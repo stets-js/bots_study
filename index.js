@@ -1,6 +1,11 @@
 require('dotenv').config();
 const amqp = require('amqplib');
+const express = require('express');
+
 const sendTelegramNotification = require('./bot-entity/telegram');
+
+const app = express();
+const port = process.env.PORT || 3000;
 
 const queueName = 'message_queue';
 
@@ -36,3 +41,11 @@ const start = async () => {
 };
 
 start();
+
+app.get('/', (req, res) => {
+  res.send('Service is running');
+});
+
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
