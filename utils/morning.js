@@ -88,7 +88,7 @@ const getWeatherForecast = async city => {
 };
 
 const sendMorningMessage = async () => {
-  const chatId = 278887628;
+  const chatId = '-1002197881869';
 
   const [quote, isAnswer, answerText] = await getRandomMessage();
   const weatherKharkiv = await getWeatherForecast('Kharkiv');
