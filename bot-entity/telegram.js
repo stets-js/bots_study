@@ -4,9 +4,9 @@ const TelegramBot = require('node-telegram-bot-api');
 const bot = new TelegramBot(process.env.TELEGRAM_BOT, {polling: true});
 
 // Функция отправки сообщения в Telegram
-const sendTelegramNotification = async (chatId, message) => {
+const sendTelegramNotification = async (chatId, message, options = {}) => {
   try {
-    await bot.sendMessage(chatId, message);
+    await bot.sendMessage(chatId, message, options);
     console.log(`Message sent to chat ${chatId}`);
   } catch (error) {
     console.error('Error sending Telegram message:', error);

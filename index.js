@@ -1,4 +1,6 @@
 require('dotenv').config();
+require('./utils/morning');
+
 const amqp = require('amqplib');
 const express = require('express');
 
@@ -45,7 +47,6 @@ start();
 app.get('/', (req, res) => {
   res.send('Service is running');
 });
-
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
