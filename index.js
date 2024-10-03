@@ -5,6 +5,7 @@ const amqp = require('amqplib');
 const express = require('express');
 
 const sendTelegramNotification = require('./bot-entity/telegram');
+const {sendEmail} = require('./bot-entity/gmail');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,6 +18,15 @@ const processMessage = async message => {
   if (type === 'tg') {
     const {chatId, text} = body;
     await sendTelegramNotification(chatId, text);
+  } else if (type === 'email') {
+    const {email, subject, message, html, sender} = body;
+    await sendEmail({
+      sender: sender,
+      email: email,
+      subject: subject,
+      message: message,
+      html: html
+    });
   } else {
     console.log('Unsupported message type:', type);
   }
