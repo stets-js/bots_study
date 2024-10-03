@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@slack/bolt": "^3.22.0",
+    "@slack/events-api": "^3.0.1",
     "amqplib": "^0.10.4",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",

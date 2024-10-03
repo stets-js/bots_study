@@ -9,7 +9,8 @@ const {sendEmail} = require('./bot-entity/gmail');
 const {
   sendDirectMessage,
   sendGroupMessage,
-  sendConfirmationMessage
+  sendConfirmationMessage,
+  slackApp
 } = require('./bot-entity/slack');
 
 const app = express();
@@ -106,7 +107,9 @@ const start = async () => {
 };
 
 start();
-
+const {createEventAdapter} = require('@slack/events-api');
+const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
+app.use('/slack/events', slackEvents.expressMiddleware());
 app.get('/', (req, res) => {
   res.send('Service is running');
 });

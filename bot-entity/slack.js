@@ -111,10 +111,4 @@ app.action('confirm_yes', async ({body, ack, say}) => {
   }
 });
 
-(async () => {
-  // Start your app
-  await app.start(4000);
-  console.log('⚡️ Slack Bolt app is running!');
-})();
-
-module.exports = {sendDirectMessage, sendGroupMessage, sendConfirmationMessage};
+module.exports = {slackApp: app, sendDirectMessage, sendGroupMessage, sendConfirmationMessage};
