@@ -101,14 +101,14 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
 app.action('confirm_yes', async ({body, ack, say}) => {
   await ack();
   console.log('Button clicked');
-  const userResponse = body.actions[0].value;
+  // const userResponse = body.actions[0].value;
   const userId = body.user.id;
 
-  if (userResponse === 'yes') {
-    await say(`Користувач <@${userId}> підтвердив!`);
-  } else if (userResponse === 'no') {
-    await say(`Користувач <@${userId}> відменив.`);
-  }
+  // if (userResponse === 'yes') {
+  await say(`Користувач <@${userId}> підтвердив!`);
+  // } else if (userResponse === 'no') {
+  // await say(`Користувач <@${userId}> відменив.`);
+  // }
 });
 
 module.exports = {slackApp: app, sendDirectMessage, sendGroupMessage, sendConfirmationMessage};

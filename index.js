@@ -110,6 +110,8 @@ start();
 const {createEventAdapter} = require('@slack/events-api');
 const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
 app.use('/slack/events', slackEvents.expressMiddleware());
+slackEvents.on('error', console.error);
+
 app.get('/', (req, res) => {
   res.send('Service is running');
 });
