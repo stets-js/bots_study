@@ -29,7 +29,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
             text: 'Так'
           },
           value: 'yes',
-          action_id: 'confirm'
+          action_id: 'confirm_yes'
         },
         {
           type: 'button',
@@ -38,7 +38,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
             text: 'Ні'
           },
           value: 'no',
-          action_id: 'confirm'
+          action_id: 'confirm_no'
         }
       ]
     }
@@ -99,12 +99,11 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
 }
 
 // Обработчик нажатий на кнопки
-app.action('confirm', async ({body, ack, say}) => {
+app.action(['confirm_yes', 'confirm_no'], async ({body, ack, say}) => {
   await ack();
 
   const userResponse = body.actions[0].value;
   const userId = body.user.id;
-  const channelId = body.channel.id;
 
   if (userResponse === 'yes') {
     await say(`Користувач <@${userId}> підтвердив!`);
@@ -112,4 +111,5 @@ app.action('confirm', async ({body, ack, say}) => {
     await say(`Користувач <@${userId}> відменив.`);
   }
 });
+
 module.exports = {sendDirectMessage, sendGroupMessage, sendConfirmationMessage};
