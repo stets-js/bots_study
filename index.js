@@ -11,31 +11,38 @@ const {sendDirectMessage, sendGroupMessage} = require('./bot-entity/slack');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const queueName = 'message_queue';
+// Назви черг для кожного типу повідомлень
+const tgQueueName = 'tg_queue';
+const emailQueueName = 'email_queue';
+const slackQueueName = 'slack_queue';
 
-const processMessage = async message => {
-  const {type, body} = message;
+const processTelegramMessage = async body => {
+  const {chatId, text} = body;
+  await sendTelegramNotification(chatId, text);
+};
 
-  if (type === 'tg') {
-    const {chatId, text} = body;
-    await sendTelegramNotification(chatId, text);
-  } else if (type === 'email') {
-    const {email, subject, message, html, sender} = body;
-    await sendEmail({
-      sender: sender,
-      email: email,
-      subject: subject,
-      message: message,
-      html: html
-    });
-  } else if (type === 'slack_direct') {
-    const {userName, userId, text} = body;
+const processEmailMessage = async body => {
+  const {email, subject, message, html, sender} = body;
+  await sendEmail({
+    sender: sender,
+    email: email,
+    subject: subject,
+    message: message,
+    html: html
+  });
+};
+
+const processSlackMessage = async body => {
+  const {type, ...rest} = body;
+
+  if (type === 'slack_direct') {
+    const {userName, userId, text} = rest;
     await sendDirectMessage(userName, userId, text);
   } else if (type === 'slack_group') {
-    const {channelId, text} = body;
+    const {channelId, text} = rest;
     await sendGroupMessage(channelId, text);
   } else {
-    console.log('Unsupported message type:', type);
+    console.log('Unsupported Slack message type:', type);
   }
 };
 
@@ -43,14 +50,36 @@ const start = async () => {
   try {
     const connection = await amqp.connect(process.env.RABBITMQ_URL);
     const channel = await connection.createChannel();
-    await channel.assertQueue(queueName, {durable: true});
 
-    console.log(`Waiting for messages in queue: ${queueName}`);
+    // Оголошення черг
+    await channel.assertQueue(tgQueueName, {durable: true});
+    await channel.assertQueue(emailQueueName, {durable: true});
+    await channel.assertQueue(slackQueueName, {durable: true});
 
-    channel.consume(queueName, async msg => {
+    console.log(
+      `Waiting for messages in queues: ${tgQueueName}, ${emailQueueName}, ${slackQueueName}`
+    );
+
+    channel.consume(tgQueueName, async msg => {
       if (msg !== null) {
         const messageContent = JSON.parse(msg.content.toString());
-        await processMessage(messageContent);
+        await processTelegramMessage(messageContent);
+        channel.ack(msg);
+      }
+    });
+
+    channel.consume(emailQueueName, async msg => {
+      if (msg !== null) {
+        const messageContent = JSON.parse(msg.content.toString());
+        await processEmailMessage(messageContent);
+        channel.ack(msg);
+      }
+    });
+
+    channel.consume(slackQueueName, async msg => {
+      if (msg !== null) {
+        const messageContent = JSON.parse(msg.content.toString());
+        await processSlackMessage(messageContent);
         channel.ack(msg);
       }
     });
@@ -64,6 +93,7 @@ start();
 app.get('/', (req, res) => {
   res.send('Service is running');
 });
+
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
