@@ -10,7 +10,50 @@ const app = new App({
 });
 
 const client = new WebClient(process.env.SLACK_BOT_TOKEN);
+async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
+  const messageBlocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: text
+      }
+    },
+    {
+      type: 'actions',
+      elements: [
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Так'
+          },
+          value: 'yes',
+          action_id: 'confirm'
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Ні'
+          },
+          value: 'no',
+          action_id: 'confirm'
+        }
+      ]
+    }
+  ];
 
+  try {
+    await slackApp.client.chat.postMessage({
+      channel: channelId,
+      blocks: messageBlocks
+    });
+    console.log(`Confirmation message sent to group ${channelId}`);
+  } catch (error) {
+    console.error(`Error sending message: ${error.message}`);
+  }
+}
 async function getUserIdByName(userName) {
   try {
     const result = await client.users.list();
@@ -45,14 +88,28 @@ async function sendDirectMessage(userName, userId = null, text) {
   }
 }
 
-async function sendGroupMessage(channelId, text) {
+async function sendGroupMessage(channelId, text, blocks = undefined) {
   //   const channelId = 'C059WAPLQ1L'; // Replace with your Slack channel ID
   try {
-    await client.chat.postMessage({channel: channelId, text});
+    await client.chat.postMessage({channel: channelId, text, blocks});
     console.log('Message sent to the group');
   } catch (error) {
     console.error(`Error sending group message: ${error.message}`);
   }
 }
 
-module.exports = {sendDirectMessage, sendGroupMessage};
+// Обработчик нажатий на кнопки
+slackApp.action('confirm', async ({body, ack, say}) => {
+  await ack();
+
+  const userResponse = body.actions[0].value;
+  const userId = body.user.id;
+  const channelId = body.channel.id;
+
+  if (userResponse === 'yes') {
+    await say(`Користувач <@${userId}> підтвердив!`);
+  } else if (userResponse === 'no') {
+    await say(`Користувач <@${userId}> відменив.`);
+  }
+});
+module.exports = {sendDirectMessage, sendGroupMessage, sendConfirmationMessage};

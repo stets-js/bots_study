@@ -6,7 +6,11 @@ const express = require('express');
 
 const sendTelegramNotification = require('./bot-entity/telegram');
 const {sendEmail} = require('./bot-entity/gmail');
-const {sendDirectMessage, sendGroupMessage} = require('./bot-entity/slack');
+const {
+  sendDirectMessage,
+  sendGroupMessage,
+  sendConfirmationMessage
+} = require('./bot-entity/slack');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,7 +19,7 @@ const port = process.env.PORT || 3000;
 const tgQueueName = 'tg_queue';
 const emailQueueName = 'email_queue';
 const slackQueueName = 'slack_queue';
-
+const message = 'message_queue';
 const processTelegramMessage = async body => {
   const {chatId, text} = body;
   await sendTelegramNotification(chatId, text);
@@ -41,6 +45,9 @@ const processSlackMessage = async body => {
   } else if (body.type === 'slack_group') {
     const {channelId, text} = body.body;
     await sendGroupMessage(channelId, text);
+  } else if (body.type === 'slack_group_confirm_subgroup') {
+    const {text, subgroupId, userId} = rest;
+    await sendConfirmationMessage(subgroupId, userId, text);
   } else {
     console.log('Unsupported Slack message type:', type);
   }
@@ -54,6 +61,7 @@ const start = async () => {
     // Оголошення черг
     await channel.assertQueue(tgQueueName, {durable: true});
     await channel.assertQueue(emailQueueName, {durable: true});
+    await channel.assertQueue(message, {durable: true});
     await channel.assertQueue(slackQueueName, {durable: true});
 
     console.log(
@@ -68,6 +76,14 @@ const start = async () => {
       }
     });
 
+    channel.consume(message, async msg => {
+      if (msg !== null) {
+        const messageContent = JSON.parse(msg.content.toString());
+        // await processEmailMessage(messageContent);
+        console.log(messageContent);
+        channel.ack(msg);
+      }
+    });
     channel.consume(emailQueueName, async msg => {
       if (msg !== null) {
         const messageContent = JSON.parse(msg.content.toString());
