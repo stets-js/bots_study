@@ -30,16 +30,16 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
           },
           value: 'yes',
           action_id: 'confirm_yes'
-        },
-        {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: 'Ні'
-          },
-          value: 'no',
-          action_id: 'confirm_no'
         }
+        // {
+        //   type: 'button',
+        //   text: {
+        //     type: 'plain_text',
+        //     text: 'Ні'
+        //   },
+        //   value: 'no',
+        //   action_id: 'confirm_no'
+        // }
       ]
     }
   ];
@@ -98,8 +98,7 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
   }
 }
 
-// Обработчик нажатий на кнопки
-app.action(/confirm/, async ({body, ack, say}) => {
+app.action('confirm_yes', async ({body, ack, say}) => {
   await ack();
   console.log('Button clicked');
   const userResponse = body.actions[0].value;
@@ -111,5 +110,11 @@ app.action(/confirm/, async ({body, ack, say}) => {
     await say(`Користувач <@${userId}> відменив.`);
   }
 });
+
+(async () => {
+  // Start your app
+  await app.start(4000);
+  console.log('⚡️ Slack Bolt app is running!');
+})();
 
 module.exports = {sendDirectMessage, sendGroupMessage, sendConfirmationMessage};
