@@ -35,11 +35,11 @@ const processEmailMessage = async body => {
 const processSlackMessage = async body => {
   const {type, ...rest} = body;
 
-  if (type === 'slack_direct') {
-    const {userName, userId, text} = rest;
+  if (body.type === 'slack_direct') {
+    const {userName, userId, text} = body.body;
     await sendDirectMessage(userName, userId, text);
-  } else if (type === 'slack_group') {
-    const {channelId, text} = rest;
+  } else if (body.type === 'slack_group') {
+    const {channelId, text} = body.body;
     await sendGroupMessage(channelId, text);
   } else {
     console.log('Unsupported Slack message type:', type);
@@ -79,6 +79,7 @@ const start = async () => {
     channel.consume(slackQueueName, async msg => {
       if (msg !== null) {
         const messageContent = JSON.parse(msg.content.toString());
+        console.log(messageContent);
         await processSlackMessage(messageContent);
         channel.ack(msg);
       }

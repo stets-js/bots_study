@@ -47,7 +47,6 @@ async function sendDirectMessage(userName, userId = null, text) {
 
 async function sendGroupMessage(channelId, text) {
   //   const channelId = 'C059WAPLQ1L'; // Replace with your Slack channel ID
-
   try {
     await client.chat.postMessage({channel: channelId, text});
     console.log('Message sent to the group');
