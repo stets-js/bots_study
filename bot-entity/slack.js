@@ -45,7 +45,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
   ];
 
   try {
-    await slackApp.client.chat.postMessage({
+    await client.chat.postMessage({
       channel: channelId,
       blocks: messageBlocks
     });
@@ -99,7 +99,7 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
 }
 
 // Обработчик нажатий на кнопки
-slackApp.action('confirm', async ({body, ack, say}) => {
+app.action('confirm', async ({body, ack, say}) => {
   await ack();
 
   const userResponse = body.actions[0].value;
