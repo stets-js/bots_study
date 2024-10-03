@@ -6,6 +6,7 @@ const express = require('express');
 
 const sendTelegramNotification = require('./bot-entity/telegram');
 const {sendEmail} = require('./bot-entity/gmail');
+const {sendDirectMessage, sendGroupMessage} = require('./bot-entity/slack');
 
 const app = express();
 const port = process.env.PORT || 3000;
