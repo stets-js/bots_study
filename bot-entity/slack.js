@@ -99,9 +99,9 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
 }
 
 // Обработчик нажатий на кнопки
-app.action(['confirm_yes', 'confirm_no'], async ({body, ack, say}) => {
+app.action(/confirm/, async ({body, ack, say}) => {
   await ack();
-
+  console.log('Button clicked');
   const userResponse = body.actions[0].value;
   const userId = body.user.id;
 
