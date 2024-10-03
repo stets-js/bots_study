@@ -27,6 +27,12 @@ const processMessage = async message => {
       message: message,
       html: html
     });
+  } else if (type === 'slack_direct') {
+    const {userName, userId, text} = body;
+    await sendDirectMessage(userName, userId, text);
+  } else if (type === 'slack_group') {
+    const {channelId, text} = body;
+    await sendGroupMessage(channelId, text);
   } else {
     console.log('Unsupported message type:', type);
   }
