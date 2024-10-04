@@ -112,7 +112,7 @@ ${quote}
 };
 
 cron.schedule(
-  '* 10 * * *',
+  '0 10 * * *',
   () => {
     console.log('Sending morning message...');
     sendMorningMessage();
