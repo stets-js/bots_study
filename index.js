@@ -11,7 +11,8 @@ const {sendEmail} = require('./bot-entity/gmail');
 const {
   sendDirectMessage,
   sendGroupMessage,
-  sendConfirmationMessage
+  sendConfirmationMessage,
+  slackApp
 } = require('./bot-entity/slack');
 
 const app = express();

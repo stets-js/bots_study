@@ -3,8 +3,8 @@ const {App} = require('@slack/bolt');
 const {WebClient} = require('@slack/web-api');
 const amqp = require('amqplib/callback_api');
 
-// Create Slack app instance
-const app = new App({
+// Create Slack slackApp instance
+const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET
 });
@@ -92,7 +92,7 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
   }
 }
 
-app.action(/actionId/, async ({body, action, ack, say}) => {
+slackApp.action(/actionId/, async ({body, action, ack, say}) => {
   await ack();
 
   console.log('Button clicked');
@@ -107,4 +107,9 @@ app.action(/actionId/, async ({body, action, ack, say}) => {
   // }
 });
 
-module.exports = {slackApp: app, sendDirectMessage, sendGroupMessage, sendConfirmationMessage};
+module.exports = {
+  slackApp,
+  sendDirectMessage,
+  sendGroupMessage,
+  sendConfirmationMessage
+};
