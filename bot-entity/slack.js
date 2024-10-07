@@ -98,7 +98,7 @@ slackApp.action(/actionId/, async ({body, action, ack, say}) => {
   const buttonValue = action.value; // Get the value from the button (e.g., confirm_userId)
   const clickedUserId = body.user.id; // ID of the user who clicked the button
   const originalUserId = buttonValue.split('_')[1]; // Extract original userId from the button value
-
+  console.log(clickedUserId, originalUserId, buttonValue);
   if (clickedUserId === originalUserId) {
     // Action confirmed by the original user
     await say(`User <@${clickedUserId}> has confirmed the action!`);
