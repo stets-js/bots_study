@@ -13,6 +13,13 @@ const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
   const messageBlocks = [
     {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Hello , click the button below to confirm your action.`
+      }
+    },
+    {
       type: 'actions',
       elements: [
         {
@@ -32,6 +39,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
   try {
     await client.chat.postMessage({
       channel: channelId,
+      text: 'Confirmation required',
       blocks: messageBlocks
     });
     console.log(`Confirmation message sent to group ${channelId}`);
@@ -39,6 +47,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
     console.error(`Error sending message: ${error.message}`);
   }
 }
+
 async function getUserIdByName(userName) {
   try {
     const result = await client.users.list();
