@@ -95,7 +95,27 @@ if (queue_name === 'slack') {
 app.get('/', (req, res) => {
   res.send('Service is running');
 });
+start(); // Start RabbitMQ consumer
 
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-});
+if (queue_name === 'slack') {
+  // Start Slack Bolt server
+  (async () => {
+    await slackApp.start(port);
+    console.log(`⚡️ Slack Bolt app is running on port ${port}`);
+
+    slackApp.event('message', async ({event, say}) => {
+      await say(`Hello, <@${event.user}>!`);
+    });
+  })();
+} else {
+  // Start Express server for other queues
+  const app = express();
+
+  app.get('/', (req, res) => {
+    res.send('Express server is running');
+  });
+
+  app.listen(port, () => {
+    console.log(`Express server is listening on port ${port}`);
+  });
+}
