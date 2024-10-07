@@ -13,33 +13,22 @@ const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
   const messageBlocks = [
     {
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: text
-      }
-    },
-    {
-      type: 'actions',
-      elements: [
+      blocks: [
         {
-          type: 'button',
-          text: {
-            type: 'plain_text',
-            text: 'Так'
-          },
-          value: 'yes',
-          action_id: 'confirm_yes'
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Click Me',
+                emoji: true
+              },
+              value: 'click_me_123',
+              action_id: 'actionId-0'
+            }
+          ]
         }
-        // {
-        //   type: 'button',
-        //   text: {
-        //     type: 'plain_text',
-        //     text: 'Ні'
-        //   },
-        //   value: 'no',
-        //   action_id: 'confirm_no'
-        // }
       ]
     }
   ];
@@ -98,14 +87,16 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
   }
 }
 
-app.action('confirm_yes', async ({body, ack, say}) => {
+app.action(/actionId/, async ({body, action, ack, say}) => {
   await ack();
+
   console.log('Button clicked');
+  const buttonId = action.action_id;
   // const userResponse = body.actions[0].value;
   const userId = body.user.id;
-
+  console.log(buttonId, userId);
   // if (userResponse === 'yes') {
-  await say(`Користувач <@${userId}> підтвердив!`);
+  // await say(`Користувач <@${userId}> підтвердив!`);
   // } else if (userResponse === 'no') {
   // await say(`Користувач <@${userId}> відменив.`);
   // }
