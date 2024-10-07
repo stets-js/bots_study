@@ -13,21 +13,17 @@ const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
   const messageBlocks = [
     {
-      blocks: [
+      type: 'actions',
+      elements: [
         {
-          type: 'actions',
-          elements: [
-            {
-              type: 'button',
-              text: {
-                type: 'plain_text',
-                text: 'Click Me',
-                emoji: true
-              },
-              value: 'click_me_123',
-              action_id: 'actionId-0'
-            }
-          ]
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Click Me',
+            emoji: true
+          },
+          value: 'click_me_123',
+          action_id: 'actionId-0'
         }
       ]
     }
