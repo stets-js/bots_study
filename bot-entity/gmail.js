@@ -2,7 +2,8 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async options => {
   if (!options.email) {
-    throw new Error('Recipient email is not defined');
+    console.error('No email provided');
+    return;
   }
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,

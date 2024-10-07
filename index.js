@@ -28,13 +28,14 @@ const processTelegramMessage = async body => {
 
 const processEmailMessage = async body => {
   const {email, subject, message, html, sender} = body;
-  await sendEmail({
-    sender: sender,
-    email: email,
-    subject: subject,
-    message: message,
-    html: html
-  });
+  if ((email, message))
+    await sendEmail({
+      sender: sender,
+      email: email,
+      subject: subject,
+      message: message,
+      html: html
+    });
 };
 
 const processSlackMessage = async body => {
