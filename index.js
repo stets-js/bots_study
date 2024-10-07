@@ -38,7 +38,7 @@ const processEmailMessage = async body => {
 
 const processSlackMessage = async body => {
   const {type, ...rest} = body;
-
+  console.log(body);
   if (body.type === 'slack_direct') {
     const {userName, userId, text} = body.body;
     if (userName && text && userName.length > 0 && text.length > 0)

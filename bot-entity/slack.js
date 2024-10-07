@@ -16,7 +16,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `Hello , click the button below to confirm your action.`
+        text: `Hello <@${userId}>, click the button below to confirm your action.`
       }
     },
     {
@@ -29,7 +29,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
             text: 'Click Me',
             emoji: true
           },
-          value: 'click_me_123',
+          value: `confirm_${userId}`, // Attach userId to the button value
           action_id: 'actionId-0'
         }
       ]
@@ -95,16 +95,17 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
 slackApp.action(/actionId/, async ({body, action, ack, say}) => {
   await ack();
 
-  console.log('Button clicked');
-  const buttonId = action.action_id;
-  // const userResponse = body.actions[0].value;
-  const userId = body.user.id;
-  console.log(buttonId, userId);
-  // if (userResponse === 'yes') {
-  // await say(`Користувач <@${userId}> підтвердив!`);
-  // } else if (userResponse === 'no') {
-  // await say(`Користувач <@${userId}> відменив.`);
-  // }
+  const buttonValue = action.value; // Get the value from the button (e.g., confirm_userId)
+  const clickedUserId = body.user.id; // ID of the user who clicked the button
+  const originalUserId = buttonValue.split('_')[1]; // Extract original userId from the button value
+
+  if (clickedUserId === originalUserId) {
+    // Action confirmed by the original user
+    await say(`User <@${clickedUserId}> has confirmed the action!`);
+  } else {
+    // Not the intended user
+    await say(`Sorry, <@${clickedUserId}>, you're not authorized to confirm this action.`);
+  }
 });
 
 module.exports = {
