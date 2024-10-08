@@ -25,7 +25,7 @@ const processTelegramMessage = async body => {
 };
 
 const processEmailMessage = async body => {
-  const {email, subject, message, html, sender} = body;
+  const {email, subject, message, html, sender} = body.body;
   if (email && message)
     await sendEmail({
       sender: sender,
