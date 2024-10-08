@@ -54,8 +54,16 @@ const processSlackMessage = async body => {
   }
 };
 
-const processQueueMessages = async channel => {
+const processQueueMessages = async () => {
+  let connection, channel;
+
   try {
+    connection = await amqp.connect(process.env.RABBITMQ_URL);
+    channel = await connection.createChannel();
+
+    await channel.assertQueue(queue_name, {durable: true});
+    console.log(`Waiting for messages in queue: ${queue_name}`);
+
     const msg = await channel.get(queue_name, {noAck: false});
 
     if (msg) {
@@ -77,23 +85,16 @@ const processQueueMessages = async channel => {
     }
   } catch (error) {
     console.error('Error processing RabbitMQ message:', error);
+  } finally {
+    if (channel) await channel.close();
+    if (connection) await connection.close();
   }
 };
 
 const start = async () => {
-  try {
-    const connection = await amqp.connect(process.env.RABBITMQ_URL);
-    const channel = await connection.createChannel();
-
-    await channel.assertQueue(queue_name, {durable: true});
-    console.log(`Waiting for messages in queue: ${queue_name}`);
-
-    setInterval(async () => {
-      await processQueueMessages(channel);
-    }, 10000); // 10000 миллисекунд = 10 секунд
-  } catch (error) {
-    console.error('Error in RabbitMQ service:', error);
-  }
+  setInterval(async () => {
+    await processQueueMessages();
+  }, 5000);
 };
 
 start();
@@ -104,8 +105,6 @@ if (queue_name === 'slack_queue') {
     console.log(`⚡️ Slack Bolt app is running on port ${port}`);
   })();
 } else {
-  const app = express();
-
   app.get('/', (req, res) => {
     res.send('Express server is running');
   });
