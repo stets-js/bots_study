@@ -73,7 +73,7 @@ const processQueueMessages = async channel => {
 
       channel.ack(msg);
     } else {
-      console.log('Очередь пуста, проверим через минуту.');
+      console.log('Черга пуста, перевірю через 10 секунд.');
     }
   } catch (error) {
     console.error('Error processing RabbitMQ message:', error);
