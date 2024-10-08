@@ -47,8 +47,8 @@ const processSlackMessage = async body => {
     const {channelId, text} = body.body;
     if (channelId && text) await sendGroupMessage(channelId, text);
   } else if (body.type === 'slack_group_confirm_subgroup') {
-    const {text, subgroupId, userId, channelId} = body.body;
-    await sendConfirmationMessage(channelId, subgroupId, userId, text);
+    const {text, subgroupId, userId, userSlackId, channelId} = body.body;
+    await sendConfirmationMessage(channelId, subgroupId, userId, userSlackId, text);
   } else {
     console.log('Unsupported Slack message type:', type);
   }
