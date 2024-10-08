@@ -10,13 +10,13 @@ const slackApp = new App({
 });
 
 const client = new WebClient(process.env.SLACK_BOT_TOKEN);
-async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
+async function sendConfirmationMessage(userId, text) {
   const messageBlocks = [
     {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `Hello <@${userId}>, click the button below to confirm your action.`
+        text: `*${text}*`
       }
     },
     {
@@ -26,25 +26,33 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
           type: 'button',
           text: {
             type: 'plain_text',
-            text: 'Click Me',
-            emoji: true
+            text: 'Подтвердить'
           },
-          value: `confirm_${userId}`, // Attach userId to the button value
-          action_id: 'actionId-0'
+          value: `confirm_${userId}`,
+          action_id: 'confirm_action'
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Отменить'
+          },
+          value: `cancel_${userId}`,
+          action_id: 'cancel_action'
         }
       ]
     }
   ];
 
   try {
-    await client.chat.postMessage({
-      channel: channelId,
-      text: 'Confirmation required',
+    const result = await client.chat.postMessage({
+      channel: userId,
+      text: 'Будеш працювати?',
       blocks: messageBlocks
     });
-    console.log(`Confirmation message sent to group ${channelId}`);
+    console.log(`Confirmation message sent to ${userId}`);
   } catch (error) {
-    console.error(`Error sending message: ${error.message}`);
+    console.error(`Error sending confirmation message: ${error.message}`);
   }
 }
 
@@ -91,20 +99,86 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
     console.error(`Error sending group message: ${error.message}`);
   }
 }
+slackApp.action('confirm_action', async ({body, action, ack, client}) => {
+  await ack();
+  const userId = body.user.id;
 
-slackApp.action(/actionId/, async ({body, action, ack, say}) => {
+  await client.chat.update({
+    channel: body.channel.id,
+    ts: body.message.ts,
+    text: `Підтверженно!`,
+    blocks: []
+  });
+});
+
+slackApp.action('cancel_action', async ({body, action, ack, client}) => {
+  await ack();
+  const userId = body.user.id;
+
+  const messageBlocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `Яка причина:`
+      }
+    },
+    {
+      type: 'input',
+      block_id: 'cancel_reason_block',
+      element: {
+        type: 'plain_text_input',
+        action_id: 'cancel_reason_input',
+        multiline: true
+      },
+      label: {
+        type: 'plain_text',
+        text: 'Причина'
+      }
+    },
+    {
+      type: 'actions',
+      elements: [
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Зберегти'
+          },
+          value: `submit_reason_${userId}`,
+          action_id: 'submit_reason'
+        }
+      ]
+    }
+  ];
+
+  await client.chat.update({
+    channel: body.channel.id,
+    ts: body.message.ts,
+    text: 'Яка причина',
+    blocks: messageBlocks
+  });
+});
+
+slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
 
-  const buttonValue = action.value; // Get the value from the button (e.g., confirm_userId)
-  const clickedUserId = body.user.id; // ID of the user who clicked the button
-  const originalUserId = buttonValue.split('_')[1]; // Extract original userId from the button value
-  console.log(clickedUserId, originalUserId, buttonValue);
-  if (clickedUserId === originalUserId) {
-    // Action confirmed by the original user
-    await say(`User <@${clickedUserId}> has confirmed the action!`);
+  const userId = body.user.id;
+  const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
+
+  if (reason && reason.length > 0) {
+    await client.chat.update({
+      channel: body.channel.id,
+      ts: body.message.ts,
+      text: `Користувач <@${userId}> відмінив за причиною: "${reason}"`,
+      blocks: []
+    });
   } else {
-    // Not the intended user
-    await say(`Sorry, <@${clickedUserId}>, you're not authorized to confirm this action.`);
+    await client.chat.postEphemeral({
+      channel: body.channel.id,
+      user: userId,
+      text: 'Яка причина.'
+    });
   }
 });
 
