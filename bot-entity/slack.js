@@ -110,7 +110,7 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
     text: `Підтверждено!`,
     blocks: []
   });
-  sendMessage('slack_queue', 'subgroup_confirmed', {subgroupId, userId});
+  sendMessage('slack_queue_confirmation', 'subgroup_confirmed', {subgroupId, userId});
   console.log(`Subgroup ${subgroupId} confirmed by user ${userId}.`);
 });
 
@@ -177,7 +177,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       text: `Користувач <@${userSlackId}> відмінив за причиною: "${reason}". Підгрупа: ${subgroupId}`,
       blocks: []
     });
-    sendMessage('slack_queue', 'subgroup_declined', {subgroupId, userId, reason});
+    sendMessage('slack_queue_confirmation', 'subgroup_declined', {subgroupId, userId, reason});
   } else {
     await client.chat.postEphemeral({
       channel: body.channel.id,
