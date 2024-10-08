@@ -26,7 +26,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
           type: 'button',
           text: {
             type: 'plain_text',
-            text: 'Подтвердить'
+            text: 'Підтверджую'
           },
           value: `confirm_${userId}`,
           action_id: 'confirm_action'
@@ -35,7 +35,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
           type: 'button',
           text: {
             type: 'plain_text',
-            text: 'Отменить'
+            text: 'Ні'
           },
           value: `cancel_${userId}`,
           action_id: 'cancel_action'
@@ -155,7 +155,7 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
   await client.chat.update({
     channel: body.channel.id,
     ts: body.message.ts,
-    text: 'Яка причина',
+    text: 'Яка причина?',
     blocks: messageBlocks
   });
 });
@@ -177,7 +177,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
     await client.chat.postEphemeral({
       channel: body.channel.id,
       user: userId,
-      text: 'Яка причина.'
+      text: 'Яка причина?'
     });
   }
 });
