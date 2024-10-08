@@ -102,10 +102,6 @@ if (queue_name === 'slack_queue') {
   (async () => {
     await slackApp.start(port);
     console.log(`⚡️ Slack Bolt app is running on port ${port}`);
-
-    slackApp.event('message', async ({event, say}) => {
-      await say(`Hello, <@${event.user}>!`);
-    });
   })();
 } else {
   const app = express();
