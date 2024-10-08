@@ -54,33 +54,43 @@ const processSlackMessage = async body => {
   }
 };
 
+const processQueueMessages = async channel => {
+  try {
+    const msg = await channel.get(queue_name, {noAck: false});
+
+    if (msg) {
+      const messageContent = JSON.parse(msg.content.toString());
+
+      if (queue_name === 'tg_queue') {
+        await processTelegramMessage(messageContent);
+      } else if (queue_name === 'email_queue') {
+        await processEmailMessage(messageContent);
+      } else if (queue_name === 'slack_queue') {
+        await processSlackMessage(messageContent);
+      } else {
+        console.log('Unknown queue:', queue_name);
+      }
+
+      channel.ack(msg);
+    } else {
+      console.log('Очередь пуста, проверим через минуту.');
+    }
+  } catch (error) {
+    console.error('Error processing RabbitMQ message:', error);
+  }
+};
+
 const start = async () => {
   try {
     const connection = await amqp.connect(process.env.RABBITMQ_URL);
     const channel = await connection.createChannel();
 
-    // Ожидание сообщений из указанной очереди
     await channel.assertQueue(queue_name, {durable: true});
-
     console.log(`Waiting for messages in queue: ${queue_name}`);
 
-    channel.consume(queue_name, async msg => {
-      if (msg !== null) {
-        const messageContent = JSON.parse(msg.content.toString());
-
-        if (queue_name === 'tg_queue') {
-          await processTelegramMessage(messageContent);
-        } else if (queue_name === 'email_queue') {
-          await processEmailMessage(messageContent);
-        } else if (queue_name === 'slack_queue') {
-          await processSlackMessage(messageContent);
-        } else {
-          console.log('Unknown queue:', queue_name);
-        }
-
-        channel.ack(msg);
-      }
-    });
+    setInterval(async () => {
+      await processQueueMessages(channel);
+    }, 10000); // 10000 миллисекунд = 10 секунд
   } catch (error) {
     console.error('Error in RabbitMQ service:', error);
   }
@@ -93,13 +103,11 @@ if (queue_name === 'slack_queue') {
     await slackApp.start(port);
     console.log(`⚡️ Slack Bolt app is running on port ${port}`);
 
-    // Slack event handler
     slackApp.event('message', async ({event, say}) => {
       await say(`Hello, <@${event.user}>!`);
     });
   })();
 } else {
-  // Start Express server for other queues
   const app = express();
 
   app.get('/', (req, res) => {
