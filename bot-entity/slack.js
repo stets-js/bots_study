@@ -2,6 +2,7 @@ require('dotenv').config();
 const {App} = require('@slack/bolt');
 const {WebClient} = require('@slack/web-api');
 const amqp = require('amqplib/callback_api');
+const {sendMessage} = require('../utils/sendMessage');
 
 // Create Slack slackApp instance
 const slackApp = new App({
@@ -10,7 +11,7 @@ const slackApp = new App({
 });
 
 const client = new WebClient(process.env.SLACK_BOT_TOKEN);
-async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
+async function sendConfirmationMessage(channelId, subgroupId, userId, userSlackId, text) {
   const messageBlocks = [
     {
       type: 'section',
@@ -28,7 +29,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
             type: 'plain_text',
             text: 'Підтверджую'
           },
-          value: `confirm_${userId}`,
+          value: `confirm_${userId}_${subgroupId}_${userSlackId}`,
           action_id: 'confirm_action'
         },
         {
@@ -37,7 +38,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
             type: 'plain_text',
             text: 'Ні'
           },
-          value: `cancel_${userId}`,
+          value: `cancel_${userId}_${subgroupId}_${userSlackId}`,
           action_id: 'cancel_action'
         }
       ]
@@ -46,16 +47,15 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, text) {
 
   try {
     const result = await client.chat.postMessage({
-      channel: userId,
+      channel: userSlackId,
       text: 'Будеш працювати?',
       blocks: messageBlocks
     });
-    console.log(`Confirmation message sent to ${userId}`);
+    console.log(`Confirmation message sent to ${userSlackId}`);
   } catch (error) {
     console.error(`Error sending confirmation message: ${error.message}`);
   }
 }
-
 async function getUserIdByName(userName) {
   try {
     const result = await client.users.list();
@@ -101,19 +101,23 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
 }
 slackApp.action('confirm_action', async ({body, action, ack, client}) => {
   await ack();
-  const userId = body.user.id;
+
+  const [actionType, userId, subgroupId, userSlackId] = action.value.split('_');
 
   await client.chat.update({
     channel: body.channel.id,
     ts: body.message.ts,
-    text: `Підтверженно!`,
+    text: `Підтверждено!`,
     blocks: []
   });
+  sendMessage('slack_queue', 'subgroup_confirmed', {subgroupId, userId});
+  console.log(`Subgroup ${subgroupId} confirmed by user ${userId}.`);
 });
 
 slackApp.action('cancel_action', async ({body, action, ack, client}) => {
   await ack();
-  const userId = body.user.id;
+
+  const [actionType, userId, subgroupId, userSlackId] = action.value.split('_');
 
   const messageBlocks = [
     {
@@ -145,7 +149,7 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
             type: 'plain_text',
             text: 'Зберегти'
           },
-          value: `submit_reason_${userId}`,
+          value: `submit_reason_${userId}_${subgroupId}`,
           action_id: 'submit_reason'
         }
       ]
@@ -163,21 +167,22 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
 
-  const userId = body.user.id;
+  const [actionType, userId, subgroupId, userSlackId] = action.value.split('_');
   const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
 
   if (reason && reason.length > 0) {
     await client.chat.update({
       channel: body.channel.id,
       ts: body.message.ts,
-      text: `Користувач <@${userId}> відмінив за причиною: "${reason}"`,
+      text: `Користувач <@${userSlackId}> відмінив за причиною: "${reason}". Підгрупа: ${subgroupId}`,
       blocks: []
     });
+    sendMessage('slack_queue', 'subgroup_declined', {subgroupId, userId, reason});
   } else {
     await client.chat.postEphemeral({
       channel: body.channel.id,
-      user: userId,
-      text: 'Яка причина?'
+      user: userSlackId,
+      text: 'Яка причина.'
     });
   }
 });
