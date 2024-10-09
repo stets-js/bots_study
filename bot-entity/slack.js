@@ -151,6 +151,15 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
           },
           value: `submit_reason_${userId}_${subgroupId}_${userSlackId}`,
           action_id: 'submit_reason'
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Назад'
+          },
+          value: `back_to_confirm_${userId}_${subgroupId}_${userSlackId}`,
+          action_id: 'back_to_confirm'
         }
       ]
     }
@@ -160,6 +169,51 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
     channel: body.channel.id,
     ts: body.message.ts,
     text: 'Яка причина?',
+    blocks: messageBlocks
+  });
+});
+slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
+  await ack();
+
+  const [actionType, userId, subgroupId, userSlackId] = action.value.split('_');
+
+  const messageBlocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `*Будеш працювати?*`
+      }
+    },
+    {
+      type: 'actions',
+      elements: [
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Підтверджую'
+          },
+          value: `confirm_${userId}_${subgroupId}_${userSlackId}`,
+          action_id: 'confirm_action'
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Ні'
+          },
+          value: `cancel_${userId}_${subgroupId}_${userSlackId}`,
+          action_id: 'cancel_action'
+        }
+      ]
+    }
+  ];
+
+  await client.chat.update({
+    channel: body.channel.id,
+    ts: body.message.ts,
+    text: 'Будеш працювати?',
     blocks: messageBlocks
   });
 });
