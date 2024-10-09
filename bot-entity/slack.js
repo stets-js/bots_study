@@ -149,7 +149,7 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
             type: 'plain_text',
             text: 'Зберегти'
           },
-          value: `submit_reason_${userId}_${subgroupId}`,
+          value: `submit_reason_${userId}_${subgroupId}_${userSlackId}`,
           action_id: 'submit_reason'
         }
       ]
