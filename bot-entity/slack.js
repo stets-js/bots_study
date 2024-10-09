@@ -110,7 +110,12 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
     text: `Підтверждено потік ${subgroupId}!`,
     blocks: []
   });
-  sendMessage('slack_queue_confirmation', 'subgroup_confirmed', {subgroupId, userId, adminId});
+  sendMessage('slack_queue_confirmation', 'subgroup_confirmed', {
+    subgroupId,
+    userSlackId,
+    userId,
+    adminId
+  });
   console.log(`Subgroup ${subgroupId} confirmed by user ${userId}.`);
 });
 
@@ -189,6 +194,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
     sendMessage('slack_queue_confirmation', 'subgroup_declined', {
       subgroupId,
       userId,
+      userSlackId,
       adminId,
       reason
     });
