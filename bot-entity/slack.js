@@ -11,7 +11,7 @@ const slackApp = new App({
 });
 
 const client = new WebClient(process.env.SLACK_BOT_TOKEN);
-async function sendConfirmationMessage(channelId, subgroupId, userId, userSlackId, text) {
+async function sendConfirmationMessage(channelId, subgroupId, userId, userSlackId, text, adminId) {
   const messageBlocks = [
     {
       type: 'section',
@@ -29,7 +29,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, userSlackI
             type: 'plain_text',
             text: 'Підтверджую'
           },
-          value: `confirm_${userId}_${subgroupId}_${userSlackId}`,
+          value: `confirm_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
           action_id: 'confirm_action'
         },
         {
@@ -38,7 +38,7 @@ async function sendConfirmationMessage(channelId, subgroupId, userId, userSlackI
             type: 'plain_text',
             text: 'Ні'
           },
-          value: `cancel_${userId}_${subgroupId}_${userSlackId}`,
+          value: `cancel_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
           action_id: 'cancel_action'
         }
       ]
@@ -102,22 +102,22 @@ async function sendGroupMessage(channelId, text, blocks = undefined) {
 slackApp.action('confirm_action', async ({body, action, ack, client}) => {
   await ack();
 
-  const [actionType, userId, subgroupId, userSlackId] = action.value.split('_');
+  const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
 
   await client.chat.update({
     channel: body.channel.id,
     ts: body.message.ts,
-    text: `Підтверждено!`,
+    text: `Підтверждено потік ${subgroupId}!`,
     blocks: []
   });
-  sendMessage('slack_queue_confirmation', 'subgroup_confirmed', {subgroupId, userId});
+  sendMessage('slack_queue_confirmation', 'subgroup_confirmed', {subgroupId, userId, adminId});
   console.log(`Subgroup ${subgroupId} confirmed by user ${userId}.`);
 });
 
 slackApp.action('cancel_action', async ({body, action, ack, client}) => {
   await ack();
 
-  const [actionType, userId, subgroupId, userSlackId] = action.value.split('_');
+  const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
 
   const messageBlocks = [
     {
@@ -149,7 +149,7 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
             type: 'plain_text',
             text: 'Зберегти'
           },
-          value: `submitReason_${userId}_${subgroupId}_${userSlackId}`,
+          value: `submitReason_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
           action_id: 'submit_reason'
         },
         {
@@ -158,7 +158,7 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
             type: 'plain_text',
             text: 'Назад'
           },
-          value: `backToConfirm_${userId}_${subgroupId}_${userSlackId}`,
+          value: `backToConfirm_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
           action_id: 'back_to_confirm'
         }
       ]
@@ -176,7 +176,7 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
 
-  const [actionType, userId, subgroupId, userSlackId] = action.value.split('_');
+  const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
   const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
 
   if (reason && reason.length > 0) {
@@ -186,7 +186,12 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       text: `Користувач <@${userSlackId}> відмінив за причиною: "${reason}". Підгрупа: ${subgroupId}`,
       blocks: []
     });
-    sendMessage('slack_queue_confirmation', 'subgroup_declined', {subgroupId, userId, reason});
+    sendMessage('slack_queue_confirmation', 'subgroup_declined', {
+      subgroupId,
+      userId,
+      adminId,
+      reason
+    });
   } else {
     await client.chat.postEphemeral({
       channel: body.channel.id,
