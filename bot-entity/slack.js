@@ -21,26 +21,26 @@ async function sendConfirmationMessage(
   text,
   adminId
 ) {
-  const messageBlocks = [
-    ...blocks,
-    {
-      type: 'actions',
-      elements: [
-        generateButton(
-          `confirm_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
-          'confirm_action'
-        ),
-        generateButton(
-          `cancel_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
-          'cancel_action',
-          'danger',
-          'Відміняю'
-        )
-      ]
-    }
-  ];
-
   try {
+    const messageBlocks = [
+      ...blocks,
+      {
+        type: 'actions',
+        elements: [
+          generateButton(
+            `confirm_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
+            'confirm_action'
+          ),
+          generateButton(
+            `cancel_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
+            'cancel_action',
+            'danger',
+            'Відміняю'
+          )
+        ]
+      }
+    ];
+
     const result = await client.chat.postMessage({
       channel: userSlackId,
       text: 'Будеш працювати?',
