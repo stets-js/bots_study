@@ -22,7 +22,7 @@ async function sendConfirmationMessage(
   adminId
 ) {
   const messageBlocks = [
-    blocks,
+    ...blocks,
     {
       type: 'actions',
       elements: [
