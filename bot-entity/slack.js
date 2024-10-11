@@ -23,7 +23,7 @@ async function sendConfirmationMessage(
 ) {
   try {
     const messageBlocks = [
-      ...blocks,
+      ...JSON.parse(blocks),
       {
         type: 'actions',
         elements: [
