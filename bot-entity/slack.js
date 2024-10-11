@@ -168,7 +168,7 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
     channel: body.channel.id,
     ts: body.message.ts,
     text: 'Яка причина?',
-    blocks: messageBlocks
+    blocks: updatedBlocks
   });
 });
 
@@ -190,7 +190,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       channel: body.channel.id,
       ts: body.message.ts,
       text: `Користувач <@${userSlackId}> відмінив за причиною: "${reason}". Підгрупа: ${subgroupId}`,
-      blocks: []
+      blocks: updatedBlocks
     });
     sendMessage('slack_queue_confirmation', 'subgroup_declined', {
       subgroupId,
