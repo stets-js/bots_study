@@ -89,7 +89,7 @@ const processQueueMessages = async () => {
 
       channel.ack(msg);
     } else {
-      console.log('Черга пуста, перевірю через 10 секунд.');
+      console.log('Черга пуста, перевірю через 5 секунд.');
     }
   } catch (error) {
     console.error('Error processing RabbitMQ message:', error);
@@ -99,9 +99,18 @@ const processQueueMessages = async () => {
   }
 };
 
+const checkServers = async () => {
+  if (queue_name === 'slack_queue') {
+    axios.get('https://bots-gmail.onrender.com/');
+    axios.get('https://bots-rzka.onrender.com/');
+  }
+  return;
+};
+
 const start = async () => {
   setInterval(async () => {
     await processQueueMessages();
+    await checkServers();
   }, 5000);
 };
 
