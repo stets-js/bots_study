@@ -1,6 +1,6 @@
 require('dotenv').config();
 require('./utils/morning');
-
+const axios = require('axios');
 const amqp = require('amqplib');
 const express = require('express');
 const {createEventAdapter} = require('@slack/events-api');
@@ -103,6 +103,7 @@ const checkServers = async () => {
   if (queue_name === 'slack_queue') {
     axios.get('https://bots-gmail.onrender.com/');
     axios.get('https://bots-rzka.onrender.com/');
+    console.log('send');
   }
   return;
 };
