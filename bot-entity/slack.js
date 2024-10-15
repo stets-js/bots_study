@@ -209,14 +209,15 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
 });
 async function checkAuthorization(slackId) {
   try {
-    const result = axios('auth_queue', 'check_authorization', {slackId});
-    return result.isAuthorized;
+    const result = await axios.get(
+      `https://dolphin-app-b3fkw.ondigitalocean.app/api/auth/slack?slackId=${slackId}`
+    );
+    return result.data.isSync;
   } catch (error) {
     console.error(`Ошибка при проверке авторизации: ${error.message}`);
     return false;
   }
 }
-
 slackApp.command('/sync_booking', async ({command, ack, respond}) => {
   await ack();
 
@@ -229,7 +230,7 @@ slackApp.command('/sync_booking', async ({command, ack, respond}) => {
       response_type: 'ephemeral'
     });
   } else {
-    const bookingUrl = `https://your-domain.com/booking/confirmSlack?slackId=${slackId}`;
+    const bookingUrl = `https://dolphin-app-b3fkw.ondigitalocean.app/api/auth/slack?slackId=${slackId}`;
     await respond({
       text: `Вам нужно авторизоваться: ${bookingUrl}`,
       response_type: 'ephemeral'
