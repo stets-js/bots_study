@@ -79,7 +79,7 @@ async function sendDirectMessage(userName, userId = null, text) {
     const result = await client.conversations.open({users: userId});
     const channelId = result.channel.id;
     await client.chat.postMessage({channel: channelId, text});
-    console.log(`Message sent to ${userName}`);
+    console.log(`Message sent to ${userId}`);
   } catch (error) {
     console.error(`Error sending message: ${error.message}`);
   }
