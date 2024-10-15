@@ -226,13 +226,13 @@ slackApp.command('/sync_booking', async ({command, ack, respond}) => {
 
   if (isAuthorized) {
     await respond({
-      text: 'Вы уже авторизованы.',
+      text: 'Ви вже синхронізовані!',
       response_type: 'ephemeral'
     });
   } else {
-    const bookingUrl = `https://dolphin-app-b3fkw.ondigitalocean.app/api/auth/slack?slackId=${slackId}`;
+    const bookingUrl = `https://study-booking.netlify.app/?slackId=${slackId}`;
     await respond({
-      text: `Вам нужно авторизоваться: ${bookingUrl}`,
+      text: `Треба синхронізуватися: ${bookingUrl}`,
       response_type: 'ephemeral'
     });
   }
