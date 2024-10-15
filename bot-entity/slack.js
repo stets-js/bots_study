@@ -1,10 +1,10 @@
+const axios = require('axios');
 require('dotenv').config();
 const {App} = require('@slack/bolt');
 const {WebClient} = require('@slack/web-api');
 const amqp = require('amqplib/callback_api');
 const {sendMessage} = require('../utils/sendMessage');
 const {generateButton} = require('../utils/slack-blocks/buttons');
-
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -207,7 +207,35 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
     });
   }
 });
+async function checkAuthorization(slackId) {
+  try {
+    const result = axios('auth_queue', 'check_authorization', {slackId});
+    return result.isAuthorized;
+  } catch (error) {
+    console.error(`Ошибка при проверке авторизации: ${error.message}`);
+    return false;
+  }
+}
 
+slackApp.command('/sync_booking', async ({command, ack, respond}) => {
+  await ack();
+
+  const slackId = command.user_id;
+  const isAuthorized = await checkAuthorization(slackId);
+
+  if (isAuthorized) {
+    await respond({
+      text: 'Вы уже авторизованы.',
+      response_type: 'ephemeral'
+    });
+  } else {
+    const bookingUrl = `https://your-domain.com/booking/confirmSlack?slackId=${slackId}`;
+    await respond({
+      text: `Вам нужно авторизоваться: ${bookingUrl}`,
+      response_type: 'ephemeral'
+    });
+  }
+});
 module.exports = {
   slackApp,
   sendDirectMessage,
