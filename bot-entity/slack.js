@@ -71,14 +71,15 @@ async function getUserIdByName(userName) {
   }
 }
 
-async function sendDirectMessage(userName, userId = null, text) {
+async function sendDirectMessage(userName, userId = null, text, blocks) {
   if (!userId) userId = await getUserIdByName(userName);
   if (!userId) return;
 
   try {
     const result = await client.conversations.open({users: userId});
     const channelId = result.channel.id;
-    await client.chat.postMessage({channel: channelId, text});
+
+    await client.chat.postMessage({channel: channelId, text, blocks});
     console.log(`Message sent to ${userId}`);
   } catch (error) {
     console.error(`Error sending message: ${error.message}`);

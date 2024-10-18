@@ -40,9 +40,9 @@ const processSlackMessage = async body => {
   const {type, ...rest} = body;
   console.log(body);
   if (body.type === 'slack_direct') {
-    const {userName, userId, text} = body.body;
+    const {userName, userId, text, blocks} = body.body;
     if (text && ((userName && userName.length > 0) || userId) && text.length > 0)
-      await sendDirectMessage(userName, userId, text);
+      await sendDirectMessage(userName, userId, text, blocks);
   } else if (body.type === 'slack_group') {
     const {channelId, text} = body.body;
     if (channelId && text) await sendGroupMessage(channelId, text);
