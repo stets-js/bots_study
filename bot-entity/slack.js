@@ -177,6 +177,7 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
   await ack();
 
   const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
+  console.log(body.message.blocks);
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
   updatedBlocks.push({
