@@ -5,7 +5,6 @@ const {WebClient} = require('@slack/web-api');
 const amqp = require('amqplib/callback_api');
 const {sendMessage} = require('../utils/sendMessage');
 const {generateButton} = require('../utils/slack-blocks/buttons');
-const {updateTable} = require('../../../StudyBooking-front/src/helpers/spreadsheet/spreadsheet');
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
