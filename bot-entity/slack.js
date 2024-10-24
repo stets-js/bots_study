@@ -5,6 +5,7 @@ const {WebClient} = require('@slack/web-api');
 const amqp = require('amqplib/callback_api');
 const {sendMessage} = require('../utils/sendMessage');
 const {generateButton} = require('../utils/slack-blocks/buttons');
+const {updateTable} = require('../../../StudyBooking-front/src/helpers/spreadsheet/spreadsheet');
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -176,9 +177,8 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
   await ack();
 
   const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
-  const updatedBlocks = body.message.blocks.filter(
-    block => block.type !== 'actions' || block.type !== 'input'
-  );
+  let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
+  updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
   updatedBlocks.push({
     type: 'actions',
     elements: [
