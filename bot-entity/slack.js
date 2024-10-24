@@ -172,7 +172,25 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
     blocks: updatedBlocks
   });
 });
-
+slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
+  await ack();
+  const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
+  const updatedBlocks = body.message.blocks.filter(
+    block => block.type !== 'actions' || block.type !== 'input'
+  );
+  updatedBlocks.push({
+    type: 'actions',
+    elements: [
+      generateButton(`confirm_${userId}_${subgroupId}_${userSlackId}_${adminId}`, 'confirm_action'),
+      generateButton(
+        `cancel_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
+        'cancel_action',
+        'danger',
+        'Відміняю'
+      )
+    ]
+  });
+});
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
 
