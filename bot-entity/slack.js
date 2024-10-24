@@ -174,6 +174,7 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
 });
 slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
   await ack();
+
   const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
   const updatedBlocks = body.message.blocks.filter(
     block => block.type !== 'actions' || block.type !== 'input'
@@ -189,6 +190,12 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
         'Відміняю'
       )
     ]
+  });
+  await client.chat.update({
+    channel: body.channel.id,
+    ts: body.message.ts,
+    text: 'Яка причина?',
+    blocks: updatedBlocks
   });
 });
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
