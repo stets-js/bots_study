@@ -178,7 +178,9 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
 
   const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
   const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
-  const updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
+  const updatedBlocks = body.message.blocks.filter(
+    block => block.type !== 'actions' || block.type !== 'input'
+  );
   if (reason && reason.length > 0) {
     updatedBlocks.push({
       type: 'section',
