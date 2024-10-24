@@ -176,7 +176,6 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
   await ack();
 
   const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
-  console.log(body.message.blocks);
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
   updatedBlocks.push({
@@ -203,9 +202,8 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
 
   const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
   const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
-  const updatedBlocks = body.message.blocks.filter(
-    block => block.type !== 'actions' || block.type !== 'input'
-  );
+  let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
+  updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
   if (reason && reason.length > 0) {
     updatedBlocks.push({
       type: 'section',
