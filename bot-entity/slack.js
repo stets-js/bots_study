@@ -263,6 +263,17 @@ slackApp.command('/sync_booking', async ({command, ack, respond}) => {
     });
   }
 });
+slackApp.command('/sync_booking_aditional', async ({command, ack, respond}) => {
+  await ack();
+
+  const slackId = command.user_id;
+
+  const bookingUrl = `https://study-booking.netlify.app/?aditionalSync=true&slackId=${slackId}`;
+  await respond({
+    text: `Ось посилання на синхронізацію додаткового аккаунта: ${bookingUrl}`,
+    response_type: 'ephemeral'
+  });
+});
 module.exports = {
   slackApp,
   sendDirectMessage,
