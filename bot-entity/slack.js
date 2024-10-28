@@ -286,9 +286,9 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
     });
   } else {
     await respond({
-      text: `Синхронізовано аккаунтів: ${user.length}\n ${user.map(
-        us => `${us.email} (${us.Role.name})\n`
-      )}`,
+      text: `Синхронізовано аккаунтів: ${user.length}\n ${user
+        .map(us => `${us.email} (${us.Role.name})`)
+        .join('\n')}`,
       response_type: 'ephemeral'
     });
   }
