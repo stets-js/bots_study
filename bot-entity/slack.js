@@ -238,19 +238,19 @@ async function checkAuthorization(slackId) {
     const result = await axios.get(
       `https://dolphin-app-b3fkw.ondigitalocean.app/api/auth/slack?slackId=${slackId}`
     );
-    return result.data.isSync;
+    return result.data;
   } catch (error) {
     console.error(`Ошибка при проверке авторизации: ${error.message}`);
-    return false;
+    return {isSync: false, users: []};
   }
 }
 slackApp.command('/sync_booking', async ({command, ack, respond}) => {
   await ack();
 
   const slackId = command.user_id;
-  const isAuthorized = await checkAuthorization(slackId);
+  const {isSync} = await checkAuthorization(slackId);
 
-  if (isAuthorized) {
+  if (isSync) {
     await respond({
       text: 'Ви вже синхронізовані!',
       response_type: 'ephemeral'
@@ -273,6 +273,25 @@ slackApp.command('/sync_booking_aditional', async ({command, ack, respond}) => {
     text: `Ось посилання на синхронізацію додаткового аккаунта: ${bookingUrl}`,
     response_type: 'ephemeral'
   });
+});
+slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
+  await ack();
+  const {users, isSync} = await checkAuthorization(slackId);
+  const slackId = command.user_id;
+  console.log(users);
+  if (!isSync) {
+    await respond({
+      text: `Жодного аккаунта не синхронізовано.`,
+      response_type: 'ephemeral'
+    });
+  } else {
+    await respond({
+      text: `Синхронізовано аккаунтів: ${users.length}\n ${users.map(
+        user => `${user.email} (${user.Role.name})`
+      )}`,
+      response_type: 'ephemeral'
+    });
+  }
 });
 module.exports = {
   slackApp,
