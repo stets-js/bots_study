@@ -241,7 +241,7 @@ async function checkAuthorization(slackId) {
     return result.data;
   } catch (error) {
     console.error(`Ошибка при проверке авторизации: ${error.message}`);
-    return {isSync: false, users: []};
+    return {isSync: false, user: []};
   }
 }
 slackApp.command('/sync_booking', async ({command, ack, respond}) => {
@@ -277,8 +277,8 @@ slackApp.command('/sync_booking_aditional', async ({command, ack, respond}) => {
 slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
   await ack();
   const slackId = command.user_id;
-  const {users, isSync} = await checkAuthorization(slackId);
-  console.log(users);
+  const {user, isSync} = await checkAuthorization(slackId);
+  console.log(user);
   if (!isSync) {
     await respond({
       text: `Жодного аккаунта не синхронізовано.`,
@@ -286,8 +286,8 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
     });
   } else {
     await respond({
-      text: `Синхронізовано аккаунтів: ${users.length}\n ${users.map(
-        user => `${user.email} (${user.Role.name})`
+      text: `Синхронізовано аккаунтів: ${user.length}\n ${user.map(
+        us => `${us.email} (${us.Role.name})`
       )}`,
       response_type: 'ephemeral'
     });
