@@ -287,7 +287,7 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
   } else {
     await respond({
       text: `Синхронізовано аккаунтів: ${user.length}\n ${user.map(
-        us => `${us.email} (${us.Role.name})`
+        us => `${us.email} (${us.Role.name})\n`
       )}`,
       response_type: 'ephemeral'
     });
