@@ -276,8 +276,8 @@ slackApp.command('/sync_booking_aditional', async ({command, ack, respond}) => {
 });
 slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
   await ack();
-  const {users, isSync} = await checkAuthorization(slackId);
   const slackId = command.user_id;
+  const {users, isSync} = await checkAuthorization(slackId);
   console.log(users);
   if (!isSync) {
     await respond({
