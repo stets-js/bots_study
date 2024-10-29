@@ -101,8 +101,13 @@ const processQueueMessages = async () => {
 
 const checkServers = async () => {
   if (queue_name === 'slack_queue') {
-    axios.get('https://bots-gmail.onrender.com/');
-    axios.get('https://bots-rzka.onrender.com/');
+    try {
+      axios.get('https://bots-gmail.onrender.com/');
+      axios.get('https://bots-rzka.onrender.com/');
+    } catch (error) {
+      console.log('error fetching');
+      console.log(error);
+    }
     console.log('send');
   }
   return;
