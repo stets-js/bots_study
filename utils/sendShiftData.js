@@ -1,6 +1,10 @@
 const axios = require('axios');
 
-async function sendShiftData(userSlackId, date, status, channelId) {
+async function sendShiftData(body, status) {
+  const userSlackId = body.user.id;
+  const channelId = body.channel.id;
+  const date = new Date();
+
   try {
     const response = await axios.post('https://dolphin-app-b3fkw.ondigitalocean.app/api/shift', {
       userSlackId,

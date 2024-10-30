@@ -9,6 +9,7 @@ const {
   generateShiftButtons,
   updateShiftMessage
 } = require('../utils/slack-blocks/generateShiftButtons');
+const {sendShiftData} = require('../utils/sendShiftData');
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -344,28 +345,10 @@ slackApp.command('/shift', async ({command, ack, respond}) => {
     response_type: 'ephemeral'
   });
 });
-slackApp.action(
-  /start_shift|start_break|end_break|end_shift/,
-  async ({action, ack, body, respond}) => {
-    await ack();
 
-    const userSlackId = body.user.id;
-    const channelId = body.channel.id;
-    const status = action.action_id;
-    const date = new Date();
-
-    // Викликаємо функцію для відправки даних про зміну
-    await sendShiftData(userSlackId, date, status, channelId);
-
-    // Надсилаємо відповідь користувачу
-    await respond({
-      text: `Зміна оновлена: *${status}*`,
-      response_type: 'ephemeral'
-    });
-  }
-);
 slackApp.action('start_shift', async ({body, ack, client}) => {
   await ack();
+  await sendShiftData(body, action.action_id);
 
   await updateShiftMessage(client, body, 'Зміну розпочато!', generateShiftButtons(true, true));
   console.log(`Зміну розпочав користувач: ${body.user.id}`);
@@ -373,18 +356,24 @@ slackApp.action('start_shift', async ({body, ack, client}) => {
 
 slackApp.action('end_shift', async ({body, ack, client}) => {
   await ack();
+  await sendShiftData(body, action.action_id);
+
   await updateShiftMessage(client, body, 'Зміну завершено!', []);
   console.log(`Зміну завершив користувач: ${body.user.id}`);
 });
 
 slackApp.action('start_break', async ({body, ack, client}) => {
   await ack();
+  await sendShiftData(body, action.action_id);
+
   await updateShiftMessage(client, body, 'Ви на паузі ⏸️', generateShiftButtons(true, true));
   console.log(`Користувач ${body.user.id} взяв паузу.`);
 });
 
 slackApp.action('end_break', async ({body, ack, client}) => {
   await ack();
+  await sendShiftData(body, action.action_id);
+
   await updateShiftMessage(client, body, 'Пауза завершена!', generateShiftButtons(false, true));
   console.log(`Користувач ${body.user.id} завершив паузу.`);
 });
