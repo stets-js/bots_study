@@ -346,7 +346,7 @@ slackApp.command('/shift', async ({command, ack, respond}) => {
   });
 });
 
-slackApp.action('start_shift', async ({body, ack, client}) => {
+slackApp.action('start_shift', async ({action, body, ack, client}) => {
   await ack();
   await sendShiftData(body, action.action_id);
 
@@ -354,7 +354,7 @@ slackApp.action('start_shift', async ({body, ack, client}) => {
   console.log(`Зміну розпочав користувач: ${body.user.id}`);
 });
 
-slackApp.action('end_shift', async ({body, ack, client}) => {
+slackApp.action('end_shift', async ({action, body, ack, client}) => {
   await ack();
   await sendShiftData(body, action.action_id);
 
@@ -362,7 +362,7 @@ slackApp.action('end_shift', async ({body, ack, client}) => {
   console.log(`Зміну завершив користувач: ${body.user.id}`);
 });
 
-slackApp.action('start_break', async ({body, ack, client}) => {
+slackApp.action('start_break', async ({action, body, ack, client}) => {
   await ack();
   await sendShiftData(body, action.action_id);
 
@@ -370,7 +370,7 @@ slackApp.action('start_break', async ({body, ack, client}) => {
   console.log(`Користувач ${body.user.id} взяв паузу.`);
 });
 
-slackApp.action('end_break', async ({body, ack, client}) => {
+slackApp.action('end_break', async ({action, body, ack, client}) => {
   await ack();
   await sendShiftData(body, action.action_id);
 
