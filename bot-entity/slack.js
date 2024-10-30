@@ -5,6 +5,10 @@ const {WebClient} = require('@slack/web-api');
 const amqp = require('amqplib/callback_api');
 const {sendMessage} = require('../utils/sendMessage');
 const {generateButton} = require('../utils/slack-blocks/buttons');
+const {
+  generateShiftButtons,
+  updateShiftMessage
+} = require('../utils/slack-blocks/generateShiftButtons');
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -293,6 +297,98 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
     });
   }
 });
+
+slackApp.command('/shift', async ({command, ack, respond}) => {
+  await ack();
+
+  const blocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: 'Виберіть дію для управління зміною:'
+      }
+    },
+    {
+      type: 'actions',
+      elements: generateShiftButtons()
+    }
+  ];
+
+  await respond({
+    text: 'Управління зміною',
+    blocks,
+    response_type: 'ephemeral'
+  });
+});
+slackApp.command('/shift', async ({command, ack, respond}) => {
+  await ack();
+
+  const blocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: 'Виберіть дію для управління зміною:'
+      }
+    },
+    {
+      type: 'actions',
+      elements: generateShiftButtons()
+    }
+  ];
+
+  await respond({
+    text: 'Управління зміною',
+    blocks,
+    response_type: 'ephemeral'
+  });
+});
+slackApp.action(
+  /start_shift|start_break|end_break|end_shift/,
+  async ({action, ack, body, respond}) => {
+    await ack();
+
+    const userSlackId = body.user.id;
+    const channelId = body.channel.id;
+    const status = action.action_id;
+    const date = new Date();
+
+    // Викликаємо функцію для відправки даних про зміну
+    await sendShiftData(userSlackId, date, status, channelId);
+
+    // Надсилаємо відповідь користувачу
+    await respond({
+      text: `Зміна оновлена: *${status}*`,
+      response_type: 'ephemeral'
+    });
+  }
+);
+slackApp.action('start_shift', async ({body, ack, client}) => {
+  await ack();
+
+  await updateShiftMessage(client, body, 'Зміну розпочато!', generateShiftButtons(true, true));
+  console.log(`Зміну розпочав користувач: ${body.user.id}`);
+});
+
+slackApp.action('end_shift', async ({body, ack, client}) => {
+  await ack();
+  await updateShiftMessage(client, body, 'Зміну завершено!', []);
+  console.log(`Зміну завершив користувач: ${body.user.id}`);
+});
+
+slackApp.action('start_break', async ({body, ack, client}) => {
+  await ack();
+  await updateShiftMessage(client, body, 'Ви на паузі ⏸️', generateShiftButtons(true, true));
+  console.log(`Користувач ${body.user.id} взяв паузу.`);
+});
+
+slackApp.action('end_break', async ({body, ack, client}) => {
+  await ack();
+  await updateShiftMessage(client, body, 'Пауза завершена!', generateShiftButtons(false, true));
+  console.log(`Користувач ${body.user.id} завершив паузу.`);
+});
+
 module.exports = {
   slackApp,
   sendDirectMessage,
