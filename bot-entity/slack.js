@@ -370,7 +370,7 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
       respond,
       userId: body.user.id,
       status: res.status,
-      errorMessage: 'Помилка завершення зміни!'
+      errorMessage: 'Помилка початку зміни!'
     });
     console.log(`Зміну розпочав користувач: ${body.user.id}`);
   }
