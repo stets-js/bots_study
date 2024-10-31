@@ -20,6 +20,7 @@ async function sendShiftData(body, status) {
   }
 }
 async function getUserStatus(body, userId = null, channelIdParam = null) {
+  console.log(body);
   const userSlackId = userId || body.user.id;
   const channelId = channelIdParam || body.channel.id;
   const date = new Date();

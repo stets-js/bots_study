@@ -20,13 +20,13 @@ const generateShiftBlocks = async ({body, userId = null, channelId = null}) => {
       fields: [
         {
           type: 'mrkdwn',
-          text: `*Зміна активна:*\n${String(shiftDuration.hours).padStart(2, '0')}:${String(
+          text: `*Час зміни:*\n${String(shiftDuration.hours).padStart(2, '0')}:${String(
             shiftDuration.minutes
           ).padStart(2, '0')}`
         },
         {
           type: 'mrkdwn',
-          text: `*Перерва активна:*\n${
+          text: `*Час перерви:*\n${
             statistics.isBreakActive || statistics.hasTakenBreakToday
               ? `${String(totalBreakTime.hours).padStart(2, '0')}:${String(
                   totalBreakTime.minutes
