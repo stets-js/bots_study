@@ -1,16 +1,18 @@
 const {getUserStatus} = require('../sendShiftData');
 const {generateShiftButtons} = require('./generateShiftButtons');
-
+const {format} = require('date-fns');
 const generateShiftBlocks = async ({body, userId = null, channelId = null}) => {
   const {data} = await getUserStatus(body, userId, channelId);
   const {flags, statistics} = data;
   const {shiftDuration, totalBreakTime} = statistics;
+  const date = new Date();
+  const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
   const blocks = [
     {
       type: 'header',
       text: {
         type: 'plain_text',
-        text: `Статус зміни: ${statistics.status}`,
+        text: `Статус зміни на ${format(kievDate, 'dd.MM.yyyy')}: ${statistics.status}`,
         emoji: true
       }
     },

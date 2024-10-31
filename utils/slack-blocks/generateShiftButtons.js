@@ -11,10 +11,10 @@ function generateShiftButtons(
     buttons.push(generateButton('start_shift', 'start_shift', 'primary', 'Почати зміну'));
   } else {
     if (isOnBreak) {
-      buttons.push(generateButton('end_break', 'end_break', 'primary', 'Закінчити паузу'));
+      buttons.push(generateButton('end_break', 'end_break', 'primary', 'Закінчити перерву'));
     } else {
       if (!hasTakenBreakToday)
-        buttons.push(generateButton('start_break', 'start_break', 'danger', 'Взяти паузу'));
+        buttons.push(generateButton('start_break', 'start_break', 'danger', 'Розпочати перерву'));
     }
     buttons.push(generateButton('end_shift', 'end_shift', 'danger', 'Завершити зміну'));
   }
