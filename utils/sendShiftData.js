@@ -26,7 +26,7 @@ async function getUserStatus(body) {
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
 
   try {
-    const response = await axios.post(
+    const response = await axios.get(
       `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${
         kievDate.split('T')[0]
       }&channelId=${channelId}`
