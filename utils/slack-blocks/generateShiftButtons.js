@@ -14,7 +14,7 @@ function generateShiftButtons(
       buttons.push(generateButton('end_break', 'end_break', 'primary', 'Закінчити перерву'));
     } else {
       if (!hasTakenBreakToday)
-        buttons.push(generateButton('start_break', 'start_break', 'danger', 'Розпочати перерву'));
+        buttons.push(generateButton('start_break', 'start_break', 'primary', 'Розпочати перерву'));
     }
     buttons.push(generateButton('end_shift', 'end_shift', 'danger', 'Завершити зміну'));
   }
