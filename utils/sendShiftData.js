@@ -28,7 +28,7 @@ async function getUserStatus(body) {
   try {
     const response = await axios.get(
       `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${
-        kievDate.split('T')[0]
+        String(kievDate).split('T')[0]
       }&channelId=${channelId}`
     );
     console.log('Дані успішно отримані:', response.data);
