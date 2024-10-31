@@ -4,10 +4,11 @@ async function sendShiftData(body, status) {
   const userSlackId = body.user.id;
   const channelId = body.channel.id;
   const date = new Date();
+  const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
   try {
     const response = await axios.post('https://dolphin-app-b3fkw.ondigitalocean.app/api/shift', {
       userSlackId,
-      date,
+      date: format(kievDate, 'yyyy.MM.dd HH:mm'),
       status,
       channelId
     });

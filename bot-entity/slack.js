@@ -344,14 +344,15 @@ const sendShiftMessage = async ({
     });
     let message = '';
     const date = new Date();
+    const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
     if (action_status === 'start_shift')
-      message = `<@${userId}> *розпочав* зміну о ${format(date, 'HH:mm')}.`;
+      message = `<@${userId}> *розпочав* зміну о ${format(kievDate, 'HH:mm')}.`;
     else if (action_status === 'start_break')
-      message = `<@${userId}> *розпочав* перерву о ${format(date, 'HH:mm')}.`;
+      message = `<@${userId}> *розпочав* перерву о ${format(kievDate, 'HH:mm')}.`;
     else if (action_status === 'end_break')
-      message = `<@${userId}> *завершив* перерву о ${format(date, 'HH:mm')}.`;
+      message = `<@${userId}> *завершив* перерву о ${format(kievDate, 'HH:mm')}.`;
     else if (action_status === 'end_shift')
-      message = `<@${userId}> *завершив* зміну о ${format(date, 'HH:mm')}.`;
+      message = `<@${userId}> *завершив* зміну о ${format(kievDate, 'HH:mm')}.`;
     await sendGroupMessage(reportChannelId, message);
   } else {
     await respond({
