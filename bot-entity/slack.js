@@ -301,7 +301,7 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
 
 slackApp.command('/shift', async ({command, ack, respond}) => {
   await ack();
-  const {data} = await getUserStatus(command);
+  const {data} = await getUserStatus(null, command.user_id, command.channel_id);
   const {flags, statistics} = data;
   const {shiftDuration, totalBreakTime} = statistics;
   const blocks = [

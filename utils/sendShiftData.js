@@ -19,9 +19,9 @@ async function sendShiftData(body, status) {
     console.error('Помилка при надсиланні даних:', error.response?.data || error.message);
   }
 }
-async function getUserStatus(body) {
-  const userSlackId = body.user.id;
-  const channelId = body.channel.id;
+async function getUserStatus(body, userId = null, channelIdParam = null) {
+  const userSlackId = userId || body.user.id;
+  const channelId = channelIdParam || body.channel.id;
   const date = new Date();
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
   console.log(kievDate);
