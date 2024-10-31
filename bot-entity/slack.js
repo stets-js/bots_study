@@ -8,6 +8,7 @@ const {generateButton} = require('../utils/slack-blocks/buttons');
 
 const {sendShiftData, getUserStatus} = require('../utils/sendShiftData');
 const {generateShiftBlocks} = require('../utils/slack-blocks/shiftBlocks');
+const {format} = require('date-fns/format');
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -342,6 +343,7 @@ const sendShiftMessage = async ({
       response_type: 'ephemeral'
     });
     let message = '';
+    const date = new Date();
     if (action_status === 'start_shift')
       message = `<@${userId}?> *розпочав* зміну о ${format(date, 'HH:mm')}.`;
     else if (action_status === 'start_break')
