@@ -343,13 +343,13 @@ const sendShiftMessage = async ({
     });
     let message = '';
     if (action_status === 'start_shift')
-      message = `<@${userSlackId}?> *розпочав* зміну о ${format(date, 'HH:mm')}.`;
+      message = `<@${userId}?> *розпочав* зміну о ${format(date, 'HH:mm')}.`;
     else if (action_status === 'start_break')
-      message = `<@${userSlackId}?> *розпочав* перерву о ${format(date, 'HH:mm')}.`;
+      message = `<@${userId}?> *розпочав* перерву о ${format(date, 'HH:mm')}.`;
     else if (action_status === 'end_break')
-      message = `<@${userSlackId}?> *завершив* перерву о ${format(date, 'HH:mm')}.`;
+      message = `<@${userId}?> *завершив* перерву о ${format(date, 'HH:mm')}.`;
     else if (action_status === 'end_shift')
-      message = `<@${userSlackId}?> *завершив* зміну о ${format(date, 'HH:mm')}.`;
+      message = `<@${userId}?> *завершив* зміну о ${format(date, 'HH:mm')}.`;
     await sendGroupMessage(reportChannelId, message);
   } else {
     await respond({
