@@ -301,8 +301,36 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
 
 slackApp.command('/shift', async ({command, ack, respond}) => {
   await ack();
-
+  const {data} = await getUserStatus(body);
+  const {flags, statistics} = data;
+  const {shiftDuration, totalBreakTime} = statistics;
   const blocks = [
+    {
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: `Статус зміни: ${statistics.status}`,
+        emoji: true
+      }
+    },
+
+    {
+      type: 'section',
+      fields: [
+        {
+          type: 'mrkdwn',
+          text: `*Зміна активна:*\n${shiftDuration.hours}:${shiftDuration.minutes}`
+        },
+        {
+          type: 'mrkdwn',
+          text: `*Перерва активна:*\n${
+            totalBreakTime.hours > 0 || totalBreakTime.minutes > 0
+              ? `${totalBreakTime.hours}:${totalBreakTime.minutes}`
+              : 'Ще не брали'
+          }`
+        }
+      ]
+    },
     {
       type: 'section',
       text: {
@@ -312,7 +340,7 @@ slackApp.command('/shift', async ({command, ack, respond}) => {
     },
     {
       type: 'actions',
-      elements: generateShiftButtons()
+      elements: generateShiftButtons(flags.isBreakActive, flags.isShiftActive)
     }
   ];
 
