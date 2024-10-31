@@ -463,10 +463,11 @@ slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) =>
   const {data} = await getUserStatus(body);
   const {statistics, flags} = data;
   const blocks = generateShiftBlocks({statistics, flags});
-
+  console.log(body);
   try {
     await client.chat.update({
       channel: body.channel.id,
+      ts: body.message.ts,
       blocks: blocks,
       text: 'Updated Shift Information'
     });
