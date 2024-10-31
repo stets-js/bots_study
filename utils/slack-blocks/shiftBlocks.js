@@ -24,7 +24,7 @@ const generateShiftBlocks = ({statistics, flags}) => {
         {
           type: 'mrkdwn',
           text: `*Перерва активна:*\n${
-            totalBreakTime.hours > 0 || totalBreakTime.minutes > 0
+            statistics.isBreakActive || statistics.hasTakenBreakToday
               ? `${String(totalBreakTime.hours).padStart(2, '0')}:${String(
                   totalBreakTime.minutes
                 ).padStart(2, '0')}`
