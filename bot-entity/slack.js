@@ -327,7 +327,15 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
     response_type: 'ephemeral'
   });
 });
-const sendShiftMessage = async ({body, respond, status, userId, errorMessage, reportChannelId}) => {
+const sendShiftMessage = async ({
+  body,
+  respond,
+  status,
+  action_status,
+  userId,
+  errorMessage,
+  reportChannelId
+}) => {
   if (String(status).startsWith(2)) {
     await respond({
       blocks: await generateShiftBlocks({body, userId}),
@@ -377,6 +385,7 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
       client,
       body,
       data,
+      action_status: action.action_id,
       respond,
       userId: body.user.id,
       status: res.status,
@@ -405,6 +414,7 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
       client,
       body,
       data,
+      action_status: action.action_id,
       respond,
       userId: body.user.id,
       status: res.status,
@@ -429,6 +439,7 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
     sendShiftMessage({
       client,
       body,
+      action_status: action.action_id,
       data,
       respond,
       userId: body.user.id,
@@ -452,6 +463,7 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
     client,
     body,
     respond,
+    action_status: action.action_id,
     status: res.status,
     userId: userSlackId,
     reportChannelId: 'C07DM1PERK8',
