@@ -319,7 +319,7 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
   }
 
   const blocks = await generateShiftBlocks({
-    null,
+    body: null,
     userId: command.user_id,
     channelId: command.channel_id
   });
