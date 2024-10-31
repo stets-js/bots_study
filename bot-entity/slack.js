@@ -458,8 +458,8 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
 slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) => {
   await ack();
 
-  const {statistics, flags} = await getUpdatedShiftData(body);
-
+  const {data} = await getUserStatus(body);
+  const {statistics, flags} = data;
   const blocks = generateShiftBlocks({statistics, flags});
 
   try {
