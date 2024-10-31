@@ -323,30 +323,42 @@ slackApp.command('/shift', async ({command, ack, respond}) => {
   });
 });
 const sendShiftMessage = async (userSlackId, status, successMessage, errorMessage) => {
-  if (String(status).startsWith(2)) {
-    await sendDirectMessage(null, userSlackId, successMessage);
-  } else {
-    await sendDirectMessage(null, userSlackId, errorMessage);
-  }
+  await respond({
+    text: String(status).startsWith(2) ? successMessage : errorMessage,
+    blocks,
+    response_type: 'ephemeral'
+  });
 };
 
 slackApp.action('start_shift', async ({action, body, ack, client}) => {
   await ack();
-  const flags = await getUserStatus(body);
-  const res = await sendShiftData(body, action.action_id);
-  const userSlackId = body.user.id;
-  console.log(res);
-  sendShiftMessage(userSlackId, res.status, 'Ваша зміна почалась!', 'Помилка початку зміни!');
+  const {flags} = await getUserStatus(body);
+  if (!flags.canStartShift) {
+    sendDirectMessage(null, body.user.id, 'Вибачте, ви вже почали зміну');
+    console.log(`Зміну не вийшло почати користувачу: ${userSlackId}`);
+  } else {
+    const res = await sendShiftData(body, action.action_id);
 
-  console.log(`Зміну розпочав користувач: ${userSlackId}`);
+    sendShiftMessage(body.user.id, res.status, 'Зміну завершено!', 'Помилка завершення зміни!');
+    console.log(`Зміну розпочав користувач: ${userSlackId}`);
+  }
 });
 
 slackApp.action('end_shift', async ({action, body, ack, client}) => {
   await ack();
-  const res = await sendShiftData(body, action.action_id);
-  const userSlackId = body.user.id;
+  const {flags} = await getUserStatus(body);
+  if (!flags.canEndShift) {
+    if (flags.canEndBreak) {
+      sendDirectMessage(null, body.user.id, 'Вибачте, спочатку треба завершити перерву.');
+    } else {
+      sendDirectMessage(null, body.user.id, 'Вибачте, ви вже закінчили або ще не розпочинали');
+    }
+  } else {
+    const res = await sendShiftData(body, action.action_id);
+    const userSlackId = body.user.id;
 
-  sendShiftMessage(userSlackId, res.status, 'Зміну завершено!', 'Помилка завершення зміни!');
+    sendShiftMessage(userSlackId, res.status, 'Зміну завершено!', 'Помилка завершення зміни!');
+  }
 
   console.log(`Зміну завершив користувач: ${userSlackId}`);
 });
