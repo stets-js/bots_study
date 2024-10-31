@@ -299,7 +299,7 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
   }
 });
 
-slackApp.command('/shift', async ({command, ack, respond}) => {
+slackApp.command('/shift', async ({command, body, ack, respond}) => {
   await ack();
   const {data} = await getUserStatus(body);
   const {flags, statistics} = data;
