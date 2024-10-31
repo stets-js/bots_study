@@ -302,7 +302,10 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
 
 slackApp.command('/shift', async ({command, ack, respond, client}) => {
   const allowedChannelId = 'C07DM1PERK8';
+
   await ack();
+  const userId = command.user_id;
+
   const result = await client.conversations.members({
     channel: allowedChannelId
   });
