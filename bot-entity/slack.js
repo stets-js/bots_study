@@ -405,7 +405,7 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
     );
   }
 
-  console.log(`Зміну завершив користувач: ${userSlackId}`);
+  console.log(`Зміну завершив користувач: ${body.user.id}`);
 });
 
 slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
@@ -428,7 +428,7 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
     );
   }
 
-  console.log(`Користувач ${userSlackId} взяв паузу.`);
+  console.log(`Користувач ${body.user.id} взяв паузу.`);
 });
 
 slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
