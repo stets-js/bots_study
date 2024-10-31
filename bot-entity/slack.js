@@ -342,7 +342,7 @@ const sendShiftMessage = async (
   if (String(status).startsWith(2)) {
     await client.chat.update({
       channel: body.channel.id,
-      ts: body.message.ts,
+      ts: body.container.message_ts,
       blocks: generateShiftBlocks(data)
     });
   } else {
