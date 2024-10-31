@@ -332,10 +332,8 @@ const sendShiftMessage = async (userSlackId, status, successMessage, errorMessag
 
 slackApp.action('start_shift', async ({action, body, ack, client}) => {
   await ack();
-  const data = await getUserStatus(body);
-  console.log(data);
+  const {data} = await getUserStatus(body);
   const {flags} = data;
-  console.log(flags);
   if (!flags.canStartShift) {
     sendDirectMessage(null, body.user.id, 'Вибачте, ви вже почали зміну');
     console.log(`Зміну не вийшло почати користувачу: ${userSlackId}`);
@@ -349,7 +347,8 @@ slackApp.action('start_shift', async ({action, body, ack, client}) => {
 
 slackApp.action('end_shift', async ({action, body, ack, client}) => {
   await ack();
-  const {flags} = await getUserStatus(body);
+  const {data} = await getUserStatus(body);
+  const {flags} = data;
   if (!flags.canEndShift) {
     if (flags.canEndBreak) {
       sendDirectMessage(null, body.user.id, 'Вибачте, спочатку треба завершити перерву.');
