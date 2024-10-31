@@ -455,6 +455,29 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
   }
 });
 
+slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) => {
+  await ack();
+
+  const {statistics, flags} = await getUpdatedShiftData(body);
+
+  const blocks = generateShiftBlocks({statistics, flags});
+
+  try {
+    await client.chat.update({
+      channel: body.channel.id,
+      ts: body.message.ts,
+      blocks: blocks,
+      text: 'Updated Shift Information'
+    });
+  } catch (error) {
+    console.error('Error updating message:', error);
+    await respond({
+      text: 'There was an error refreshing the shift information.',
+      response_type: 'ephemeral'
+    });
+  }
+});
+
 module.exports = {
   slackApp,
   sendDirectMessage,
