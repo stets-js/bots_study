@@ -317,10 +317,12 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
     );
     return;
   }
-  const {data} = await getUserStatus(null, command.user_id, command.channel_id);
-  const {flags, statistics} = data;
 
-  const blocks = generateShiftBlocks({statistics, flags});
+  const blocks = await generateShiftBlocks({
+    null,
+    userId: command.user_id,
+    channelId: command.channel_id
+  });
 
   await respond({
     text: 'Управління зміною',
@@ -337,11 +339,9 @@ const sendShiftMessage = async (
   successMessage,
   errorMessage
 ) => {
-  console.log(body);
-  console.log(body.message);
   if (String(status).startsWith(2)) {
     await respond({
-      blocks: generateShiftBlocks(data),
+      blocks: await generateShiftBlocks(body),
       response_type: 'ephemeral'
     });
   } else {
@@ -459,9 +459,7 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
 slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) => {
   await ack();
 
-  const {data} = await getUserStatus(body);
-  const {statistics, flags} = data;
-  const blocks = generateShiftBlocks({statistics, flags});
+  const blocks = await generateShiftBlocks({body});
   console.log(body);
   try {
     await respond({

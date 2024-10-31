@@ -1,6 +1,9 @@
+const {getUserStatus} = require('../sendShiftData');
 const {generateShiftButtons} = require('./generateShiftButtons');
 
-const generateShiftBlocks = ({statistics, flags}) => {
+const generateShiftBlocks = async ({body, userId, channelId}) => {
+  const {data} = await getUserStatus(body, userId, channelId);
+  const {flags, statistics} = data;
   const {shiftDuration, totalBreakTime} = statistics;
   const blocks = [
     {
