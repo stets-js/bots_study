@@ -340,15 +340,14 @@ const sendShiftMessage = async (
   if (String(status).startsWith(2)) {
     await client.chat.update({
       channel: body.channel.id,
-      ts: body.message.ts,
       blocks: generateShiftBlocks(data)
     });
   } else {
+    await respond({
+      text: errorMessage,
+      response_type: 'ephemeral'
+    });
   }
-  await respond({
-    text: errorMessage,
-    response_type: 'ephemeral'
-  });
 };
 
 const sendEphemeralResponse = async (respond, text) => {
@@ -465,7 +464,6 @@ slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) =>
   try {
     await client.chat.update({
       channel: body.channel.id,
-      ts: body.message.ts,
       blocks: blocks,
       text: 'Updated Shift Information'
     });
