@@ -376,7 +376,7 @@ const sendShiftMessage = async (
     successMessage,
     errorMessage
 ) => {
-    if (status === "success") {
+    if (String(status).startsWith(2)) {
         await sendDirectMessage(null, userSlackId, successMessage);
     } else {
         await sendDirectMessage(null, userSlackId, errorMessage);
