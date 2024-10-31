@@ -361,7 +361,7 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
 
     console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
   } else {
-    const res = await sendShiftData(body, action.action_id);
+    const res = await sendShiftData(body, action.action_id, 'C07DM1PERK8');
 
     sendShiftMessage({
       client,
@@ -388,7 +388,7 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
       text: 'Вибачте, спочатку треба завершити перерву.'
     });
   } else {
-    const res = await sendShiftData(body, action.action_id);
+    const res = await sendShiftData(body, action.action_id, 'C07DM1PERK8');
 
     sendShiftMessage({
       client,
@@ -412,7 +412,7 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
     if (flags.isBreakActive) sendEphemeralResponse(respond, 'Вибачте, ви вже на перерві');
     else sendEphemeralResponse(respond, 'Ви ще не починали зміну, щоб почати перерву');
   } else {
-    const res = await sendShiftData(body, action.action_id);
+    const res = await sendShiftData(body, action.action_id, 'C07DM1PERK8');
     sendShiftMessage({
       client,
       body,
@@ -430,7 +430,7 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
 slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
   await ack();
 
-  const res = await sendShiftData(body, action.action_id);
+  const res = await sendShiftData(body, action.action_id, 'C07DM1PERK8');
   const userSlackId = body.user.id;
 
   sendShiftMessage({
