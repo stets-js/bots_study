@@ -340,10 +340,9 @@ const sendShiftMessage = async (
   console.log(body);
   console.log(body.message);
   if (String(status).startsWith(2)) {
-    await client.chat.update({
-      channel: body.channel.id,
-      ts: body.container.message_ts,
-      blocks: generateShiftBlocks(data)
+    await respond({
+      blocks: generateShiftBlocks(data),
+      response_type: 'ephemeral'
     });
   } else {
     await respond({
