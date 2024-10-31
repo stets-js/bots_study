@@ -465,11 +465,9 @@ slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) =>
   const blocks = generateShiftBlocks({statistics, flags});
   console.log(body);
   try {
-    await client.chat.update({
-      channel: body.channel.id,
-      ts: body.message.ts,
+    await respond({
       blocks: blocks,
-      text: 'Updated Shift Information'
+      response_type: 'ephemeral'
     });
   } catch (error) {
     console.error('Error updating message:', error);
