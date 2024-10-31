@@ -330,7 +330,7 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
 const sendShiftMessage = async ({body, respond, status, userId, errorMessage}) => {
   if (String(status).startsWith(2)) {
     await respond({
-      blocks: await generateShiftBlocks(body, userId),
+      blocks: await generateShiftBlocks({body, userId}),
       response_type: 'ephemeral'
     });
   } else {
