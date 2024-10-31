@@ -387,7 +387,7 @@ slackApp.action("start_shift", async ({ action, body, ack, client }) => {
     await ack();
     const res = await sendShiftData(body, action.action_id);
     const userSlackId = body.user.id;
-
+    console.log(res);
     sendShiftMessage(
         userSlackId,
         res.status,
