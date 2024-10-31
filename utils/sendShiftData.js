@@ -1,7 +1,7 @@
 const axios = require('axios');
 const {format} = require('date-fns');
 const {sendGroupMessage} = require('../bot-entity/slack');
-async function sendShiftData(body, status, reportsChannelId) {
+async function sendShiftData(body, status) {
   const userSlackId = body.user.id;
   const channelId = body.channel.id;
 
@@ -12,16 +12,6 @@ async function sendShiftData(body, status, reportsChannelId) {
       status,
       channelId
     });
-    let message = '';
-    if (status === 'start_shift')
-      message = `<@${userSlackId}?> *розпочав* зміну о ${format(date, 'HH:mm')}.`;
-    else if (status === 'start_break')
-      message = `<@${userSlackId}?> *розпочав* перерву о ${format(date, 'HH:mm')}.`;
-    else if (status === 'end_break')
-      message = `<@${userSlackId}?> *завершив* перерву о ${format(date, 'HH:mm')}.`;
-    else if (status === 'end_shift')
-      message = `<@${userSlackId}?> *завершив* зміну о ${format(date, 'HH:mm')}.`;
-    await sendGroupMessage(reportsChannelId, message);
     console.log('Дані успішно надіслані:', response.data);
     return response;
   } catch (error) {

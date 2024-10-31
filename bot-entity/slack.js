@@ -327,12 +327,22 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
     response_type: 'ephemeral'
   });
 });
-const sendShiftMessage = async ({body, respond, status, userId, errorMessage}) => {
+const sendShiftMessage = async ({body, respond, status, userId, errorMessage, reportChannelId}) => {
   if (String(status).startsWith(2)) {
     await respond({
       blocks: await generateShiftBlocks({body, userId}),
       response_type: 'ephemeral'
     });
+    let message = '';
+    if (status === 'start_shift')
+      message = `<@${userSlackId}?> *розпочав* зміну о ${format(date, 'HH:mm')}.`;
+    else if (status === 'start_break')
+      message = `<@${userSlackId}?> *розпочав* перерву о ${format(date, 'HH:mm')}.`;
+    else if (status === 'end_break')
+      message = `<@${userSlackId}?> *завершив* перерву о ${format(date, 'HH:mm')}.`;
+    else if (status === 'end_shift')
+      message = `<@${userSlackId}?> *завершив* зміну о ${format(date, 'HH:mm')}.`;
+    await sendGroupMessage(reportChannelId, message);
   } else {
     await respond({
       text: errorMessage,
@@ -361,7 +371,7 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
 
     console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
   } else {
-    const res = await sendShiftData(body, action.action_id, 'C07DM1PERK8');
+    const res = await sendShiftData(body, action.action_id);
 
     sendShiftMessage({
       client,
@@ -370,6 +380,7 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
       respond,
       userId: body.user.id,
       status: res.status,
+      reportChannelId: 'C07DM1PERK8',
       errorMessage: 'Помилка початку зміни!'
     });
     console.log(`Зміну розпочав користувач: ${body.user.id}`);
@@ -397,6 +408,8 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
       respond,
       userId: body.user.id,
       status: res.status,
+      reportChannelId: 'C07DM1PERK8',
+
       errorMessage: 'Помилка завершення зміни!'
     });
   }
@@ -420,6 +433,8 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
       respond,
       userId: body.user.id,
       status: res.status,
+      reportChannelId: 'C07DM1PERK8',
+
       errorMessage: 'Помилка початку перерви!'
     });
   }
@@ -439,6 +454,8 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
     respond,
     status: res.status,
     userId: userSlackId,
+    reportChannelId: 'C07DM1PERK8',
+
     errorMessage: 'Помилка завершення паузи!'
   });
 
