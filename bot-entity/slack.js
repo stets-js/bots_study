@@ -430,7 +430,6 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
   sendShiftMessage({
     client,
     body,
-    data,
     respond,
     status: res.status,
     userId: userSlackId,
