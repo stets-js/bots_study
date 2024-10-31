@@ -1,5 +1,5 @@
 const axios = require('axios');
-
+const {format} = require('date-fns');
 async function sendShiftData(body, status) {
   const userSlackId = body.user.id;
   const channelId = body.channel.id;
@@ -27,7 +27,10 @@ async function getUserStatus(body) {
   console.log(kievDate);
   try {
     const response = await axios.get(
-      `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${kievDate}&channelId=${channelId}`
+      `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${format(
+        kievDate,
+        'yyyy-MM-dd'
+      )}&channelId=${channelId}`
     );
     console.log('Дані успішно отримані:', response.data);
     return response;
