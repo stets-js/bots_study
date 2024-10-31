@@ -13,7 +13,7 @@ function generateShiftButtons(isOnBreak = false, isShiftActive = false) {
     }
     buttons.push(generateButton('end_shift', 'end_shift', 'danger', 'Завершити зміну'));
   }
-
+  buttons.push(generateButton('refresh_shift', 'refresh_shift', 'primary', 'Оновити 🔄'));
   return buttons;
 }
 async function updateShiftMessage(client, body, statusText, buttons) {
