@@ -1,6 +1,10 @@
 const {generateButton} = require('./buttons');
 
-function generateShiftButtons(isOnBreak = false, isShiftActive = false) {
+function generateShiftButtons(
+  isOnBreak = false,
+  isShiftActive = false,
+  hasTakenBreakToday = false
+) {
   const buttons = [];
 
   if (!isShiftActive) {
@@ -9,7 +13,8 @@ function generateShiftButtons(isOnBreak = false, isShiftActive = false) {
     if (isOnBreak) {
       buttons.push(generateButton('end_break', 'end_break', 'primary', 'Закінчити паузу'));
     } else {
-      buttons.push(generateButton('start_break', 'start_break', 'danger', 'Взяти паузу'));
+      if (!hasTakenBreakToday)
+        buttons.push(generateButton('start_break', 'start_break', 'danger', 'Взяти паузу'));
     }
     buttons.push(generateButton('end_shift', 'end_shift', 'danger', 'Завершити зміну'));
   }

@@ -5,10 +5,7 @@ const {WebClient} = require('@slack/web-api');
 const amqp = require('amqplib/callback_api');
 const {sendMessage} = require('../utils/sendMessage');
 const {generateButton} = require('../utils/slack-blocks/buttons');
-const {
-  generateShiftButtons,
-  updateShiftMessage
-} = require('../utils/slack-blocks/generateShiftButtons');
+
 const {sendShiftData, getUserStatus} = require('../utils/sendShiftData');
 const {generateShiftBlocks} = require('../utils/slack-blocks/shiftBlocks');
 // Create Slack slackApp instance

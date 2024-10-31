@@ -45,7 +45,11 @@ const generateShiftBlocks = async ({body, userId = null, channelId = null}) => {
     },
     {
       type: 'actions',
-      elements: generateShiftButtons(flags.isBreakActive, flags.isShiftActive)
+      elements: generateShiftButtons(
+        flags.isBreakActive,
+        flags.isShiftActive,
+        statistics.hasTakenBreakToday
+      )
     }
   ];
   return blocks;
