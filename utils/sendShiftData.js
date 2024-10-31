@@ -15,8 +15,8 @@ async function sendShiftData(body, status) {
                 channelId,
             }
         );
-        return response;
         console.log("Дані успішно надіслані:", response.data);
+        return response;
     } catch (error) {
         return error;
         console.error(
@@ -25,5 +25,23 @@ async function sendShiftData(body, status) {
         );
     }
 }
+async function getUserStatus(body) {
+    const userSlackId = body.user.id;
+    const channelId = body.channel.id;
+    const date = new Date();
+    const kievDate = date.toLocaleDateString("uk-UA", {
+        timeZone: "Europe/Kiev",
+    });
 
-module.exports = { sendShiftData };
+    try {
+        const response = await axios.post(
+            `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${kievDate}&channelId=${channelId}`
+        );
+        console.log("Дані успішно отримані:", response.data);
+        return response;
+    } catch (error) {
+        return error;
+    }
+}
+
+module.exports = { sendShiftData, getUserStatus };

@@ -9,7 +9,7 @@ const {
     generateShiftButtons,
     updateShiftMessage,
 } = require("../utils/slack-blocks/generateShiftButtons");
-const { sendShiftData } = require("../utils/sendShiftData");
+const { sendShiftData, getUserStatus } = require("../utils/sendShiftData");
 // Create Slack slackApp instance
 const slackApp = new App({
     token: process.env.SLACK_BOT_TOKEN,
@@ -347,29 +347,6 @@ slackApp.command("/shift", async ({ command, ack, respond }) => {
         response_type: "ephemeral",
     });
 });
-slackApp.command("/shift", async ({ command, ack, respond }) => {
-    await ack();
-
-    const blocks = [
-        {
-            type: "section",
-            text: {
-                type: "mrkdwn",
-                text: "Виберіть дію для управління зміною:",
-            },
-        },
-        {
-            type: "actions",
-            elements: generateShiftButtons(),
-        },
-    ];
-
-    await respond({
-        text: "Управління зміною",
-        blocks,
-        response_type: "ephemeral",
-    });
-});
 const sendShiftMessage = async (
     userSlackId,
     status,
@@ -385,6 +362,9 @@ const sendShiftMessage = async (
 
 slackApp.action("start_shift", async ({ action, body, ack, client }) => {
     await ack();
+    const flags = await getUserStatus(body);
+    console.log(flags);
+    console.log("hello!", flags.data);
     const res = await sendShiftData(body, action.action_id);
     const userSlackId = body.user.id;
     console.log(res);
