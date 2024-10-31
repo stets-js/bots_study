@@ -353,7 +353,12 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   const {data} = await getUserStatus(body);
   const {flags} = data;
   if (!flags.canStartShift) {
-    sendEphemeralResponse(respond, 'Вибачте, ви вже почали зміну');
+    await client.chat.postEphemeral({
+      channel: body.channel.id,
+      user: body.user.id,
+      text: 'Вибачте, ви вже почали/відпрацювали зміну.'
+    });
+
     console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
   } else {
     const res = await sendShiftData(body, action.action_id);
@@ -375,12 +380,13 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
   await ack();
   const {data} = await getUserStatus(body);
   const {flags} = data;
-  if (!flags.canEndShift) {
-    if (flags.canEndBreak) {
-      sendEphemeralResponse(respond, 'Вибачте, спочатку треба завершити перерву.');
-    } else {
-      sendEphemeralResponse(respond, 'Вибачте, ви вже закінчили або ще не розпочинали');
-    }
+
+  if (flags.isBreakActive) {
+    await client.chat.postEphemeral({
+      channel: body.channel.id,
+      user: body.user.id,
+      text: 'Вибачте, спочатку треба завершити перерву.'
+    });
   } else {
     const res = await sendShiftData(body, action.action_id);
 
