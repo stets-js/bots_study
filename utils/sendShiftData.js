@@ -1,6 +1,5 @@
 const axios = require('axios');
 const {format} = require('date-fns');
-const {sendGroupMessage} = require('../bot-entity/slack');
 async function sendShiftData(body, status) {
   const userSlackId = body.user.id;
   const channelId = body.channel.id;
