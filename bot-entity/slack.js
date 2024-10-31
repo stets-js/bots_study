@@ -319,13 +319,17 @@ slackApp.command('/shift', async ({command, ack, respond}) => {
       fields: [
         {
           type: 'mrkdwn',
-          text: `*Зміна активна:*\n${shiftDuration.hours}:${shiftDuration.minutes}`
+          text: `*Зміна активна:*\n${String(shiftDuration.hours).padStart(2, '0')}:${String(
+            shiftDuration.minutes
+          ).padStart(2, '0')}`
         },
         {
           type: 'mrkdwn',
           text: `*Перерва активна:*\n${
             totalBreakTime.hours > 0 || totalBreakTime.minutes > 0
-              ? `${totalBreakTime.hours}:${totalBreakTime.minutes}`
+              ? `${String(totalBreakTime.hours).padStart(2, '0')}:${String(
+                  totalBreakTime.minutes
+                ).padStart(2, '0')}`
               : 'Ще не брали'
           }`
         }
