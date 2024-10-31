@@ -322,7 +322,7 @@ slackApp.command('/shift', async ({command, ack, respond}) => {
     response_type: 'ephemeral'
   });
 });
-const sendShiftMessage = async (respond, userSlackId, status, successMessage, errorMessage) => {
+const sendShiftMessage = async (respond, status, successMessage, errorMessage) => {
   await respond({
     text: String(status).startsWith(2) ? successMessage : errorMessage,
     blocks,
@@ -336,18 +336,12 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   const {flags} = data;
   if (!flags.canStartShift) {
     sendDirectMessage(null, body.user.id, 'Вибачте, ви вже почали зміну');
-    console.log(`Зміну не вийшло почати користувачу: ${userSlackId}`);
+    console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
   } else {
     const res = await sendShiftData(body, action.action_id);
 
-    sendShiftMessage(
-      respond,
-      body.user.id,
-      res.status,
-      'Зміну завершено!',
-      'Помилка завершення зміни!'
-    );
-    console.log(`Зміну розпочав користувач: ${userSlackId}`);
+    sendShiftMessage(respond, res.status, 'Зміну завершено!', 'Помилка завершення зміни!');
+    console.log(`Зміну розпочав користувач: ${body.user.id}`);
   }
 });
 
@@ -365,7 +359,7 @@ slackApp.action('end_shift', async ({action, body, ack, client}) => {
     const res = await sendShiftData(body, action.action_id);
     const userSlackId = body.user.id;
 
-    sendShiftMessage(userSlackId, res.status, 'Зміну завершено!', 'Помилка завершення зміни!');
+    // sendShiftMessage(userSlackId, res.status, 'Зміну завершено!', 'Помилка завершення зміни!');
   }
 
   console.log(`Зміну завершив користувач: ${userSlackId}`);
