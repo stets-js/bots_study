@@ -26,7 +26,7 @@ async function getUserStatus(body, userId = null, channelIdParam = null) {
   const date = new Date();
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
   console.log('HERE!!');
-  сonsole.log(
+  console.log(
     `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${format(
       kievDate,
       'yyyy-MM-dd'
