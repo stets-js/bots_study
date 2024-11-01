@@ -395,7 +395,9 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
     const kwizCheck = await client.conversations.members({
       channel: 'C07UADS7U3G'
     });
-    const correctChannelId = kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+    const correctChannelId = kwizCheck.members.includes(body.user.id)
+      ? 'C07UADS7U3G'
+      : 'C07U2G5J7PH';
     const res = await sendShiftData(body, correctChannelId, action.action_id);
 
     sendShiftMessage({
@@ -428,7 +430,9 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
     const kwizCheck = await client.conversations.members({
       channel: 'C07UADS7U3G'
     });
-    const correctChannelId = kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+    const correctChannelId = kwizCheck.members.includes(body.user.id)
+      ? 'C07UADS7U3G'
+      : 'C07U2G5J7PH';
     const res = await sendShiftData(body, correctChannelId, action.action_id);
 
     sendShiftMessage({
@@ -459,7 +463,9 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
     const kwizCheck = await client.conversations.members({
       channel: 'C07UADS7U3G'
     });
-    const correctChannelId = kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+    const correctChannelId = kwizCheck.members.includes(body.user.id)
+      ? 'C07UADS7U3G'
+      : 'C07U2G5J7PH';
     const res = await sendShiftData(body, correctChannelId, action.action_id);
 
     sendShiftMessage({
@@ -484,7 +490,7 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
   const kwizCheck = await client.conversations.members({
     channel: 'C07UADS7U3G'
   });
-  const correctChannelId = kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
   const res = await sendShiftData(body, correctChannelId, action.action_id);
 
   const userSlackId = body.user.id;
