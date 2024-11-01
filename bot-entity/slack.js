@@ -363,13 +363,7 @@ const sendShiftMessage = async ({
     else if (action_status === 'end_shift')
       message = `<@${userId}> *завершив* зміну о ${format(kievDate, 'HH:mm')}.`;
 
-    const kwizCheck = await client.conversations.members({
-      channel: 'C07UADS7U3G'
-    });
-    await sendGroupMessage(
-      kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH',
-      message
-    );
+    await sendGroupMessage(reportChannelId, message);
   } else {
     await respond({
       text: errorMessage,
@@ -398,7 +392,11 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
 
     console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
   } else {
-    const res = await sendShiftData(body, action.action_id);
+    const kwizCheck = await client.conversations.members({
+      channel: 'C07UADS7U3G'
+    });
+    const correctChannelId = kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+    const res = await sendShiftData(body, correctChannelId, action.action_id);
 
     sendShiftMessage({
       client,
@@ -408,7 +406,7 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
       respond,
       userId: body.user.id,
       status: res.status,
-      reportChannelId: 'C07DM1PERK8',
+      reportChannelId: correctChannelId,
       errorMessage: 'Помилка початку зміни!'
     });
     console.log(`Зміну розпочав користувач: ${body.user.id}`);
@@ -427,7 +425,11 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
       text: 'Вибачте, спочатку треба завершити перерву.'
     });
   } else {
-    const res = await sendShiftData(body, action.action_id, 'C07DM1PERK8');
+    const kwizCheck = await client.conversations.members({
+      channel: 'C07UADS7U3G'
+    });
+    const correctChannelId = kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+    const res = await sendShiftData(body, correctChannelId, action.action_id);
 
     sendShiftMessage({
       client,
@@ -437,7 +439,7 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
       respond,
       userId: body.user.id,
       status: res.status,
-      reportChannelId: 'C07DM1PERK8',
+      reportChannelId: correctChannelId,
 
       errorMessage: 'Помилка завершення зміни!'
     });
@@ -454,7 +456,12 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
     if (flags.isBreakActive) sendEphemeralResponse(respond, 'Вибачте, ви вже на перерві');
     else sendEphemeralResponse(respond, 'Ви ще не починали зміну, щоб почати перерву');
   } else {
-    const res = await sendShiftData(body, action.action_id, 'C07DM1PERK8');
+    const kwizCheck = await client.conversations.members({
+      channel: 'C07UADS7U3G'
+    });
+    const correctChannelId = kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+    const res = await sendShiftData(body, correctChannelId, action.action_id);
+
     sendShiftMessage({
       client,
       body,
@@ -463,7 +470,7 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
       respond,
       userId: body.user.id,
       status: res.status,
-      reportChannelId: 'C07DM1PERK8',
+      reportChannelId: correctChannelId,
 
       errorMessage: 'Помилка початку перерви!'
     });
@@ -474,8 +481,12 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
   await ack();
+  const kwizCheck = await client.conversations.members({
+    channel: 'C07UADS7U3G'
+  });
+  const correctChannelId = kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+  const res = await sendShiftData(body, correctChannelId, action.action_id);
 
-  const res = await sendShiftData(body, action.action_id, 'C07DM1PERK8');
   const userSlackId = body.user.id;
 
   sendShiftMessage({
@@ -485,7 +496,7 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
     action_status: action.action_id,
     status: res.status,
     userId: userSlackId,
-    reportChannelId: 'C07DM1PERK8',
+    reportChannelId: correctChannelId,
 
     errorMessage: 'Помилка завершення паузи!'
   });
