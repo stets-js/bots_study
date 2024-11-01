@@ -299,23 +299,32 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
 });
 
 slackApp.command('/shift', async ({command, ack, respond, client}) => {
-  const allowedChannelId = 'C07DM1PERK8';
+  const allowedChannelIds = ['C07DM1PERK8', 'C07UADS7U3G', 'C07U2G5J7PH'];
+  // test, kwiz, om
+  const commandText = command.text;
 
   await ack();
   const userId = command.user_id;
+  let isMemberOfAllowedChannel = false;
 
-  const result = await client.conversations.members({
-    channel: allowedChannelId
-  });
+  for (const channelId of allowedChannelIds) {
+    const result = await client.conversations.members({
+      channel: channelId
+    });
 
-  if (!result.members.includes(userId)) {
+    if (result.members.includes(userId)) {
+      isMemberOfAllowedChannel = true;
+      break;
+    }
+  }
+
+  if (!isMemberOfAllowedChannel) {
     await sendEphemeralResponse(
       respond,
       'Вибачте, у вас немає доступу до цієї команди, оскільки ви не є учасником відповідного каналу.'
     );
     return;
   }
-
   const blocks = await generateShiftBlocks({
     body: null,
     userId: command.user_id,
@@ -353,7 +362,14 @@ const sendShiftMessage = async ({
       message = `<@${userId}> *завершив* перерву о ${format(kievDate, 'HH:mm')}.`;
     else if (action_status === 'end_shift')
       message = `<@${userId}> *завершив* зміну о ${format(kievDate, 'HH:mm')}.`;
-    await sendGroupMessage(reportChannelId, message);
+
+    const kwizCheck = await client.conversations.members({
+      channel: 'C07UADS7U3G'
+    });
+    await sendGroupMessage(
+      kwizCheck.members.includes(userId) ? 'C07UADS7U3G' : 'C07U2G5J7PH',
+      message
+    );
   } else {
     await respond({
       text: errorMessage,
