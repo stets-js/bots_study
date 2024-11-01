@@ -25,7 +25,13 @@ async function getUserStatus(body, userId = null, channelIdParam = null) {
   const channelId = channelIdParam || body.channel.id;
   const date = new Date();
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
-  console.log(kievDate);
+  console.log('HERE!!');
+  сonsole.log(
+    `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${format(
+      kievDate,
+      'yyyy-MM-dd'
+    )}&channelId=${channelId}`
+  );
   try {
     const response = await axios.get(
       `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${format(
