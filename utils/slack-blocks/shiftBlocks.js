@@ -2,11 +2,7 @@ const {getUserStatus} = require('../sendShiftData');
 const {generateShiftButtons} = require('./generateShiftButtons');
 const {format} = require('date-fns');
 const generateShiftBlocks = async ({body, userId = null, channelId = null}) => {
-  const kwizCheck = await client.conversations.members({
-    channel: 'C07UADS7U3G'
-  });
-  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
-  const {data} = await getUserStatus(body, userId, correctChannelId);
+  const {data} = await getUserStatus(body, userId, channelId);
   const {flags, statistics} = data;
   const {shiftDuration, totalBreakTime} = statistics;
   const date = new Date();

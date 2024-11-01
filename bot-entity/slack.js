@@ -306,7 +306,7 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
   await ack();
   const userId = command.user_id;
   let isMemberOfAllowedChannel = false;
-
+  const whosMemeber = '';
   for (const channelId of allowedChannelIds) {
     const result = await client.conversations.members({
       channel: channelId
@@ -314,6 +314,7 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
 
     if (result.members.includes(userId)) {
       isMemberOfAllowedChannel = true;
+      whosMemeber = channelId;
       break;
     }
   }
@@ -328,7 +329,7 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
   const blocks = await generateShiftBlocks({
     body: null,
     userId: command.user_id,
-    channelId: command.channel_id
+    channelId: whosMemeber
   });
 
   await respond({
@@ -348,7 +349,7 @@ const sendShiftMessage = async ({
 }) => {
   if (String(status).startsWith(2)) {
     await respond({
-      blocks: await generateShiftBlocks({body, userId}),
+      blocks: await generateShiftBlocks({body, userId, channelId: reportChannelId}),
       response_type: 'ephemeral'
     });
     let message = '';
@@ -505,8 +506,11 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-
-  const blocks = await generateShiftBlocks({body});
+  const kwizCheck = await client.conversations.members({
+    channel: 'C07UADS7U3G'
+  });
+  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+  const blocks = await generateShiftBlocks({body, channelId: correctChannelId});
   try {
     await respond({
       blocks: blocks,
