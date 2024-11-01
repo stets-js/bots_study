@@ -380,8 +380,11 @@ const sendEphemeralResponse = async (respond, text) => {
 };
 slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-
-  const {data} = await getUserStatus(body);
+  const kwizCheck = await client.conversations.members({
+    channel: 'C07UADS7U3G'
+  });
+  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+  const {data} = await getUserStatus(body, null, correctChannelId);
   const {flags} = data;
   if (!flags.canStartShift) {
     await client.chat.postEphemeral({
@@ -392,12 +395,6 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
 
     console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
   } else {
-    const kwizCheck = await client.conversations.members({
-      channel: 'C07UADS7U3G'
-    });
-    const correctChannelId = kwizCheck.members.includes(body.user.id)
-      ? 'C07UADS7U3G'
-      : 'C07U2G5J7PH';
     const res = await sendShiftData(body, correctChannelId, action.action_id);
 
     sendShiftMessage({
@@ -417,7 +414,11 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-  const {data} = await getUserStatus(body);
+  const kwizCheck = await client.conversations.members({
+    channel: 'C07UADS7U3G'
+  });
+  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+  const {data} = await getUserStatus(body, null, correctChannelId);
   const {flags} = data;
 
   if (flags.isBreakActive) {
@@ -427,12 +428,6 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
       text: 'Вибачте, спочатку треба завершити перерву.'
     });
   } else {
-    const kwizCheck = await client.conversations.members({
-      channel: 'C07UADS7U3G'
-    });
-    const correctChannelId = kwizCheck.members.includes(body.user.id)
-      ? 'C07UADS7U3G'
-      : 'C07U2G5J7PH';
     const res = await sendShiftData(body, correctChannelId, action.action_id);
 
     sendShiftMessage({
@@ -454,18 +449,16 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
   await ack();
-  const {data} = await getUserStatus(body);
+  const kwizCheck = await client.conversations.members({
+    channel: 'C07UADS7U3G'
+  });
+  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
+  const {data} = await getUserStatus(body, null, correctChannelId);
   const {flags} = data;
   if (!flags.canStartBreak) {
     if (flags.isBreakActive) sendEphemeralResponse(respond, 'Вибачте, ви вже на перерві');
     else sendEphemeralResponse(respond, 'Ви ще не починали зміну, щоб почати перерву');
   } else {
-    const kwizCheck = await client.conversations.members({
-      channel: 'C07UADS7U3G'
-    });
-    const correctChannelId = kwizCheck.members.includes(body.user.id)
-      ? 'C07UADS7U3G'
-      : 'C07U2G5J7PH';
     const res = await sendShiftData(body, correctChannelId, action.action_id);
 
     sendShiftMessage({
