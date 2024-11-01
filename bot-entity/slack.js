@@ -306,7 +306,7 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
   await ack();
   const userId = command.user_id;
   let isMemberOfAllowedChannel = false;
-  const whosMemeber = '';
+  let whosMemeber = '';
   for (const channelId of allowedChannelIds) {
     const result = await client.conversations.members({
       channel: channelId
