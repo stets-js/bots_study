@@ -90,7 +90,7 @@ const start = async () => {
 
     setInterval(async () => {
       await processQueueMessages(channel);
-    }, 3000); // 10000 миллисекунд = 10 секунд
+    }, 5000); // 10000 миллисекунд = 10 секунд
   } catch (error) {
     console.error('Error in RabbitMQ service:', error);
   }
