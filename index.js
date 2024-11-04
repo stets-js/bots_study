@@ -73,7 +73,7 @@ const processQueueMessages = async channel => {
 
       channel.ack(msg);
     } else {
-      console.log('Черга пуста, перевірю через 10 секунд.');
+      console.log('Черга пуста, перевірю через 3 секунд.');
     }
   } catch (error) {
     console.error('Error processing RabbitMQ message:', error);
@@ -90,7 +90,7 @@ const start = async () => {
 
     setInterval(async () => {
       await processQueueMessages(channel);
-    }, 10000); // 10000 миллисекунд = 10 секунд
+    }, 3000); // 10000 миллисекунд = 10 секунд
   } catch (error) {
     console.error('Error in RabbitMQ service:', error);
   }
