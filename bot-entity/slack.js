@@ -399,7 +399,7 @@ slackApp.action('shift_type_selector', async ({ack, respond, action, body, clien
 
 slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
-  const selectedShiftType = action.action_id.split('@')[1];
+  const [status, selectedShiftType] = action.action_id.split('@');
   // return;
   console.log(selectedShiftType, ' selectedShiftTypE!');
   const kwizCheck = await client.conversations.members({
@@ -413,7 +413,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
 
     console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
   } else {
-    const res = await sendShiftData(body, correctChannelId, action.action_id, selectedShiftType);
+    const res = await sendShiftData(body, correctChannelId, status, selectedShiftType);
     console.log(res);
     sendShiftMessage({
       client,
