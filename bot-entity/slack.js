@@ -380,7 +380,7 @@ const sendEphemeralResponse = async (respond, text) => {
     response_type: 'ephemeral'
   });
 };
-slackApp.action('shift_type_selector', async ({ack, action, body, client}) => {
+slackApp.action('shift_type_selector', async ({ack, respond, action, body, client}) => {
   await ack();
 
   const selectedShiftType = action.selected_option.value;
@@ -391,24 +391,15 @@ slackApp.action('shift_type_selector', async ({ack, action, body, client}) => {
     channelId: body.channel.id,
     selectedShiftType
   });
-
-  await client.chat.update({
-    channel: body.channel.id,
-    ts: body.message.ts,
-    text: 'Оновлено зміну',
-    blocks
-  });
+  await respond({text: 'Оновлено зміну', response_type: 'ephemeral', blocks});
 });
 
 slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   await ack();
   console.log(action);
   const actionData = JSON.parse(action.value);
-  const selectedOption = actionData.selectedValue; // Значение селектора
 
-  console.log(selectedOption, actionData);
-  console.log('YESS!');
-  return;
+  // return;
   const kwizCheck = await client.conversations.members({
     channel: 'C07UADS7U3G'
   });
