@@ -2,11 +2,18 @@ const {generateButton} = require('./buttons');
 function generateSelector({name, options, placeholder, selectedValue = null}) {
   return {
     type: 'static_select',
-    placeholder: name,
+    placeholder: {
+      type: 'plain_text',
+      text: name,
+      emoji: true
+    },
     options: options.map(option => ({
-      value: option,
-      label: option,
-      selected: option === selectedValue
+      text: {
+        type: 'plain_text',
+        text: option,
+        emoji: true
+      },
+      value: option
     }))
   };
 }

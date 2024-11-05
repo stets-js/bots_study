@@ -7,6 +7,7 @@ const generateShiftBlocks = async ({body, userId = null, channelId = null}) => {
   const {shiftDuration, totalBreakTime} = statistics;
   const date = new Date();
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
+
   const blocks = [
     {
       type: 'header',
