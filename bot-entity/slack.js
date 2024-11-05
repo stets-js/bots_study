@@ -384,20 +384,19 @@ slackApp.action('shift_type_selector', async ({ack, respond, action, body, clien
   await ack();
 
   const selectedShiftType = action.selected_option.value;
-
+  console.log(action);
   const blocks = await generateShiftBlocks({
     body: null,
     userId: body.user.id,
     channelId: body.channel.id,
     selectedShiftType
   });
+  console.log(blocks);
   await respond({text: 'Оновлено зміну', response_type: 'ephemeral', blocks});
 });
 
 slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-  console.log(action);
-  const actionData = JSON.parse(action.value);
 
   // return;
   const kwizCheck = await client.conversations.members({
