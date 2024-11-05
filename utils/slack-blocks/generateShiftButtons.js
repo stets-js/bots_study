@@ -1,14 +1,17 @@
 const {generateButton} = require('./buttons');
 function generateSelector({name, action_id, options, placeholder, selectedValue = null}) {
-  return {
+  const body = {
     type: 'static_select',
     action_id,
     placeholder: {
       type: 'plain_text',
       text: name,
       emoji: true
-    },
-    initial_option: selectedValue,
+    }
+  };
+  if (selectedValue && selectedValue.length > 0) body.initial_option = selectedValue;
+  return {
+    ...body,
     options: options.map(option => ({
       text: {
         type: 'plain_text',
