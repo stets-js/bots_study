@@ -1,7 +1,8 @@
 const {generateButton} = require('./buttons');
-function generateSelector({name, options, placeholder, selectedValue = null}) {
+function generateSelector({name, action_id, options, placeholder, selectedValue = null}) {
   return {
     type: 'static_select',
+    action_id,
     placeholder: {
       type: 'plain_text',
       text: name,
@@ -21,7 +22,8 @@ function generateSelector({name, options, placeholder, selectedValue = null}) {
 function generateShiftButtons(
   isOnBreak = false,
   isShiftActive = false,
-  hasTakenBreakToday = false
+  hasTakenBreakToday = false,
+  selectedShiftType = ''
 ) {
   const buttons = [];
 
@@ -29,12 +31,15 @@ function generateShiftButtons(
     buttons.push(
       generateSelector({
         name: 'shift_type',
+        action_id: 'shift_type_selector',
         options: ['Option 1', 'Option 2', 'Option 3'],
         selectedValue: 'Option 1'
       })
     );
 
-    buttons.push(generateButton('start_shift', 'start_shift', 'primary', 'Почати зміну'));
+    buttons.push(
+      generateButton('start_shift', 'start_shift' + selectedShiftType, 'primary', 'Почати зміну')
+    );
   } else {
     if (isOnBreak) {
       buttons.push(generateButton('end_break', 'end_break', 'primary', 'Закінчити перерву'));

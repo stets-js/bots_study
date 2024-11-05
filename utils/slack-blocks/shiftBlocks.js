@@ -1,7 +1,12 @@
 const {getUserStatus} = require('../sendShiftData');
 const {generateShiftButtons} = require('./generateShiftButtons');
 const {format} = require('date-fns');
-const generateShiftBlocks = async ({body, userId = null, channelId = null}) => {
+const generateShiftBlocks = async ({
+  body,
+  userId = null,
+  channelId = null,
+  selectedShiftType = ''
+}) => {
   const {data} = await getUserStatus(body, userId, channelId);
   const {flags, statistics} = data;
   const {shiftDuration, totalBreakTime} = statistics;
@@ -51,7 +56,8 @@ const generateShiftBlocks = async ({body, userId = null, channelId = null}) => {
       elements: generateShiftButtons(
         flags.isBreakActive,
         flags.isShiftActive,
-        statistics.hasTakenBreakToday
+        statistics.hasTakenBreakToday,
+        selectedShiftType
       )
     }
   ];
