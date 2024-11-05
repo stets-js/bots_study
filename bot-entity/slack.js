@@ -380,6 +380,7 @@ const sendEphemeralResponse = async (respond, text) => {
     response_type: 'ephemeral'
   });
 };
+
 slackApp.action('shift_type_selector', async ({ack, respond, action, body, client}) => {
   await ack();
 
@@ -397,7 +398,7 @@ slackApp.action('shift_type_selector', async ({ack, respond, action, body, clien
 
 slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-
+  console.log(action);
   // return;
   const kwizCheck = await client.conversations.members({
     channel: 'C07UADS7U3G'

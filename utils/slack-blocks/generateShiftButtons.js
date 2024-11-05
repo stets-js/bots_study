@@ -36,13 +36,18 @@ function generateShiftButtons(
       generateSelector({
         name: 'shift_type',
         action_id: 'shift_type_selector',
-        options: ['Option 1', 'Option 2', 'Option 3'],
+        options: ['om', 'kwiz'],
         selectedValue: selectedShiftType
       })
     );
 
     buttons.push(
-      generateButton('start_shift', 'start_shift' + selectedShiftType, 'primary', 'Почати зміну')
+      generateButton(
+        'start_shift',
+        'start_shift' + selectedShiftType.length > 0 ? `@${selectedShiftType}` : '',
+        'primary',
+        'Почати зміну'
+      )
     );
   } else {
     if (isOnBreak) {
