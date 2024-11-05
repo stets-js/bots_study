@@ -8,6 +8,7 @@ function generateSelector({name, action_id, options, placeholder, selectedValue 
       text: name,
       emoji: true
     },
+    initial_option: selectedValue,
     options: options.map(option => ({
       text: {
         type: 'plain_text',
@@ -33,7 +34,7 @@ function generateShiftButtons(
         name: 'shift_type',
         action_id: 'shift_type_selector',
         options: ['Option 1', 'Option 2', 'Option 3'],
-        selectedValue: 'Option 1'
+        selectedValue: selectedShiftType
       })
     );
 
