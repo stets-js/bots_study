@@ -1,4 +1,15 @@
 const {generateButton} = require('./buttons');
+function generateSelector({name, options, placeholder, selectedValue = null}) {
+  return {
+    type: 'static_select',
+    placeholder: name,
+    options: options.map(option => ({
+      value: option,
+      label: option,
+      selected: option === selectedValue
+    }))
+  };
+}
 
 function generateShiftButtons(
   isOnBreak = false,
@@ -8,7 +19,13 @@ function generateShiftButtons(
   const buttons = [];
 
   if (!isShiftActive) {
-    buttons.push(generateSelector('shift_type', ['Option 1', 'Option 2', 'Option 3'], 'Option 1'));
+    buttons.push(
+      generateSelector({
+        name: 'shift_type',
+        options: ['Option 1', 'Option 2', 'Option 3'],
+        selectedValue: 'Option 1'
+      })
+    );
 
     buttons.push(generateButton('start_shift', 'start_shift', 'primary', 'Почати зміну'));
   } else {
@@ -41,18 +58,6 @@ async function updateShiftMessage(client, body, statusText, buttons) {
     text: statusText,
     blocks: updatedBlocks
   });
-}
-
-function generateSelector(name, options, selectedValue = null) {
-  return {
-    type: 'selector',
-    name: name,
-    options: options.map(option => ({
-      value: option,
-      label: option,
-      selected: option === selectedValue
-    }))
-  };
 }
 
 module.exports = {generateShiftButtons, generateSelector, updateShiftMessage};
