@@ -44,7 +44,7 @@ function generateShiftButtons(
     buttons.push(
       generateButton(
         'start_shift',
-        'start_shift' + selectedShiftType.length > 0 ? `@${selectedShiftType}` : '',
+        'start_shift' + (selectedShiftType.length > 0 ? `@${selectedShiftType}` : ''),
         'primary',
         'Почати зміну'
       )
