@@ -385,6 +385,7 @@ slackApp.action('shift_type_selector', async ({ack, respond, action, body, clien
   await ack();
 
   const selectedShiftType = action.selected_option.value;
+
   console.log(action);
   const blocks = await generateShiftBlocks({
     body: null,
@@ -393,12 +394,12 @@ slackApp.action('shift_type_selector', async ({ack, respond, action, body, clien
     selectedShiftType
   });
   console.log(blocks);
-  await respond({text: 'Оновлено зміну', response_type: 'ephemeral', blocks});
+  await respond({text: 'Оновлено зміну', response_type: 'ephemeral', blocks: blocks});
 });
 
-slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
+slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
-  console.log(action);
+  const selectedShiftType = action.action_id.split('@')[1];
   // return;
   const kwizCheck = await client.conversations.members({
     channel: 'C07UADS7U3G'
@@ -407,15 +408,11 @@ slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   const {data} = await getUserStatus(body, null, correctChannelId);
   const {flags} = data;
   if (!flags.canStartShift) {
-    await client.chat.postEphemeral({
-      channel: body.channel.id,
-      user: body.user.id,
-      text: 'Вибачте, ви вже почали/відпрацювали зміну.'
-    });
+    await respond({text: 'Вибачте, ви вже почали/відпрацювали зміну.', response_type: 'ephemeral'});
 
     console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
   } else {
-    const res = await sendShiftData(body, correctChannelId, action.action_id);
+    const res = await sendShiftData(body, correctChannelId, action.action_id, selectedShiftType);
 
     sendShiftMessage({
       client,

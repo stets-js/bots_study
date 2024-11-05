@@ -1,6 +1,6 @@
 const axios = require('axios');
 const {format} = require('date-fns');
-async function sendShiftData(body, channelId, status) {
+async function sendShiftData(body, channelId, status, selectedShiftType) {
   const userSlackId = body.user.id;
   const date = new Date();
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
@@ -9,7 +9,8 @@ async function sendShiftData(body, channelId, status) {
       userSlackId,
       date: format(kievDate, 'yyyy.MM.dd HH:mm'),
       status,
-      channelId
+      channelId,
+      shiftType: selectedShiftType
     });
     console.log('Дані успішно надіслані:', response.data);
     return response;
