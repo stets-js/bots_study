@@ -382,7 +382,7 @@ const sendEphemeralResponse = async (respond, text) => {
 };
 slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-
+  console.log(action);
   const actionData = JSON.parse(action.value);
   const selectedOption = actionData.selectedValue; // Значение селектора
 
