@@ -300,8 +300,6 @@ slackApp.command('/sync_booking_list', async ({command, ack, respond}) => {
 
 slackApp.command('/shift', async ({command, ack, respond, client}) => {
   const allowedChannelIds = ['C07DM1PERK8', 'C07UADS7U3G', 'C07U2G5J7PH'];
-  // test, kwiz, om
-  const commandText = command.text;
 
   await ack();
   const userId = command.user_id;

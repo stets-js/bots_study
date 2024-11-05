@@ -8,6 +8,8 @@ function generateShiftButtons(
   const buttons = [];
 
   if (!isShiftActive) {
+    buttons.push(generateSelector('shift_type', ['Option 1', 'Option 2', 'Option 3'], 'Option 1'));
+
     buttons.push(generateButton('start_shift', 'start_shift', 'primary', 'Почати зміну'));
   } else {
     if (isOnBreak) {
@@ -40,4 +42,17 @@ async function updateShiftMessage(client, body, statusText, buttons) {
     blocks: updatedBlocks
   });
 }
-module.exports = {generateShiftButtons, updateShiftMessage};
+
+function generateSelector(name, options, selectedValue = null) {
+  return {
+    type: 'selector',
+    name: name,
+    options: options.map(option => ({
+      value: option,
+      label: option,
+      selected: option === selectedValue
+    }))
+  };
+}
+
+module.exports = {generateShiftButtons, generateSelector, updateShiftMessage};
