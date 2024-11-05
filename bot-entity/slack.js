@@ -302,9 +302,12 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
   const allowedChannelIds = ['C07DM1PERK8', 'C07UADS7U3G', 'C07U2G5J7PH'];
 
   await ack();
+
   const userId = command.user_id;
   let isMemberOfAllowedChannel = false;
+
   let whosMemeber = '';
+
   for (const channelId of allowedChannelIds) {
     const result = await client.conversations.members({
       channel: channelId
@@ -379,6 +382,13 @@ const sendEphemeralResponse = async (respond, text) => {
 };
 slackApp.action('start_shift', async ({action, body, ack, client, respond}) => {
   await ack();
+
+  const actionData = JSON.parse(action.value);
+  const selectedOption = actionData.selectedValue; // Значение селектора
+
+  console.log(selectedOption, actionData);
+  console.log('YESS!');
+  return;
   const kwizCheck = await client.conversations.members({
     channel: 'C07UADS7U3G'
   });
