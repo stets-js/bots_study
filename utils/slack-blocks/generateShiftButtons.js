@@ -9,7 +9,15 @@ function generateSelector({name, action_id, options, placeholder, selectedValue 
       emoji: true
     }
   };
-  if (selectedValue && selectedValue.length > 0) body.initial_option = selectedValue;
+  if (selectedValue && selectedValue.length > 0)
+    body.initial_option = {
+      text: {
+        type: 'plain_text',
+        text: selectedValue,
+        emoji: true
+      },
+      value: selectedValue
+    };
   return {
     ...body,
     options: options.map(option => ({
