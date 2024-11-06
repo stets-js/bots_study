@@ -445,7 +445,6 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
       respond,
       userId: body.user.id,
       status: res.status,
-
       reportChannelId: channelId,
       errorMessage: 'Помилка початку зміни!'
     });

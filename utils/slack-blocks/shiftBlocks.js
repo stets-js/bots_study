@@ -21,7 +21,7 @@ const generateShiftBlocks = async ({
   const {shiftDuration, totalBreakTime} = statistics;
   const date = new Date();
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
-
+  console.log('started formating settings');
   const blocks = [
     {
       type: 'header',
