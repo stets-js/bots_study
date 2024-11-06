@@ -96,7 +96,6 @@ function generateShiftButtons(
       'Оновити 🔄'
     )
   );
-  console.log(buttons);
   return buttons;
 }
 async function updateShiftMessage(client, body, statusText, buttons) {

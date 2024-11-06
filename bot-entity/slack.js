@@ -551,6 +551,9 @@ slackApp.action(/end_break/, async ({action, body, ack, client, respond}) => {
   if (!isMember) {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
   }
+  const {data} = await getUserStatus(body, null, channelId);
+
+  const {flags, statistics} = data;
 
   const res = await sendShiftData({
     body,
