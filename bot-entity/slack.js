@@ -419,7 +419,6 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
     client
   );
   if (!isMember) {
-    console.log(channelId);
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи. ');
   }
 
@@ -436,7 +435,6 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
       selectedShiftType,
       shiftNumber: statistics.lastShiftNumber
     });
-    console.log(res);
     sendShiftMessage({
       client,
       body,
@@ -502,6 +500,7 @@ slackApp.action(/end_shift/, async ({action, body, ack, client, respond}) => {
 
 slackApp.action(/start_break/, async ({action, body, ack, client, respond}) => {
   await ack();
+  const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
 
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
@@ -511,7 +510,6 @@ slackApp.action(/start_break/, async ({action, body, ack, client, respond}) => {
   if (!isMember) {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
   }
-  const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
   const {data} = await getUserStatus(body, null, channelId);
 
   const {flags, statistics} = data;
