@@ -592,7 +592,7 @@ slackApp.action(/refresh_shift/, async ({action, body, ack, client, respond}) =>
   if (!isMember) {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
   }
-  const blocks = await generateShiftBlocks({body, channelId});
+  const blocks = await generateShiftBlocks({body, channelId, selectedShiftType, shiftNumber});
   try {
     await respond({
       blocks: blocks,
