@@ -9,6 +9,7 @@ const {generateButton} = require('../utils/slack-blocks/buttons');
 const {sendShiftData, getUserStatus} = require('../utils/sendShiftData');
 const {generateShiftBlocks} = require('../utils/slack-blocks/shiftBlocks');
 const {format} = require('date-fns/format');
+const userInSelectedChannel = require('../utils/getCorrectChannelId');
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -346,11 +347,12 @@ const sendShiftMessage = async ({
   action_status,
   userId,
   errorMessage,
-  reportChannelId
+  reportChannelId,
+  data = null
 }) => {
   if (String(status).startsWith(2)) {
     await respond({
-      blocks: await generateShiftBlocks({body, userId, channelId: reportChannelId}),
+      blocks: await generateShiftBlocks({body, userId, data, channelId: reportChannelId}),
       response_type: 'ephemeral'
     });
     let message = '';
@@ -399,31 +401,38 @@ slackApp.action('shift_type_selector', async ({ack, respond, action, body, clien
 
 slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
-  const [status, selectedShiftType] = action.action_id.split('@');
-  // return;
-  console.log(selectedShiftType, ' selectedShiftTypE!');
-  const kwizCheck = await client.conversations.members({
-    channel: 'C07UADS7U3G'
-  });
-  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
-  const {data} = await getUserStatus(body, null, correctChannelId);
-  const {flags} = data;
-  if (!flags.canStartShift) {
-    await respond({text: 'Вибачте, ви вже почали/відпрацювали зміну.', response_type: 'ephemeral'});
 
-    console.log(`Зміну не вийшло почати користувачу: ${body.user.id}`);
+  const [status, selectedShiftType] = action.action_id.split('@');
+
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  if (!isMember) {
+    return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
+  }
+
+  const {data} = await getUserStatus(body, null, channelId);
+  const {flags, statistics} = data;
+
+  if (!flags.canStartShift) {
+    return sendEphemeralResponse(respond, 'Вибачте, ви вже почали зміну.');
   } else {
-    const res = await sendShiftData(body, correctChannelId, status, selectedShiftType);
+    const res = await sendShiftData({
+      body,
+      channelId,
+      status,
+      selectedShiftType,
+      shiftNumber: statistics.lastShiftNumber
+    });
     console.log(res);
     sendShiftMessage({
       client,
       body,
       data,
-      action_status: action.action_id,
+      action_status: `${status}@${selectedShiftType}@${statistics.lastShiftNumber}`,
       respond,
       userId: body.user.id,
       status: res.status,
-      reportChannelId: correctChannelId,
+
+      reportChannelId: channelId,
       errorMessage: 'Помилка початку зміни!'
     });
     console.log(`Зміну розпочав користувач: ${body.user.id}`);
@@ -432,31 +441,35 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
 
 slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-  const kwizCheck = await client.conversations.members({
-    channel: 'C07UADS7U3G'
-  });
-  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
-  const {data} = await getUserStatus(body, null, correctChannelId);
-  const {flags} = data;
+  const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
+
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  if (!isMember) {
+    return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
+  }
+  const {data} = await getUserStatus(body, null, channelId);
+  const {flags, statistics} = data;
 
   if (flags.isBreakActive) {
-    await client.chat.postEphemeral({
-      channel: body.channel.id,
-      user: body.user.id,
-      text: 'Вибачте, спочатку треба завершити перерву.'
-    });
+    await postEphemeral(respond, 'Вибачте, спочатку треба завершити перерву.');
   } else {
-    const res = await sendShiftData(body, correctChannelId, action.action_id);
+    const res = await sendShiftData({
+      body,
+      channelId,
+      status,
+      selectedShiftType,
+      shiftNumber
+    });
 
     sendShiftMessage({
       client,
       body,
       data,
-      action_status: action.action_id,
+      action_status: `${status}@${selectedShiftType}@${statistics.lastShiftNumber}}`,
       respond,
       userId: body.user.id,
       status: res.status,
-      reportChannelId: correctChannelId,
+      reportChannelId: channelId,
 
       errorMessage: 'Помилка завершення зміни!'
     });
@@ -467,27 +480,31 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
   await ack();
-  const kwizCheck = await client.conversations.members({
-    channel: 'C07UADS7U3G'
-  });
-  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
-  const {data} = await getUserStatus(body, null, correctChannelId);
-  const {flags} = data;
+
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  if (!isMember) {
+    return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
+  }
+  const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
+  const {data} = await getUserStatus(body, null, channelId);
+
+  const {flags, statistics} = data;
+
   if (!flags.canStartBreak) {
     if (flags.isBreakActive) sendEphemeralResponse(respond, 'Вибачте, ви вже на перерві');
     else sendEphemeralResponse(respond, 'Ви ще не починали зміну, щоб почати перерву');
   } else {
-    const res = await sendShiftData(body, correctChannelId, action.action_id);
+    const res = await sendShiftData({body, channelId, status, selectedShiftType, shiftNumber});
 
     sendShiftMessage({
       client,
       body,
-      action_status: action.action_id,
+      action_status: `${status}@${selectedShiftType}@${shiftNumber}`,
       data,
       respond,
       userId: body.user.id,
       status: res.status,
-      reportChannelId: correctChannelId,
+      reportChannelId: channelId,
 
       errorMessage: 'Помилка початку перерви!'
     });
@@ -498,11 +515,19 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
   await ack();
-  const kwizCheck = await client.conversations.members({
-    channel: 'C07UADS7U3G'
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  if (!isMember) {
+    return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
+  }
+  const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
+
+  const res = await sendShiftData({
+    body,
+    channelId: channelId,
+    status,
+    selectedShiftType,
+    shiftNumber: shiftNumber
   });
-  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
-  const res = await sendShiftData(body, correctChannelId, action.action_id);
 
   const userSlackId = body.user.id;
 
@@ -510,10 +535,11 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
     client,
     body,
     respond,
-    action_status: action.action_id,
+    data,
+    action_status: `${status}@${selectedShiftType}@${shiftNumber}`,
     status: res.status,
     userId: userSlackId,
-    reportChannelId: correctChannelId,
+    reportChannelId: channelId,
 
     errorMessage: 'Помилка завершення паузи!'
   });
@@ -523,11 +549,11 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-  const kwizCheck = await client.conversations.members({
-    channel: 'C07UADS7U3G'
-  });
-  const correctChannelId = kwizCheck.members.includes(body.user.id) ? 'C07UADS7U3G' : 'C07U2G5J7PH';
-  const blocks = await generateShiftBlocks({body, channelId: correctChannelId});
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  if (!isMember) {
+    return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
+  }
+  const blocks = await generateShiftBlocks({body, channelId});
   try {
     await respond({
       blocks: blocks,
