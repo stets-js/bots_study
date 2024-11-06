@@ -404,7 +404,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
 
   const [status, selectedShiftType] = action.action_id.split('@');
 
-  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id, client);
   if (!isMember) {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
   }
@@ -443,7 +443,7 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
   await ack();
   const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
 
-  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id, client);
   if (!isMember) {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
   }
@@ -481,7 +481,7 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
 slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
   await ack();
 
-  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id, client);
   if (!isMember) {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
   }
@@ -515,7 +515,7 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
   await ack();
-  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id, client);
   if (!isMember) {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
   }
@@ -549,7 +549,7 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
 
 slackApp.action('refresh_shift', async ({action, body, ack, client, respond}) => {
   await ack();
-  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id);
+  const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id, client);
   if (!isMember) {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
   }
