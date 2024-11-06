@@ -403,10 +403,11 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
 
   const [status, selectedShiftType] = action.action_id.split('@');
-
+  console.log(status, selectedShiftType);
   const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id, client);
   if (!isMember) {
-    return sendEphemeralResponse(respond, 'Ви не належите до цієї групи.');
+    console.log(channelId);
+    return sendEphemeralResponse(respond, 'Ви не належите до цієї групи. ');
   }
 
   const {data} = await getUserStatus(body, null, channelId);
