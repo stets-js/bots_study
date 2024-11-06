@@ -403,7 +403,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
 
   const [status, selectedShiftType] = action.action_id.split('@');
-  console.log(status, selectedShiftType);
+  console.log(status, selectedShiftType, body.user.id);
   const {channelId, isMember} = userInSelectedChannel(selectedShiftType, body.user.id, client);
   if (!isMember) {
     console.log(channelId);

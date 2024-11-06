@@ -3,7 +3,7 @@ const userInSelectedChannel = async (shiftType, userId, client) => {
   const channel = await client.conversations.members({channel: channelId});
 
   const isMember = channel.members.includes(userId);
-
+  console.log(channel.members);
   return {channelId, isMember};
 };
 
