@@ -88,7 +88,14 @@ function generateShiftButtons(
       );
     }
   }
-  buttons.push(generateButton('refresh_shift', 'refresh_shift', 'primary', 'Оновити 🔄'));
+  buttons.push(
+    generateButton(
+      'refresh_shift',
+      `refresh_shift@${selectedShiftType}@${shiftNumber}`,
+      'primary',
+      'Оновити 🔄'
+    )
+  );
   return buttons;
 }
 async function updateShiftMessage(client, body, statusText, buttons) {
