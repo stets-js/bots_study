@@ -91,7 +91,7 @@ async function sendDirectMessage(userName, userId = null, text, blocks) {
   }
 }
 
-async function sendGroupMessage(channelId, text, blocks = undefined) {
+async function sendGroupMessage(channelId, text = '', blocks = undefined) {
   //   const channelId = 'C059WAPLQ1L'; // Replace with your Slack channel ID
   try {
     await client.chat.postMessage({channel: channelId, text, blocks});
@@ -344,6 +344,8 @@ const sendShiftMessage = async ({
   body,
   respond,
   status,
+  selectedShiftType,
+  shiftNumber,
   action_status,
   userId,
   errorMessage,
@@ -352,7 +354,14 @@ const sendShiftMessage = async ({
 }) => {
   if (String(status).startsWith(2)) {
     await respond({
-      blocks: await generateShiftBlocks({body, userId, data, channelId: reportChannelId}),
+      blocks: await generateShiftBlocks({
+        body,
+        userId,
+        selectedShiftType,
+        shiftNumber,
+        data,
+        channelId: reportChannelId
+      }),
       response_type: 'ephemeral'
     });
     let message = '';
@@ -432,7 +441,9 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
       client,
       body,
       data,
-      action_status: `${status}@${selectedShiftType}@${statistics.lastShiftNumber}`,
+      selectedShiftType,
+      shiftNumber: statistics.lastShiftNumber,
+      action_status: status,
       respond,
       userId: body.user.id,
       status: res.status,
@@ -474,7 +485,9 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
       client,
       body,
       data,
-      action_status: `${status}@${selectedShiftType}@${statistics.lastShiftNumber}}`,
+      selectedShiftType,
+      shiftNumber,
+      action_status: status,
       respond,
       userId: body.user.id,
       status: res.status,
@@ -512,7 +525,9 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
     sendShiftMessage({
       client,
       body,
-      action_status: `${status}@${selectedShiftType}@${shiftNumber}`,
+      selectedShiftType,
+      shiftNumber: shiftNumber,
+      action_status: status,
       data,
       respond,
       userId: body.user.id,
@@ -553,7 +568,9 @@ slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
     body,
     respond,
     data,
-    action_status: `${status}@${selectedShiftType}@${shiftNumber}`,
+    selectedShiftType,
+    shiftNumber: shiftNumber,
+    action_status: status,
     status: res.status,
     userId: userSlackId,
     reportChannelId: channelId,

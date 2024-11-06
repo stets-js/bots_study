@@ -5,6 +5,7 @@ const generateShiftBlocks = async ({
   body,
   userId = null,
   channelId = null,
+  shiftNumber,
   selectedShiftType = '',
   data = null
 }) => {
@@ -65,7 +66,8 @@ const generateShiftBlocks = async ({
         flags.isBreakActive,
         flags.isShiftActive,
         statistics.hasTakenBreakToday,
-        selectedShiftType
+        selectedShiftType,
+        shiftNumber
       )
     }
   ];
