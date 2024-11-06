@@ -584,6 +584,8 @@ slackApp.action(/end_break/, async ({action, body, ack, client, respond}) => {
 
 slackApp.action(/refresh_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
+  const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
+
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
     body.user.id,
