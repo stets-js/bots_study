@@ -9,7 +9,11 @@ const generateShiftBlocks = async ({
   data = null
 }) => {
   let formattedData;
-  if (!data) formattedData = await getUserStatus(body, userId, channelId);
+
+  if (!data) {
+    const response = await getUserStatus(body, userId, channelId);
+    formattedData = response.data;
+  }
   console.log('formatted!!!', formattedData);
   console.log('simple!', data);
   const {flags, statistics} = data || formattedData;
