@@ -455,7 +455,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   }
 });
 
-slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
+slackApp.action(/end_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
   const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
 
@@ -500,7 +500,7 @@ slackApp.action('end_shift', async ({action, body, ack, client, respond}) => {
   console.log(`Зміну завершив користувач: ${body.user.id}`);
 });
 
-slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
+slackApp.action(/start_break/, async ({action, body, ack, client, respond}) => {
   await ack();
 
   const {channelId, isMember} = await userInSelectedChannel(
@@ -541,7 +541,7 @@ slackApp.action('start_break', async ({action, body, ack, client, respond}) => {
   console.log(`Користувач ${body.user.id} взяв паузу.`);
 });
 
-slackApp.action('end_break', async ({action, body, ack, client, respond}) => {
+slackApp.action(/end_break/, async ({action, body, ack, client, respond}) => {
   await ack();
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
