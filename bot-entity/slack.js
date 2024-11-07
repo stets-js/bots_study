@@ -422,7 +422,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи. ');
   }
 
-  const {data} = await getUserStatus(body, null, channelId, shiftNumber || 1, selectedShiftType);
+  const {data} = await getUserStatus(body, null, channelId, 0, selectedShiftType);
   const {flags, statistics} = data;
 
   if (!flags.canStartShift) {
