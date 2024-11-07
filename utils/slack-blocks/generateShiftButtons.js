@@ -58,7 +58,7 @@ function generateShiftButtons(
   } else {
     if (isOnBreak) {
       buttons.push(
-        generateButton('end_break', `end_break${additionalData}`, 'primary', 'Закінчити перерву')
+        generateButton('end_break', `end_break${additionalData}`, 'primary', 'Завершити перерву')
       );
     } else {
       buttons.push(
@@ -74,9 +74,10 @@ function generateShiftButtons(
       );
     }
   }
-  // buttons.push(
-  //   generateButton('refresh_shift', `refresh_shift${additionalData}`, 'primary', 'Оновити 🔄')
-  // );
+  if (isShiftActive)
+    buttons.push(
+      generateButton('refresh_shift', `refresh_shift${additionalData}`, 'primary', 'Оновити час🔄')
+    );
   console.log(buttons);
   return buttons;
 }
