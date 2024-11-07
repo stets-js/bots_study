@@ -411,7 +411,7 @@ slackApp.action('shift_type_selector', async ({ack, respond, action, body, clien
 slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
 
-  const [status, selectedShiftType] = action.action_id.split('@');
+  const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
   console.log(status, selectedShiftType, body.user.id);
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
@@ -422,7 +422,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
     return sendEphemeralResponse(respond, 'Ви не належите до цієї групи. ');
   }
 
-  const {data} = await getUserStatus(body, null, channelId, shiftNumber, selectedShiftType);
+  const {data} = await getUserStatus(body, null, channelId, shiftNumber || 1, selectedShiftType);
   const {flags, statistics} = data;
 
   if (!flags.canStartShift) {
