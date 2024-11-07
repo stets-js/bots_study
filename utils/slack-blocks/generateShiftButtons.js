@@ -39,7 +39,9 @@ function generateShiftButtons(
   shiftNumber = ''
 ) {
   const buttons = [];
-
+  let additionalData = '';
+  if (selectedShiftType) additionalData += `@${selectedShiftType}`;
+  if (shiftNumber) additionalData += `@${shiftNumber}`;
   if (!isShiftActive) {
     buttons.push(
       generateSelector({
@@ -49,9 +51,7 @@ function generateShiftButtons(
         selectedValue: selectedShiftType
       })
     );
-    let additionalData = '';
-    if (selectedShiftType) additionalData += `@${selectedShiftType}`;
-    if (shiftNumber) additionalData += `@${shiftNumber}`;
+
     buttons.push(
       generateButton('start_shift', `start_shift${additionalData}`, 'primary', 'Почати зміну')
     );
