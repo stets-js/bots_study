@@ -435,6 +435,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
       selectedShiftType,
       shiftNumber: statistics.lastShiftNumber
     });
+    console.log(res);
     sendShiftMessage({
       client,
       body,
