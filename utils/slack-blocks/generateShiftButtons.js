@@ -74,9 +74,9 @@ function generateShiftButtons(
       );
     }
   }
-  buttons.push(
-    generateButton('refresh_shift', `refresh_shift${additionalData}`, 'primary', 'Оновити 🔄')
-  );
+  // buttons.push(
+  //   generateButton('refresh_shift', `refresh_shift${additionalData}`, 'primary', 'Оновити 🔄')
+  // );
   console.log(buttons);
   return buttons;
 }
