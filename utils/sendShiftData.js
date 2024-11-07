@@ -31,20 +31,16 @@ async function getUserStatus(
   const channelId = channelIdParam || body.channel.id;
   const date = new Date();
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
-  console.log(
-    `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${format(
-      kievDate,
-      'yyyy-MM-dd'
-    )}&channelId=${channelId}&shiftNumber=${shiftNumber}&shiftType=${selectedShiftType}`
-  );
 
   try {
-    const response = await axios.get(
-      `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${format(
-        kievDate,
-        'yyyy-MM-dd'
-      )}&channelId=${channelId}`
-    );
+    let url = `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${format(
+      kievDate,
+      'yyyy-MM-dd'
+    )}&channelId=${channelId}`;
+    if (shiftNumber) url += `&shiftNumber=${shiftNumber}`;
+    if (selectedShiftType) url += `&shiftType=${selectedShiftType}`;
+    console.log(url);
+    const response = await axios.get(url);
     console.log('Дані успішно отримані:', response.data);
     return response;
   } catch (error) {
