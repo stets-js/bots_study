@@ -69,15 +69,14 @@ function generateShiftButtons(
         )
       );
     } else {
-      if (!hasTakenBreakToday)
-        buttons.push(
-          generateButton(
-            'start_break',
-            `start_break@${selectedShiftType}@${shiftNumber}`,
-            'primary',
-            'Розпочати перерву'
-          )
-        );
+      buttons.push(
+        generateButton(
+          'start_break',
+          `start_break@${selectedShiftType}@${shiftNumber}`,
+          'primary',
+          'Розпочати перерву'
+        )
+      );
       buttons.push(
         generateButton(
           'end_shift',

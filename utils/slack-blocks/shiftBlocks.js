@@ -44,7 +44,7 @@ const generateShiftBlocks = async ({
         {
           type: 'mrkdwn',
           text: `*Час перерви:*\n${
-            statistics.isBreakActive || statistics.hasTakenBreakToday
+            statistics.isBreakActive
               ? `${String(totalBreakTime.hours).padStart(2, '0')}:${String(
                   totalBreakTime.minutes
                 ).padStart(2, '0')}`
@@ -65,7 +65,7 @@ const generateShiftBlocks = async ({
       elements: generateShiftButtons(
         flags.isBreakActive,
         flags.isShiftActive,
-        statistics.hasTakenBreakToday,
+        null,
         selectedShiftType,
         shiftNumber
       )
