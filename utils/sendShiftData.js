@@ -20,7 +20,13 @@ async function sendShiftData({body, channelId, status, selectedShiftType, shiftN
     console.error('Помилка при надсиланні даних:', error.response?.data || error.message);
   }
 }
-async function getUserStatus(body, userId = null, channelIdParam = null) {
+async function getUserStatus(
+  body,
+  userId = null,
+  channelIdParam = null,
+  shiftNumber = null,
+  selectedShiftType = null
+) {
   const userSlackId = userId || body.user.id;
   const channelId = channelIdParam || body.channel.id;
   const date = new Date();
@@ -29,7 +35,7 @@ async function getUserStatus(body, userId = null, channelIdParam = null) {
     `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/statistic?userSlackId=${userSlackId}&todayDate=${format(
       kievDate,
       'yyyy-MM-dd'
-    )}&channelId=${channelId}`
+    )}&channelId=${channelId}&shiftNumber=${shiftNumber}&shiftType=${selectedShiftType}`
   );
 
   try {
