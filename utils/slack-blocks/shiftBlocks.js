@@ -9,15 +9,9 @@ const generateShiftBlocks = async ({
   selectedShiftType = '',
   data = null
 }) => {
-  let formattedData;
-
-  if (!data) {
-    const response = await getUserStatus(body, userId, channelId);
-    formattedData = response.data;
-  }
-  console.log('formatted!!!', formattedData);
-  console.log('simple!', data);
-  const {flags, statistics} = data || formattedData;
+  const response = await getUserStatus(body, userId, channelId);
+  const formattedData = response.data;
+  const {flags, statistics} = formattedData;
   const {shiftDuration, totalBreakTime} = statistics;
   const date = new Date();
   const kievDate = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/Kiev'}));
