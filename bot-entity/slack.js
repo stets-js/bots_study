@@ -441,7 +441,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
       body,
       data,
       selectedShiftType,
-      shiftNumber: statistics.lastShiftNumber + 1,
+      shiftNumber: res.data.data.shiftNumber,
       action_status: status,
       respond,
       userId: body.user.id,
