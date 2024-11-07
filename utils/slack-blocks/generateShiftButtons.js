@@ -49,51 +49,33 @@ function generateShiftButtons(
         selectedValue: selectedShiftType
       })
     );
-
+    let additionalData = '';
+    if (selectedShiftType) additionalData += `@${selectedShiftType}`;
+    if (shiftNumber) additionalData += `@${shiftNumber}`;
     buttons.push(
-      generateButton(
-        'start_shift',
-        `start_shift@${selectedShiftType}@${shiftNumber}`,
-        'primary',
-        'Почати зміну'
-      )
+      generateButton('start_shift', `start_shift${additionalData}`, 'primary', 'Почати зміну')
     );
   } else {
     if (isOnBreak) {
       buttons.push(
-        generateButton(
-          'end_break',
-          `end_break@${selectedShiftType}@${shiftNumber}`,
-          'primary',
-          'Закінчити перерву'
-        )
+        generateButton('end_break', `end_break${additionalData}`, 'primary', 'Закінчити перерву')
       );
     } else {
       buttons.push(
         generateButton(
           'start_break',
-          `start_break@${selectedShiftType}@${shiftNumber}`,
+          `start_break${additionalData}`,
           'primary',
           'Розпочати перерву'
         )
       );
       buttons.push(
-        generateButton(
-          'end_shift',
-          `end_shift@${selectedShiftType}@${shiftNumber}`,
-          'danger',
-          'Завершити зміну'
-        )
+        generateButton('end_shift', `end_shift${additionalData}`, 'danger', 'Завершити зміну')
       );
     }
   }
   buttons.push(
-    generateButton(
-      'refresh_shift',
-      `refresh_shift@${selectedShiftType}@${shiftNumber}`,
-      'primary',
-      'Оновити 🔄'
-    )
+    generateButton('refresh_shift', `refresh_shift${additionalData}`, 'primary', 'Оновити 🔄')
   );
   console.log(buttons);
   return buttons;
