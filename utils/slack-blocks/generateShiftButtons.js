@@ -129,7 +129,9 @@ function generateSpreadsheetActions(selectedShiftType, start, end) {
 
   buttons.push(generateDatePicker({action_id: 'start_date', initial_date: startOfTheMonth}));
   buttons.push(generateDatePicker({action_id: 'end_date', initial_date: endOfTheMonth}));
-  buttons.push(generateButton(value, `generate_spreadsheet`, 'primary', 'Згенерувати'));
+  buttons.push(
+    generateButton('generate_spreadsheet', `generate_spreadsheet`, 'primary', 'Згенерувати', value)
+  );
 
   return buttons;
 }

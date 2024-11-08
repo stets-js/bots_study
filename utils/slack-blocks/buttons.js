@@ -1,4 +1,10 @@
-const generateButton = (value, action_id, style = 'primary', buttonText = 'Підтверджую') => {
+const generateButton = (
+  value,
+  action_id,
+  style = 'primary',
+  buttonText = 'Підтверджую',
+  additional
+) => {
   return {
     type: 'button',
     text: {
@@ -9,7 +15,7 @@ const generateButton = (value, action_id, style = 'primary', buttonText = 'Пі�
     style,
     value,
     action_id,
-    additional: 'asd'
+    ...additional
   };
 };
 const generateDatePicker = ({action_id, initial_date, text = 'Select a date'}) => {

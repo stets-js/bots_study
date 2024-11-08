@@ -672,10 +672,11 @@ slackApp.action('end_date', async ({action, ack, body, respond}) => {
   });
 });
 
-slackApp.action('generate_spreadsheet', async ({ack, body, client, respond}) => {
+slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respond}) => {
   await ack();
   console.log(body);
-  const {selectedShiftType, startDate, endDate} = extractDataFromBlocks(body.message.blocks);
+  console.log(action, 'action');
+  const {selectedShiftType, startDate, endDate} = {};
 
   if (!selectedShiftType || !startDate || !endDate) {
     return sendEphemeralResponse(respond, 'Не всі поля були обрані');
