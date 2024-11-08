@@ -675,7 +675,7 @@ slackApp.action('end_date', async ({action, ack, body, respond}) => {
 slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respond}) => {
   await ack();
   const stateValues = body.state.values;
-
+  console.log(stateValues);
   const selectedShiftType = stateValues.stats.spreadsheet_type_selector.selected_option.value;
 
   const startDate = stateValues.stats.start_date_picker.selected_date;
