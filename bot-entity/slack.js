@@ -637,40 +637,13 @@ slackApp.command('/shift-stats', async ({command, ack, respond, client}) => {
 
 slackApp.action('spreadsheet_type_selector', async ({action, ack, body, respond}) => {
   await ack();
-  console.log(body);
-  const selectedShiftType = action.selected_option.value;
-
-  const blocks = generateShiftStatsController({selectedShiftType});
-  await respond({
-    text: 'Оновлено управління зміною',
-    blocks,
-    response_type: 'ephemeral'
-  });
 });
 
 slackApp.action('start_date', async ({action, ack, body, respond}) => {
   await ack();
-
-  const startDate = action.selected_date;
-
-  const blocks = generateShiftStatsController({startDate});
-  await respond({
-    text: 'Оновлено управління зміною',
-    blocks,
-    response_type: 'ephemeral'
-  });
 });
 slackApp.action('end_date', async ({action, ack, body, respond}) => {
   await ack();
-
-  const endDate = action.selected_date;
-
-  const blocks = await generateShiftStatsController({endDate});
-  await respond({
-    text: 'Оновлено управління зміною',
-    blocks,
-    response_type: 'ephemeral'
-  });
 });
 
 slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respond}) => {
@@ -687,7 +660,8 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
     return sendEphemeralResponse(respond, 'Не всі поля були обрані');
   }
   const res = await generateSpreadsheet(selectedShiftType, startDate, endDate);
-  if (res.statusText === 'ok')
+  console.log(res);
+  if (res)
     return await sendEphemeralResponse(
       respond,
       `<https://docs.google.com/spreadsheets/d/1RoL9gDXxu7Z6s0Kc5wT8U3HsI5g9nXyv6LCx0RM9dEQ/edit?usp=sharing|Звіт згенеровано> успіно для ${selectedShiftType} з ${startDate} по ${endDate}.`
