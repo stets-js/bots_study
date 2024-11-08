@@ -1,4 +1,6 @@
 const {generateButton, generateDatePicker} = require('./buttons');
+const {format} = require('date-fns');
+
 function generateSelector({name, action_id, options, placeholder, selectedValue = null}) {
   const body = {
     type: 'static_select',
@@ -117,10 +119,10 @@ function generateSpreadsheetActions(selectedShiftType, start, end) {
   const now = new Date();
 
   const startOfTheMonth =
-    start || String(new Date(now.getFullYear(), now.getMonth(), 1)).split('T')[0];
+    start || format(new Date(now.getFullYear(), now.getMonth(), 1), 'yyyy-MM-dd');
 
   const endOfTheMonth =
-    end || String(new Date(now.getFullYear(), now.getMonth() + 1, 0)).split('T')[0];
+    end || format(new Date(now.getFullYear(), now.getMonth() + 1, 0), 'yyyy-MM-dd');
 
   buttons.push(generateDatePicker({action_id: 'start_date', initial_date: startOfTheMonth}));
   buttons.push(generateDatePicker({action_id: 'end_date', initial_date: endOfTheMonth}));
