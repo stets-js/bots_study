@@ -101,7 +101,7 @@ async function updateShiftMessage(client, body, statusText, buttons) {
   });
 }
 
-async function generateSpreadsheetActions(selectedShiftType, start, end) {
+function generateSpreadsheetActions(selectedShiftType, start, end) {
   const buttons = [];
   let additionalData = '';
   if (selectedShiftType) additionalData += `@${selectedShiftType}`;

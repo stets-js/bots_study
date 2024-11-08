@@ -72,7 +72,7 @@ const generateShiftBlocks = async ({
   return blocks;
 };
 
-const generateShiftStatsController = async ({selectedShiftType, start, end}) => {
+const generateShiftStatsController = ({selectedShiftType = '', start = null, end = null}) => {
   const blocks = [
     {
       type: 'header',
