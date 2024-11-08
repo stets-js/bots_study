@@ -7,7 +7,7 @@ async function sendShiftData({body, channelId, status, selectedShiftType, shiftN
   try {
     const response = await axios.post('https://dolphin-app-b3fkw.ondigitalocean.app/api/shift', {
       userSlackId,
-      date: format(kievDate, 'yyyy.MM.dd HH:mm'),
+      date: format(kievDate, 'yyyy.MM.dd HH:mm:ss'),
       status,
       channelId,
       shiftNumber,
