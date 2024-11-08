@@ -636,7 +636,7 @@ slackApp.command('/shift-stats', async ({command, ack, respond, client}) => {
 
 slackApp.action('spreadsheet_type_selector', async ({action, ack, body, respond}) => {
   await ack();
-
+  console.log(body);
   const selectedShiftType = action.selected_option.value;
 
   const {startDate, endDate} = extractDataFromBlocks(body.message.blocks);
@@ -680,7 +680,7 @@ slackApp.action('end_date', async ({action, ack, body, respond}) => {
 
 slackApp.action('generate_spreadsheet', async ({ack, body, client, respond}) => {
   await ack();
-
+  console.log(body);
   const {selectedShiftType, startDate, endDate} = extractDataFromBlocks(body.message.blocks);
 
   if (!selectedShiftType || !startDate || !endDate) {
