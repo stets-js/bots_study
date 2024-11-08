@@ -60,4 +60,4 @@ async function generateSpreadsheet(selectedShiftType, startDate, endDate) {
     return error;
   }
 }
-module.exports = {sendShiftData, getUserStatus};
+module.exports = {sendShiftData, generateSpreadsheet, getUserStatus};

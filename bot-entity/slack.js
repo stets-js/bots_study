@@ -6,7 +6,7 @@ const amqp = require('amqplib/callback_api');
 const {sendMessage} = require('../utils/sendMessage');
 const {generateButton} = require('../utils/slack-blocks/buttons');
 
-const {sendShiftData, getUserStatus} = require('../utils/sendShiftData');
+const {sendShiftData, getUserStatus, generateSpreadsheet} = require('../utils/sendShiftData');
 const {
   generateShiftBlocks,
   generateShiftStatsController
@@ -14,6 +14,7 @@ const {
 const {format} = require('date-fns/format');
 const userInSelectedChannel = require('../utils/getCorrectChannelId');
 const {extractDataFromBlocks} = require('../utils/extractDataFromBlocks');
+const {generateSpreadsheetActions} = require('../utils/slack-blocks/generateShiftButtons');
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -685,7 +686,7 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
   if (!selectedShiftType || !startDate || !endDate) {
     return sendEphemeralResponse(respond, 'Не всі поля були обрані');
   }
-  const res = await generateShiftStatsController({selectedShiftType, startDate, endDate});
+  const res = await generateSpreadsheet(selectedShiftType, startDate, endDate);
   if (res.statusText === 'ok')
     return await sendEphemeralResponse(
       respond,
