@@ -664,7 +664,7 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
   if (res)
     return await sendEphemeralResponse(
       respond,
-      `<https://docs.google.com/spreadsheets/d/1RoL9gDXxu7Z6s0Kc5wT8U3HsI5g9nXyv6LCx0RM9dEQ/edit?usp=sharing|Звіт згенеровано> успіно для ${selectedShiftType} з ${startDate} по ${endDate}.`
+      `<https://docs.google.com/spreadsheets/d/1RoL9gDXxu7Z6s0Kc5wT8U3HsI5g9nXyv6LCx0RM9dEQ/edit?usp=sharing|Звіт згенеровано> успішно для ${selectedShiftType} з ${startDate} по ${endDate}.`
     );
   else return await sendEphemeralResponse(respond, 'Щось пішло не так :(');
 });
