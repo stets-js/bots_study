@@ -33,7 +33,7 @@ const generateShiftBlocks = async ({
           type: 'mrkdwn',
           text: `*Час зміни:*\n${String(shiftDuration.hours).padStart(2, '0')}:${String(
             shiftDuration.minutes
-          ).padStart(2, '0')}`
+          ).padStart(2, '0')}:${String(shiftDuration.seconds).padStart(2, '0')}`
         },
         {
           type: 'mrkdwn',
@@ -41,7 +41,7 @@ const generateShiftBlocks = async ({
             flags.hasStartedBreak
               ? `${String(totalBreakTime.hours).padStart(2, '0')}:${String(
                   totalBreakTime.minutes
-                ).padStart(2, '0')}`
+                ).padStart(2, '0')}:${String(totalBreakTime.seconds).padStart(2, '0')}`
               : 'Ще не брали'
           }`
         }
