@@ -116,9 +116,11 @@ function generateSpreadsheetActions(selectedShiftType, start, end) {
   );
   const now = new Date();
 
-  const startOfTheMonth = start || new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfTheMonth =
+    start || String(new Date(now.getFullYear(), now.getMonth(), 1)).split('T')[0];
 
-  const endOfTheMonth = end || new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const endOfTheMonth =
+    end || String(new Date(now.getFullYear(), now.getMonth() + 1, 0)).split('T')[0];
 
   buttons.push(generateDatePicker({action_id: 'start_date', initial_date: startOfTheMonth}));
   buttons.push(generateDatePicker({action_id: 'end_date', initial_date: endOfTheMonth}));
