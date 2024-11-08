@@ -675,15 +675,12 @@ slackApp.action('end_date', async ({action, ack, body, respond}) => {
 slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respond}) => {
   await ack();
   const stateValues = body.state.values;
-  console.log(stateValues);
-  const selectedShiftType =
-    stateValues.shift_type_block.spreadsheet_type_selector.selected_option.value;
 
-  // Получаем начальную дату из первого DatePicker
-  const startDate = stateValues.date_picker_block_start.start_date_picker.selected_date;
+  const selectedShiftType = stateValues.stats.spreadsheet_type_selector.selected_option.value;
 
-  // Получаем конечную дату из второго DatePicker
-  const endDate = stateValues.date_picker_block_end.end_date_picker.selected_date;
+  const startDate = stateValues.stats.start_date_picker.selected_date;
+
+  const endDate = stateValues.stats.end_date_picker.selected_date;
 
   if (!selectedShiftType || !startDate || !endDate) {
     return sendEphemeralResponse(respond, 'Не всі поля були обрані');

@@ -85,6 +85,7 @@ const generateShiftStatsController = ({selectedShiftType = '', start = null, end
 
     {
       type: 'actions',
+      block_id: 'stats',
       elements: generateSpreadsheetActions(selectedShiftType, start, end)
     }
   ];
