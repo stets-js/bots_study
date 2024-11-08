@@ -1,10 +1,11 @@
 const {generateButton, generateDatePicker} = require('./buttons');
 const {format} = require('date-fns');
 
-function generateSelector({name, action_id, options, placeholder, selectedValue = null}) {
+function generateSelector({name, action_id, block_id, options, placeholder, selectedValue = null}) {
   const body = {
     type: 'static_select',
     action_id,
+    block_id,
     placeholder: {
       type: 'plain_text',
       text: name,
@@ -109,6 +110,7 @@ function generateSpreadsheetActions(selectedShiftType, start, end) {
 
   buttons.push(
     generateSelector({
+      block_id: 'date_picker_block_start',
       name: 'shift_type',
       action_id: 'spreadsheet_type_selector',
       options: ['om', 'kwiz'],
@@ -127,8 +129,20 @@ function generateSpreadsheetActions(selectedShiftType, start, end) {
   if (start) value.start = start;
   if (end) value.end = end;
 
-  buttons.push(generateDatePicker({action_id: 'start_date', initial_date: startOfTheMonth}));
-  buttons.push(generateDatePicker({action_id: 'end_date', initial_date: endOfTheMonth}));
+  buttons.push(
+    generateDatePicker({
+      block_id: 'date_picker_block_start',
+      action_id: 'start_date',
+      initial_date: startOfTheMonth
+    })
+  );
+  buttons.push(
+    generateDatePicker({
+      block_id: 'date_picker_block_end',
+      action_id: 'end_date',
+      initial_date: endOfTheMonth
+    })
+  );
   buttons.push(
     generateButton('generate_spreadsheet', `generate_spreadsheet`, 'primary', 'Згенерувати', value)
   );

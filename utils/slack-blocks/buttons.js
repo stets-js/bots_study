@@ -18,10 +18,11 @@ const generateButton = (
     ...additional
   };
 };
-const generateDatePicker = ({action_id, initial_date, text = 'Select a date'}) => {
+const generateDatePicker = ({action_id, block_id, initial_date, text = 'Select a date'}) => {
   return {
     type: 'datepicker',
     initial_date,
+    block_id,
     placeholder: {
       type: 'plain_text',
       text,
