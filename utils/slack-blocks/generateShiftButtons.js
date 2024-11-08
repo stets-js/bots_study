@@ -101,7 +101,7 @@ async function updateShiftMessage(client, body, statusText, buttons) {
   });
 }
 
-async function generateSpreadsheetController(selectedShiftType, start, end) {
+async function generateSpreadsheetActions(selectedShiftType, start, end) {
   const buttons = [];
   let additionalData = '';
   if (selectedShiftType) additionalData += `@${selectedShiftType}`;
@@ -133,5 +133,5 @@ module.exports = {
   generateShiftButtons,
   generateSelector,
   updateShiftMessage,
-  generateSpreadsheetController
+  generateSpreadsheetActions
 };

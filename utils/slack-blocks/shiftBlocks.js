@@ -1,5 +1,9 @@
 const {getUserStatus} = require('../sendShiftData');
-const {generateShiftButtons} = require('./generateShiftButtons');
+const {
+  generateShiftButtons,
+  generateSpreadsheetController,
+  generateSpreadsheetActions
+} = require('./generateShiftButtons');
 const {format} = require('date-fns');
 const generateShiftBlocks = async ({
   body,
@@ -67,4 +71,23 @@ const generateShiftBlocks = async ({
   ];
   return blocks;
 };
-module.exports = {generateShiftBlocks};
+
+const generateShiftStatsController = async ({selectedShiftType, start, end}) => {
+  const blocks = [
+    {
+      type: 'header',
+      text: {
+        type: 'plain_text',
+        text: `Згенерувати звіт по змінам: `,
+        emoji: true
+      }
+    },
+
+    {
+      type: 'actions',
+      elements: generateSpreadsheetActions(selectedShiftType, start, end)
+    }
+  ];
+  return blocks;
+};
+module.exports = {generateShiftBlocks, generateShiftStatsController};

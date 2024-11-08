@@ -7,10 +7,12 @@ const {sendMessage} = require('../utils/sendMessage');
 const {generateButton} = require('../utils/slack-blocks/buttons');
 
 const {sendShiftData, getUserStatus} = require('../utils/sendShiftData');
-const {generateShiftBlocks} = require('../utils/slack-blocks/shiftBlocks');
+const {
+  generateShiftBlocks,
+  generateShiftStatsController
+} = require('../utils/slack-blocks/shiftBlocks');
 const {format} = require('date-fns/format');
 const userInSelectedChannel = require('../utils/getCorrectChannelId');
-const {generateSpreadsheetController} = require('../utils/slack-blocks/generateShiftButtons');
 const {extractDataFromBlocks} = require('../utils/extractDataFromBlocks');
 // Create Slack slackApp instance
 const slackApp = new App({
@@ -623,7 +625,7 @@ slackApp.command('/shift-stats', async ({command, ack, respond, client}) => {
     return await sendEphemeralResponse(respond, 'Вибачте, у вас немає доступу до цієї команди.');
   }
 
-  const blocks = await generateSpreadsheetController({});
+  const blocks = await generateShiftStatsController({});
 
   await respond({
     text: 'Управління зміною',
@@ -639,7 +641,7 @@ slackApp.action('spreadsheet_type_selector', async ({action, ack, body, respond}
 
   const {startDate, endDate} = extractDataFromBlocks(body.message.blocks);
 
-  const blocks = await generateSpreadsheetController(selectedShiftType, startDate, endDate);
+  const blocks = await generateShiftStatsController({selectedShiftType, startDate, endDate});
   await respond({
     text: 'Оновлено управління зміною',
     blocks,
@@ -654,7 +656,7 @@ slackApp.action('start_date', async ({action, ack, body, respond}) => {
 
   const {selectedShiftType, endDate} = extractDataFromBlocks(body.message.blocks);
 
-  const blocks = await generateSpreadsheetController(selectedShiftType, startDate, endDate);
+  const blocks = await generateShiftStatsController({selectedShiftType, startDate, endDate});
   await respond({
     text: 'Оновлено управління зміною',
     blocks,
@@ -668,7 +670,7 @@ slackApp.action('end_date', async ({action, ack, body, respond}) => {
 
   const {selectedShiftType, startDate} = extractDataFromBlocks(body.message.blocks);
 
-  const blocks = await generateSpreadsheetController(selectedShiftType, startDate, endDate);
+  const blocks = await generateShiftStatsController({selectedShiftType, startDate, endDate});
   await respond({
     text: 'Оновлено управління зміною',
     blocks,
@@ -684,7 +686,7 @@ slackApp.action('generate_spreadsheet', async ({ack, body, client, respond}) => 
   if (!selectedShiftType || !startDate || !endDate) {
     return sendEphemeralResponse(respond, 'Не всі поля були обрані');
   }
-  const res = await generateSpreadsheet(selectedShiftType, startDate, endDate);
+  const res = await generateShiftStatsController({selectedShiftType, startDate, endDate});
   if (res.statusText === 'ok')
     return await sendEphemeralResponse(
       respond,
