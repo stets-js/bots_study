@@ -8,7 +8,8 @@ const generateButton = (value, action_id, style = 'primary', buttonText = 'Пі�
     },
     style,
     value,
-    action_id
+    action_id,
+    additional: 'asd'
   };
 };
 const generateDatePicker = ({action_id, initial_date, text = 'Select a date'}) => {

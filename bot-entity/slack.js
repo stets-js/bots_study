@@ -639,9 +639,7 @@ slackApp.action('spreadsheet_type_selector', async ({action, ack, body, respond}
   console.log(body);
   const selectedShiftType = action.selected_option.value;
 
-  const {startDate, endDate} = extractDataFromBlocks(body.message.blocks);
-
-  const blocks = await generateShiftStatsController({selectedShiftType, startDate, endDate});
+  const blocks = generateShiftStatsController({selectedShiftType});
   await respond({
     text: 'Оновлено управління зміною',
     blocks,
@@ -654,9 +652,7 @@ slackApp.action('start_date', async ({action, ack, body, respond}) => {
 
   const startDate = action.selected_date;
 
-  const {selectedShiftType, endDate} = extractDataFromBlocks(body.message.blocks);
-
-  const blocks = await generateShiftStatsController({selectedShiftType, startDate, endDate});
+  const blocks = generateShiftStatsController({startDate});
   await respond({
     text: 'Оновлено управління зміною',
     blocks,
@@ -668,9 +664,7 @@ slackApp.action('end_date', async ({action, ack, body, respond}) => {
 
   const endDate = action.selected_date;
 
-  const {selectedShiftType, startDate} = extractDataFromBlocks(body.message.blocks);
-
-  const blocks = await generateShiftStatsController({selectedShiftType, startDate, endDate});
+  const blocks = await generateShiftStatsController({endDate});
   await respond({
     text: 'Оновлено управління зміною',
     blocks,

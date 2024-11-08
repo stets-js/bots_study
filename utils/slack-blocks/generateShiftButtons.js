@@ -106,7 +106,6 @@ async function updateShiftMessage(client, body, statusText, buttons) {
 function generateSpreadsheetActions(selectedShiftType, start, end) {
   const buttons = [];
   let additionalData = '';
-  if (selectedShiftType) additionalData += `@${selectedShiftType}`;
 
   buttons.push(
     generateSelector({
@@ -123,12 +122,14 @@ function generateSpreadsheetActions(selectedShiftType, start, end) {
 
   const endOfTheMonth =
     end || format(new Date(now.getFullYear(), now.getMonth() + 1, 0), 'yyyy-MM-dd');
+  const value = {};
+  if (selectedShiftType) value.selectedShiftType = selectedShiftType;
+  if (start) value.start = start;
+  if (end) value.end = end;
 
   buttons.push(generateDatePicker({action_id: 'start_date', initial_date: startOfTheMonth}));
   buttons.push(generateDatePicker({action_id: 'end_date', initial_date: endOfTheMonth}));
-  buttons.push(
-    generateButton('generate_spreadsheet', `generate_spreadsheet`, 'primary', 'Згенерувати')
-  );
+  buttons.push(generateButton(value, `generate_spreadsheet`, 'primary', 'Згенерувати'));
 
   return buttons;
 }
