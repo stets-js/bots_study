@@ -1,4 +1,4 @@
-const {generateButton} = require('./buttons');
+const {generateButton, generateDatePicker} = require('./buttons');
 function generateSelector({name, action_id, options, placeholder, selectedValue = null}) {
   const body = {
     type: 'static_select',
@@ -101,4 +101,37 @@ async function updateShiftMessage(client, body, statusText, buttons) {
   });
 }
 
-module.exports = {generateShiftButtons, generateSelector, updateShiftMessage};
+async function generateSpreadsheetController(selectedShiftType, start, end) {
+  const buttons = [];
+  let additionalData = '';
+  if (selectedShiftType) additionalData += `@${selectedShiftType}`;
+
+  buttons.push(
+    generateSelector({
+      name: 'shift_type',
+      action_id: 'spreadsheet_type_selector',
+      options: ['om', 'kwiz'],
+      selectedValue: selectedShiftType
+    })
+  );
+  const now = new Date();
+
+  const startOfTheMonth = start || new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const endOfTheMonth = end || new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  buttons.push(generateDatePicker({action_id: 'start_date', initial_date: startOfTheMonth}));
+  buttons.push(generateDatePicker({action_id: 'end_date', initial_date: endOfTheMonth}));
+  buttons.push(
+    generateButton('generate_spreadsheet', `generate_spreadsheet`, 'primary', 'Згенерувати')
+  );
+
+  return buttons;
+}
+
+module.exports = {
+  generateShiftButtons,
+  generateSelector,
+  updateShiftMessage,
+  generateSpreadsheetController
+};

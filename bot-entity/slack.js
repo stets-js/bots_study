@@ -10,6 +10,8 @@ const {sendShiftData, getUserStatus} = require('../utils/sendShiftData');
 const {generateShiftBlocks} = require('../utils/slack-blocks/shiftBlocks');
 const {format} = require('date-fns/format');
 const userInSelectedChannel = require('../utils/getCorrectChannelId');
+const {generateSpreadsheetController} = require('../utils/slack-blocks/generateShiftButtons');
+const {extractDataFromBlocks} = require('../utils/extractDataFromBlocks');
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -608,6 +610,87 @@ slackApp.action(/refresh_shift/, async ({action, body, ack, client, respond}) =>
       response_type: 'ephemeral'
     });
   }
+});
+slackApp.command('/shift-stats', async ({command, ack, respond, client}) => {
+  const allowedUsers = ['U05AACXUW9X', 'U059NEZSZQF', 'U07DTKVFV2N'];
+
+  await ack();
+
+  const userId = command.user_id;
+  let isAllowed = allowedUsers.includes(userId);
+
+  if (!isAllowed) {
+    return await sendEphemeralResponse(respond, 'Вибачте, у вас немає доступу до цієї команди.');
+  }
+
+  const blocks = await generateSpreadsheetController({});
+
+  await respond({
+    text: 'Управління зміною',
+    blocks,
+    response_type: 'ephemeral'
+  });
+});
+
+slackApp.action('spreadsheet_type_selector', async ({action, ack, body, respond}) => {
+  await ack();
+
+  const selectedShiftType = action.selected_option.value;
+
+  const {startDate, endDate} = extractDataFromBlocks(body.message.blocks);
+
+  const blocks = await generateSpreadsheetController(selectedShiftType, startDate, endDate);
+  await respond({
+    text: 'Оновлено управління зміною',
+    blocks,
+    response_type: 'ephemeral'
+  });
+});
+
+slackApp.action('start_date', async ({action, ack, body, respond}) => {
+  await ack();
+
+  const startDate = action.selected_date;
+
+  const {selectedShiftType, endDate} = extractDataFromBlocks(body.message.blocks);
+
+  const blocks = await generateSpreadsheetController(selectedShiftType, startDate, endDate);
+  await respond({
+    text: 'Оновлено управління зміною',
+    blocks,
+    response_type: 'ephemeral'
+  });
+});
+slackApp.action('end_date', async ({action, ack, body, respond}) => {
+  await ack();
+
+  const endDate = action.selected_date;
+
+  const {selectedShiftType, startDate} = extractDataFromBlocks(body.message.blocks);
+
+  const blocks = await generateSpreadsheetController(selectedShiftType, startDate, endDate);
+  await respond({
+    text: 'Оновлено управління зміною',
+    blocks,
+    response_type: 'ephemeral'
+  });
+});
+
+slackApp.action('generate_spreadsheet', async ({ack, body, client, respond}) => {
+  await ack();
+
+  const {selectedShiftType, startDate, endDate} = extractDataFromBlocks(body.message.blocks);
+
+  if (!selectedShiftType || !startDate || !endDate) {
+    return sendEphemeralResponse(respond, 'Не всі поля були обрані');
+  }
+  const res = await generateSpreadsheet(selectedShiftType, startDate, endDate);
+  if (res.statusText === 'ok')
+    return await sendEphemeralResponse(
+      respond,
+      `<https://docs.google.com/spreadsheets/d/1RoL9gDXxu7Z6s0Kc5wT8U3HsI5g9nXyv6LCx0RM9dEQ/edit?usp=sharing|Звіт згенеровано> успіно для ${selectedShiftType} з ${startDate} по ${endDate}.`
+    );
+  else return await sendEphemeralResponse(respond, 'Щось пішло не так :(');
 });
 
 module.exports = {

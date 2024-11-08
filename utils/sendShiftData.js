@@ -49,4 +49,15 @@ async function getUserStatus(
   }
 }
 
+async function generateSpreadsheet(selectedShiftType, startDate, endDate) {
+  let url = `https://dolphin-app-b3fkw.ondigitalocean.app/api/shift/spreadsheet?startDate=${startDate}&endDate=${endDate}&shiftType=${selectedShiftType}`;
+
+  try {
+    const response = await axios.get(url);
+    console.log('Дані успішно отримані:', response.data);
+    return response;
+  } catch (error) {
+    return error;
+  }
+}
 module.exports = {sendShiftData, getUserStatus};

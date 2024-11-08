@@ -11,4 +11,16 @@ const generateButton = (value, action_id, style = 'primary', buttonText = 'Пі�
     action_id
   };
 };
-module.exports = {generateButton};
+const generateDatePicker = ({action_id, initial_date, text = 'Select a date'}) => {
+  return {
+    type: 'datepicker',
+    initial_date,
+    placeholder: {
+      type: 'plain_text',
+      text,
+      emoji: true
+    },
+    action_id
+  };
+};
+module.exports = {generateButton, generateDatePicker};
