@@ -676,7 +676,6 @@ slackApp.action('end_date', async ({action, ack, body, respond}) => {
 slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respond}) => {
   await ack();
   const stateValues = body.state.values;
-  console.log(stateValues);
   const selectedShiftType = stateValues.stats.spreadsheet_type_selector.selected_option.value;
 
   const startDate = stateValues.stats.start_date.selected_date;
@@ -686,7 +685,21 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
   if (!selectedShiftType || !startDate || !endDate) {
     return sendEphemeralResponse(respond, 'Не всі поля були обрані');
   }
-  const res = await generateSpreadsheet(selectedShiftType, startDate, endDate);
+  const channelId = shiftType === 'kwiz' ? 'C07UADS7U3G' : shiftType === 'om' ? 'C07U2G5J7PH' : '';
+  const channel = await client.conversations.members({channel: channelId});
+
+  const members = channel.members;
+  const detailedMembers = [];
+
+  for (const memberId of members) {
+    const userInfo = await client.users.info({user: memberId});
+    detailedMembers.push({
+      id: memberId,
+      name: userInfo.user.real_name || userInfo.user.name
+    });
+  }
+
+  const res = await generateSpreadsheet(selectedShiftType, startDate, endDate, detailedMembers);
   console.log(res);
   if (res)
     return await sendEphemeralResponse(
