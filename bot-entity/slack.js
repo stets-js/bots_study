@@ -418,6 +418,12 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
 
   const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
   console.log(status, selectedShiftType, body.user.id);
+  console.log('start shift, ', action.action_id);
+  if (!selectedShiftType)
+    return sendEphemeralResponse(
+      respond,
+      'Щось не підвантажелось до контроллера :(. Спробуйте використати /shift ще раз.'
+    );
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
     body.user.id,
@@ -461,7 +467,12 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
 slackApp.action(/end_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
   const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
-
+  console.log('end shift, ', action.action_id);
+  if (!selectedShiftType || !shiftNumber)
+    return sendEphemeralResponse(
+      respond,
+      'Щось не підвантажелось до контроллера :(. Спробуйте використати /shift ще раз.'
+    );
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
     body.user.id,
@@ -506,7 +517,12 @@ slackApp.action(/end_shift/, async ({action, body, ack, client, respond}) => {
 slackApp.action(/start_break/, async ({action, body, ack, client, respond}) => {
   await ack();
   const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
-
+  console.log('start break, ', action.action_id);
+  if (!selectedShiftType || !shiftNumber)
+    return sendEphemeralResponse(
+      respond,
+      'Щось не підвантажелось до контроллера :(. Спробуйте використати /shift ще раз.'
+    );
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
     body.user.id,
@@ -546,8 +562,13 @@ slackApp.action(/start_break/, async ({action, body, ack, client, respond}) => {
 
 slackApp.action(/end_break/, async ({action, body, ack, client, respond}) => {
   await ack();
+  console.log('end break, ', action.action_id);
   const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
-
+  if (!selectedShiftType || !shiftNumber)
+    return sendEphemeralResponse(
+      respond,
+      'Щось не підвантажелось до контроллера :(. Спробуйте використати /shift ще раз.'
+    );
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
     body.user.id,
@@ -592,6 +613,12 @@ slackApp.action(/refresh_shift/, async ({action, body, ack, client, respond}) =>
   await ack();
   const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
 
+  console.log('refresh, ', action.action_id);
+  if (!selectedShiftType || !shiftNumber)
+    return sendEphemeralResponse(
+      respond,
+      'Щось не підвантажелось до контроллера :(. Спробуйте використати /shift ще раз.'
+    );
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
     body.user.id,
