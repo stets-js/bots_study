@@ -685,7 +685,8 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
   if (!selectedShiftType || !startDate || !endDate) {
     return sendEphemeralResponse(respond, 'Не всі поля були обрані');
   }
-  const channelId = shiftType === 'kwiz' ? 'C07UADS7U3G' : shiftType === 'om' ? 'C07U2G5J7PH' : '';
+  const channelId =
+    selectedShiftType === 'kwiz' ? 'C07UADS7U3G' : selectedShiftType === 'om' ? 'C07U2G5J7PH' : '';
   const channel = await client.conversations.members({channel: channelId});
 
   const members = channel.members;
