@@ -309,13 +309,24 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
 
   await ack();
 
-  const {channelId, isMember} = await userInSelectedChannel(
-    selectedShiftType,
-    command.user_id,
-    client
-  );
+  const userId = command.user_id;
+  let isMemberOfAllowedChannel = false;
 
-  if (!isMember) {
+  let whosMemeber = '';
+
+  for (const channelId of allowedChannelIds) {
+    const result = await client.conversations.members({
+      channel: channelId
+    });
+
+    if (result.members.includes(userId)) {
+      isMemberOfAllowedChannel = true;
+      whosMemeber = channelId;
+      break;
+    }
+  }
+
+  if (!isMemberOfAllowedChannel) {
     await sendEphemeralResponse(
       respond,
       'Вибачте, у вас немає доступу до цієї команди, оскільки ви не є учасником відповідного каналу.'
@@ -325,7 +336,7 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
   const blocks = await generateShiftBlocks({
     body: null,
     userId: command.user_id,
-    channelId
+    channelId: whosMemeber
   });
 
   await respond({
