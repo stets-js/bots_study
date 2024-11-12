@@ -9,7 +9,7 @@ const generateShiftBlocks = async ({
   body,
   userId = null,
   channelId = null,
-  shiftNumber = 1,
+  shiftNumber,
   selectedShiftType = '',
   data = null
 }) => {
@@ -67,7 +67,7 @@ const generateShiftBlocks = async ({
         flags.isShiftActive,
         null,
         selectedShiftType || statistics.shiftType,
-        shiftNumber || statistics.lastShiftNumber
+        shiftNumber || statistics.lastStatus
       )
     }
   ];
