@@ -15,6 +15,7 @@ const generateShiftBlocks = async ({
 }) => {
   const response = await getUserStatus(body, userId, channelId, shiftNumber, selectedShiftType);
   const formattedData = response.data;
+  console.log(formattedData, 'Formatted');
   const {flags, statistics} = formattedData;
   const {shiftDuration, totalBreakTime} = statistics;
   const date = new Date();
