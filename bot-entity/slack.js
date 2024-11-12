@@ -400,17 +400,17 @@ const sendEphemeralResponse = async (respond, text) => {
 slackApp.action('shift_type_selector', async ({ack, respond, action, body, client}) => {
   await ack();
 
-  const selectedShiftType = action.selected_option.value;
+  // const selectedShiftType = action.selected_option.value;
 
-  console.log(action);
-  const blocks = await generateShiftBlocks({
-    body: null,
-    userId: body.user.id,
-    channelId: body.channel.id,
-    selectedShiftType
-  });
-  console.log(blocks);
-  await respond({text: 'Оновлено зміну', response_type: 'ephemeral', blocks: blocks});
+  // console.log(action);
+  // const blocks = await generateShiftBlocks({
+  //   body: null,
+  //   userId: body.user.id,
+  //   channelId: body.channel.id,
+  //   selectedShiftType
+  // });
+  // console.log(blocks);
+  // await respond({text: 'Оновлено зміну', response_type: 'ephemeral', blocks: blocks});
 });
 
 slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
