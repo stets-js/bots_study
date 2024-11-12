@@ -60,6 +60,7 @@ const generateShiftBlocks = async ({
     },
     {
       type: 'actions',
+      block_id: 'stats',
       elements: generateShiftButtons(
         flags.isBreakActive,
         flags.isShiftActive,

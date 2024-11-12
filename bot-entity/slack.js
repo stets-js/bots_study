@@ -415,15 +415,17 @@ slackApp.action('shift_type_selector', async ({ack, respond, action, body, clien
 
 slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
+  const stateValues = body.state.values;
 
-  const [status, selectedShiftType, shiftNumber] = action.action_id.split('@');
-  console.log(status, selectedShiftType, body.user.id);
+  const selectedShiftType = stateValues.stats.shift_type_selector.selected_option.value;
+
+  const [status, notUsingIt, shiftNumber] = action.action_id.split('@');
+  console.log(action.action_id, body.user.id, selectedShiftType);
   console.log('start shift, ', action.action_id);
+
   if (!selectedShiftType)
-    return sendEphemeralResponse(
-      respond,
-      'Щось не підвантажелось до контроллера :(. Спробуйте використати /shift ще раз.'
-    );
+    return sendEphemeralResponse(respond, 'Ви не обрали тип зміни, використайте ще раз /shift.');
+
   const {channelId, isMember} = await userInSelectedChannel(
     selectedShiftType,
     body.user.id,
@@ -446,7 +448,7 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
       selectedShiftType,
       shiftNumber: statistics.lastShiftNumber
     });
-    console.log(res);
+    console.log(res.data);
     sendShiftMessage({
       client,
       body,
