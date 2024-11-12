@@ -417,8 +417,8 @@ slackApp.action(/start_shift/, async ({action, body, ack, client, respond}) => {
   await ack();
   const stateValues = body.state.values;
 
-  const selectedShiftType = stateValues.stats.shift_type_selector.selected_option.value;
-  console.log(body.user);
+  const selectedShiftType = stateValues?.stats?.shift_type_selector?.selected_option?.value;
+  console.log(selectedShiftType);
   const [status, notUsingIt, shiftNumber] = action.action_id.split('@');
   console.log(action.action_id, body.user.id, selectedShiftType);
   console.log('start shift, ', action.action_id);
