@@ -24,7 +24,7 @@ async function getUserStatus(
   body,
   userId = null,
   channelIdParam = null,
-  shiftNumber = 1,
+  shiftNumber = null,
   selectedShiftType = null
 ) {
   const userSlackId = userId || body.user.id;

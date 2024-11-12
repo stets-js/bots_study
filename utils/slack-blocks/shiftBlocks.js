@@ -9,7 +9,7 @@ const generateShiftBlocks = async ({
   body,
   userId = null,
   channelId = null,
-  shiftNumber,
+  shiftNumber = null,
   selectedShiftType = '',
   data = null
 }) => {
