@@ -67,7 +67,7 @@ const generateShiftBlocks = async ({
         flags.isShiftActive,
         null,
         selectedShiftType || statistics.shiftType,
-        shiftNumber || statistics.lastStatus
+        shiftNumber || statistics.lastShiftNumber
       )
     }
   ];
