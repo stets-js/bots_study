@@ -22,15 +22,7 @@ const slackApp = new App({
 });
 
 const client = new WebClient(process.env.SLACK_BOT_TOKEN);
-async function sendConfirmationMessage(
-  channelId,
-  blocks,
-  subgroupId,
-  userId,
-  userSlackId,
-  text,
-  adminId
-) {
+async function sendConfirmationMessage(blocks, subgroupId, userId, userSlackId, text, adminId) {
   try {
     const messageBlocks = [
       ...JSON.parse(blocks),
