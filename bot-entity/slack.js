@@ -636,7 +636,7 @@ slackApp.action(/refresh_shift/, async ({action, body, ack, client, respond}) =>
   }
 });
 slackApp.command('/shift-stats', async ({command, ack, respond, client}) => {
-  const allowedUsers = ['U05AACXUW9X', 'U059NEZSZQF', 'U07DTKVFV2N'];
+  const allowedUsers = ['U05AACXUW9X', 'U059NEZSZQF', 'U07DTKVFV2N', 'U058MSTENLX'];
 
   await ack();
 
