@@ -330,7 +330,9 @@ slackApp.command('/shift', async ({command, ack, respond, client}) => {
     userId: command.user_id,
     channelId: whosMemeber
   });
-
+  if (!blocks) {
+    await sendEphemeralResponse(respond, 'Вибачте, щось пішло не так.');
+  }
   await respond({
     text: 'Управління зміною',
     blocks,
@@ -350,15 +352,22 @@ const sendShiftMessage = async ({
   data = null
 }) => {
   if (String(status).startsWith(2)) {
+    const blocks = await generateShiftBlocks({
+      body,
+      userId,
+      selectedShiftType,
+      shiftNumber,
+      data,
+      channelId: reportChannelId
+    });
+    if (!blocks) {
+      return await sendEphemeralResponse(
+        respond,
+        'Щось не підвантажелось до контроллера :(. Спробуйте використати /shift ще раз.'
+      );
+    }
     await respond({
-      blocks: await generateShiftBlocks({
-        body,
-        userId,
-        selectedShiftType,
-        shiftNumber,
-        data,
-        channelId: reportChannelId
-      }),
+      blocks,
       response_type: 'ephemeral'
     });
     let message = '';
