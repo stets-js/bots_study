@@ -1,5 +1,5 @@
 require('dotenv').config();
-require('./utils/morning');
+// require('./utils/morning');
 const axios = require('axios');
 const amqp = require('amqplib');
 const express = require('express');

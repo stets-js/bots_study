@@ -111,17 +111,17 @@ ${quote}
   if (isAnswer) await sendTelegramNotification(chatId, answerText, {parse_mode: 'MarkdownV2'});
 };
 
-cron.schedule(
-  '0 10 * * *',
-  () => {
-    console.log('Sending morning message...');
-    sendMorningMessage();
-  },
-  {
-    scheduled: true,
-    timezone: 'Europe/Kiev'
-  }
-);
+// cron.schedule(
+//   '0 10 * * *',
+//   () => {
+//     console.log('Sending morning message...');
+//     sendMorningMessage();
+//   },
+//   {
+//     scheduled: true,
+//     timezone: 'Europe/Kiev'
+//   }
+// );
 // cron.schedule('* * * * * *', () => {
 //   console.log('This runs every second');
 // });
