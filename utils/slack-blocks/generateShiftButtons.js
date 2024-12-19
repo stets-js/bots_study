@@ -50,7 +50,7 @@ function generateShiftButtons(
       generateSelector({
         name: 'shift_type',
         action_id: 'shift_type_selector',
-        options: ['om', 'kwiz'],
+        options: ['om', 'kwiz', 'sup'],
         selectedValue: selectedShiftType
       })
     );
@@ -64,14 +64,15 @@ function generateShiftButtons(
         generateButton('end_break', `end_break${additionalData}`, 'primary', 'Завершити перерву')
       );
     } else {
-      buttons.push(
-        generateButton(
-          'start_break',
-          `start_break${additionalData}`,
-          'primary',
-          'Розпочати перерву'
-        )
-      );
+      if (selectedShiftType !== 'sup')
+        buttons.push(
+          generateButton(
+            'start_break',
+            `start_break${additionalData}`,
+            'primary',
+            'Розпочати перерву'
+          )
+        );
       buttons.push(
         generateButton('end_shift', `end_shift${additionalData}`, 'danger', 'Завершити зміну')
       );
