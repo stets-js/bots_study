@@ -41,7 +41,7 @@ const generateShiftBlocks = async ({
             shiftDuration.minutes
           ).padStart(2, '0')}:${String(shiftDuration.seconds).padStart(2, '0')}`
         },
-        {
+        selectedShiftType !== 'sup' && {
           type: 'mrkdwn',
           text: `*Час перерви:*\n${
             flags.hasStartedBreak
