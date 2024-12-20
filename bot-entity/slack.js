@@ -645,7 +645,7 @@ slackApp.action(/refresh_shift/, async ({action, body, ack, client, respond}) =>
   }
 });
 slackApp.command('/shift-stats', async ({command, ack, respond, client}) => {
-  const allowedUsers = ['U05AACXUW9X', 'U059NEZSZQF', 'U07DTKVFV2N', 'U058MSTENLX'];
+  const allowedUsers = ['U05AACXUW9X', 'U059NEZSZQF', 'U07DTKVFV2N', 'U058MSTENLX', 'U05AT31TMUL'];
 
   await ack();
 
@@ -689,7 +689,13 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
     return sendEphemeralResponse(respond, 'Не всі поля були обрані');
   }
   const channelId =
-    selectedShiftType === 'kwiz' ? 'C07UADS7U3G' : selectedShiftType === 'om' ? 'C07U2G5J7PH' : '';
+    selectedShiftType === 'kwiz'
+      ? 'C07UADS7U3G'
+      : selectedShiftType === 'om'
+      ? 'C07U2G5J7PH'
+      : selectedShiftType === 'sup'
+      ? 'C083PKS3L0M'
+      : '';
   const channel = await client.conversations.members({channel: channelId});
 
   const members = channel.members;
