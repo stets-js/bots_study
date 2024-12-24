@@ -28,27 +28,25 @@ const processEmailMessage = async body => {
 };
 
 const processQueueMessages = async (channel, queue_name) => {
-  try {
-    const msg = await channel.get(queue_name, {noAck: false});
+  await channel.consume(queue_name, async msg => {
+    try {
+      if (msg) {
+        const messageContent = JSON.parse(msg.content.toString());
 
-    if (msg) {
-      const messageContent = JSON.parse(msg.content.toString());
+        if (queue_name === 'tg_queue') {
+          await processTelegramMessage(messageContent);
+        } else if (queue_name === 'email_queue') {
+          await processEmailMessage(messageContent);
+        } else {
+          console.log('Unknown queue:', queue_name);
+        }
 
-      if (queue_name === 'tg_queue') {
-        await processTelegramMessage(messageContent);
-      } else if (queue_name === 'email_queue') {
-        await processEmailMessage(messageContent);
-      } else {
-        console.log('Unknown queue:', queue_name);
+        channel.ack(msg);
       }
-
-      channel.ack(msg);
-    } else {
-      console.log('Черга пуста, перевірю через 3 секунд.');
+    } catch (error) {
+      console.error('Error processing RabbitMQ message:', error);
     }
-  } catch (error) {
-    console.error('Error processing RabbitMQ message:', error);
-  }
+  });
 };
 
 const startQueue = async queue_name => {
