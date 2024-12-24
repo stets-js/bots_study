@@ -11,7 +11,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const processTelegramMessage = async body => {
-  const {chatId, text} = body;
+  const {chatId, text} = body.body;
+
   if (chatId && text && text.length > 0) await sendTelegramNotification(chatId, text);
 };
 
