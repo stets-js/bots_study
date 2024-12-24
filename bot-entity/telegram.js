@@ -16,13 +16,13 @@ bot.onText(/\/sync/, async msg => {
       keyboard: [
         [
           {
-            text: 'Перейти на сайт 🌐',
+            text: 'Перейти на сайт 🌐' + targetUrl,
             url: targetUrl
           }
         ]
       ],
       resize_keyboard: true,
-      one_time_keyboard: false
+      one_time_keyboard: true
     }
   };
 
