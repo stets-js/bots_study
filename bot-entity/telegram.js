@@ -11,26 +11,10 @@ bot.onText(/\/sync/, async msg => {
   const queryParams = `chatId=${chatId}&userId=${userId}`;
   const targetUrl = `https://study-booking.netlify.app/?${queryParams}`;
 
-  const options = {
-    reply_markup: {
-      keyboard: [
-        [
-          {
-            text: 'Перейти на сайт 🌐' + targetUrl,
-            url: targetUrl
-          }
-        ]
-      ],
-      resize_keyboard: true,
-      one_time_keyboard: true
-    }
-  };
-
   try {
     await bot.sendMessage(
       chatId,
-      'Добро пожаловать! Используйте кнопку ниже, чтобы перейти на сайт:',
-      options
+      `Для синхронізації перейдіть за посиланням. Якщо ви вже авторизовані до букінга, синхронізація відбудеться автоматично.В іншому випадку, після переходу за посиланням треба авторизуватися. \n ${targetUrl}`
     );
   } catch (error) {
     console.error('Error setting persistent button:', error);
