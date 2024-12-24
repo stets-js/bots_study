@@ -2,8 +2,6 @@ require('dotenv').config();
 const axios = require('axios');
 const bot = require('../utils/telegramBot');
 
-const userStates = {};
-
 bot.onText(/\/sync/, async msg => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
@@ -14,7 +12,7 @@ bot.onText(/\/sync/, async msg => {
   try {
     await bot.sendMessage(
       chatId,
-      `Для синхронізації перейдіть за посиланням. Якщо ви вже авторизовані до букінга, синхронізація відбудеться автоматично.В іншому випадку, після переходу за посиланням треба авторизуватися. \n ${targetUrl}`
+      `Для синхронізації перейдіть за посиланням.\nЯкщо ви вже авторизовані до букінга, синхронізація відбудеться автоматично.\nВ іншому випадку, після переходу за посиланням треба авторизуватися. \n ${targetUrl}`
     );
   } catch (error) {
     console.error('Error setting persistent button:', error);
