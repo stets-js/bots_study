@@ -32,7 +32,8 @@ const processQueueMessages = async (channel, queue_name) => {
     try {
       if (msg) {
         const messageContent = JSON.parse(msg.content.toString());
-
+        console.log('got message');
+        console.log(msg);
         if (queue_name === 'tg_queue') {
           await processTelegramMessage(messageContent);
         } else if (queue_name === 'email_queue') {
