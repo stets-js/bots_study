@@ -4,64 +4,37 @@ const bot = require('../utils/telegramBot');
 
 const userStates = {};
 
-bot.onText(/\/start-sync/, msg => {
-  const chatId = msg.chat.id;
-
-  userStates[chatId] = {step: 'askEmail'};
-
-  bot.sendMessage(chatId, 'Відправте свою пошту з букінга:');
-});
-
-bot.on('message', async msg => {
+bot.onText(/\/sync/, async msg => {
   const chatId = msg.chat.id;
   const userId = msg.from.id;
 
-  if (userStates[chatId]) {
-    const userState = userStates[chatId];
+  const queryParams = `chatId=${chatId}&userId=${userId}`;
+  const targetUrl = `https://study-booking.netlify.app/?${queryParams}`;
 
-    if (userState.step === 'askEmail') {
-      const email = msg.text.trim();
-
-      if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-        return bot.sendMessage(chatId, 'Невірний формат пошти. Спробуйте ще раз:');
-      }
-
-      userState.email = email;
-      userState.step = 'askPassword';
-      return bot.sendMessage(chatId, 'Тепер відправте пароль з букінга:');
-    }
-
-    if (userState.step === 'askPassword') {
-      const password = msg.text.trim();
-      userState.password = password;
-
-      console.log(
-        `User ${chatId} (ID: ${userId}) provided email: ${userState.email} and password: ${password}`
-      );
-
-      try {
-        const response = await axios.patch(
-          'https://dolphin-app-b3fkw.ondigitalocean.app/api/users/telegram',
+  const options = {
+    reply_markup: {
+      keyboard: [
+        [
           {
-            email: userState.email,
-            chatId: chatId,
-            userId: userId,
-            password: password
+            text: 'Перейти на сайт 🌐',
+            url: targetUrl
           }
-        );
-
-        if (response.status === 200) {
-          await bot.sendMessage(chatId, 'Синхронизация успешно завершена!');
-        } else {
-          await bot.sendMessage(chatId, 'Щось пішло не так, спробуйте ще раз.');
-        }
-      } catch (error) {
-        console.error('Error syncing user:', error);
-        await bot.sendMessage(chatId, 'Щось пішло не так, спробуйте ще раз.');
-      }
-
-      delete userStates[chatId];
+        ]
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: false
     }
+  };
+
+  try {
+    await bot.sendMessage(
+      chatId,
+      'Добро пожаловать! Используйте кнопку ниже, чтобы перейти на сайт:',
+      options
+    );
+  } catch (error) {
+    console.error('Error setting persistent button:', error);
+    await bot.sendMessage(chatId, 'Произошла ошибка, попробуйте позже.');
   }
 });
 
