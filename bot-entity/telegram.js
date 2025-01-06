@@ -1,6 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const bot = require('../utils/telegramBot');
+const {updateStatus} = require('../utils/axios');
 
 bot.onText(/\/sync/, async msg => {
   const chatId = msg.chat.id;
@@ -34,9 +35,9 @@ bot.on('callback_query', async callbackQuery => {
   const {message, data} = callbackQuery;
   const chatId = message.chat.id;
   const messageId = message.message_id;
-  const {action, subgroupId, status} = JSON.parse(data);
+  const {action, subgroupId, status, mentorId} = JSON.parse(data);
   try {
-    const response = await updateStatus({id: subgroupId, status});
+    const response = await updateStatus({subgroupId, status, mentorId});
 
     if (response.status === 200) {
       bot.sendMessage(
