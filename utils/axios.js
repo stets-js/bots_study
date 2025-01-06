@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 async function updateStatus(token, data) {
-  const url = `https://dolphin-app-b3fkw.ondigitalocean.app/api/subgroups/${data.subgroupId}/status`;
+  const url = `https://dolphin-app-b3fkw.ondigitalocean.app/api/subgroups/${data.subgroupId}/status?action=${data.status}&mentorId=${data.mentorId}`;
   try {
     const response = await axios.post(url, data, {
       headers: {
