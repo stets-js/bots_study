@@ -1,5 +1,6 @@
 require('dotenv').config();
-const axios = require('axios');
+const jwt = require('jsonwebtoken');
+
 const bot = require('../utils/telegramBot');
 const {updateStatus} = require('../utils/axios');
 
@@ -37,7 +38,9 @@ bot.on('callback_query', async callbackQuery => {
   const messageId = message.message_id;
   const {subgroupId, status, mentorId} = JSON.parse(data);
   try {
-    const response = await updateStatus({subgroupId, status, mentorId});
+    const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {expiresIn: '1h'});
+
+    const response = await updateStatus(token, {subgroupId, status, mentorId});
 
     if (response.status === 200) {
       bot.sendMessage(
