@@ -24,7 +24,7 @@ bot.onText(/\/sync/, async msg => {
 const sendTelegramNotification = async (chatId, message, reply_markup = {}) => {
   try {
     console.log(reply_markup, 'marikup');
-    await bot.sendMessage(chatId, message, {...reply_markup});
+    await bot.sendMessage(chatId, message, reply_markup);
     console.log(`Message sent to chat ${chatId}`);
   } catch (error) {
     console.error('Error sending Telegram message:', error);
@@ -35,7 +35,7 @@ bot.on('callback_query', async callbackQuery => {
   const {message, data} = callbackQuery;
   const chatId = message.chat.id;
   const messageId = message.message_id;
-  const {action, subgroupId, status, mentorId} = JSON.parse(data);
+  const {subgroupId, status, mentorId} = JSON.parse(data);
   try {
     const response = await updateStatus({subgroupId, status, mentorId});
 
