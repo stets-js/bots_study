@@ -41,8 +41,8 @@ bot.on('callback_query', async callbackQuery => {
     const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {expiresIn: '1h'});
 
     const response = await updateStatus(token, {subgroupId, status, mentorId});
-
-    if (response.status === 200) {
+    console.log(response);
+    if (response) {
       bot.sendMessage(
         chatId,
         status.includes('approved')
