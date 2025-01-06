@@ -18,7 +18,7 @@ const processTelegramMessage = async body => {
 
 const processEmailMessage = async body => {
   const {email, subject, message, html, sender} = body.body;
-  if (email && email.length > 3 && message)
+  if (email && email.length > 3 && email.includes('@') && message)
     await sendEmail({
       sender: sender,
       email: email,
