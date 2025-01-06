@@ -20,13 +20,44 @@ bot.onText(/\/sync/, async msg => {
   }
 });
 
-const sendTelegramNotification = async (chatId, message, options = {}) => {
+const sendTelegramNotification = async (chatId, message, markUp = {}) => {
   try {
-    await bot.sendMessage(chatId, message, options);
+    await bot.sendMessage(chatId, message, markUp);
     console.log(`Message sent to chat ${chatId}`);
   } catch (error) {
     console.error('Error sending Telegram message:', error);
   }
 };
+
+bot.on('callback_query', async callbackQuery => {
+  const {message, data} = callbackQuery;
+  const chatId = message.chat.id;
+  const messageId = message.message_id;
+  const {action, subgroupId, status} = JSON.parse(data);
+  try {
+    const response = await updateStatus({id: subgroupId, status});
+
+    if (response.status === 200) {
+      bot.sendMessage(
+        chatId,
+        status.includes('approved')
+          ? 'Ви підтвердили викладання у потоці'
+          : 'Ви відмовились від викладання у потоці'
+      );
+    }
+
+    await bot.answerCallbackQuery(callbackQuery.id);
+  } catch (error) {
+    await bot.deleteMessage(chatId, messageId);
+    bot.sendMessage(
+      chatId,
+      'Це повідомлення не актуальне, або щось пішло не так. В разі необхідності підтверження потока, використайте Teacher booking'
+    );
+    console.error(
+      'Це повідомлення не актуальне, або щось пішло не так. В разі необхідності підтверження потока, використайте Teacher booking',
+      error
+    );
+  }
+});
 
 module.exports = sendTelegramNotification;
