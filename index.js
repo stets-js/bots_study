@@ -4,9 +4,7 @@ const axios = require('axios');
 const amqp = require('amqplib');
 const express = require('express');
 const {createEventAdapter} = require('@slack/events-api');
-const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
 
-const sendTelegramNotification = require('./bot-entity/telegram');
 const {
   sendDirectMessage,
   sendGroupMessage,
@@ -17,11 +15,6 @@ const {
 const app = express();
 const port = process.env.PORT || 3000;
 const queue_name = process.env.QUEUE_NAME;
-
-const processTelegramMessage = async body => {
-  const {chatId, text} = body;
-  if (chatId && text && text.length > 0) await sendTelegramNotification(chatId, text);
-};
 
 const processSlackMessage = async body => {
   const {type, ...rest} = body;
