@@ -37,21 +37,49 @@ bot.on('callback_query', async callbackQuery => {
   const chatId = message.chat.id;
   const messageId = message.message_id;
   const {subgroupId, status, mentorId} = JSON.parse(data);
+
   try {
-    const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {expiresIn: '1h'});
+    if (status.includes('rejected')) {
+      await bot.sendMessage(chatId, 'Будь ласка, введіть причину скасування.');
 
-    const response = await updateStatus(token, {subgroupId, status, mentorId});
-    console.log(response);
-    if (response) {
-      bot.sendMessage(
-        chatId,
-        status.includes('approved')
-          ? 'Ви підтвердили викладання у потоці'
-          : 'Ви відмовились від викладання у потоці'
-      );
+      bot.once('message', async msg => {
+        const cancelReason = msg.text;
+
+        const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {
+          expiresIn: '1h'
+        });
+
+        const response = await updateStatus(token, {
+          subgroupId,
+          status,
+          mentorId,
+          cancelReason
+        });
+
+        if (response) {
+          bot.sendMessage(chatId, `Ви скасували викладання у потоці. Причина: ${cancelReason}`);
+        } else {
+          bot.sendMessage(chatId, 'Сталася помилка при скасуванні викладання.');
+        }
+
+        await bot.answerCallbackQuery(callbackQuery.id);
+      });
+    } else {
+      const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {expiresIn: '1h'});
+
+      const response = await updateStatus(token, {subgroupId, status, mentorId});
+      console.log(response);
+      if (response) {
+        bot.sendMessage(
+          chatId,
+          status.includes('approved')
+            ? 'Ви підтвердили викладання у потоці'
+            : 'Ви відмовились від викладання у потоці'
+        );
+      }
+
+      await bot.answerCallbackQuery(callbackQuery.id);
     }
-
-    await bot.answerCallbackQuery(callbackQuery.id);
   } catch (error) {
     await bot.deleteMessage(chatId, messageId);
     bot.sendMessage(
