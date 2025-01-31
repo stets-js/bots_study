@@ -7,7 +7,6 @@ const {createEventAdapter} = require('@slack/events-api');
 const slackEvents = createEventAdapter(process.env.SLACK_SIGNING_SECRET);
 
 const sendTelegramNotification = require('./bot-entity/telegram');
-const {sendEmail} = require('./bot-entity/gmail');
 const {
   sendDirectMessage,
   sendGroupMessage,
@@ -22,18 +21,6 @@ const queue_name = process.env.QUEUE_NAME;
 const processTelegramMessage = async body => {
   const {chatId, text} = body;
   if (chatId && text && text.length > 0) await sendTelegramNotification(chatId, text);
-};
-
-const processEmailMessage = async body => {
-  const {email, subject, message, html, sender} = body;
-  if (email && message)
-    await sendEmail({
-      sender: sender,
-      email: email,
-      subject: subject,
-      message: message,
-      html: html
-    });
 };
 
 const processSlackMessage = async body => {
@@ -69,11 +56,7 @@ const processQueueMessages = async () => {
     if (msg) {
       const messageContent = JSON.parse(msg.content.toString());
 
-      if (queue_name === 'tg_queue') {
-        await processTelegramMessage(messageContent);
-      } else if (queue_name === 'email_queue') {
-        await processEmailMessage(messageContent);
-      } else if (queue_name === 'slack_queue') {
+      if (queue_name === 'slack_queue') {
         await processSlackMessage(messageContent);
       } else {
         console.log('Unknown queue:', queue_name);
