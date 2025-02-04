@@ -1,11 +1,9 @@
-const axios = require('axios');
 require('dotenv').config();
 const {App} = require('@slack/bolt');
 const {WebClient} = require('@slack/web-api');
-const amqp = require('amqplib/callback_api');
 const {sendMessage} = require('../utils/sendMessage');
 const {generateButton} = require('../utils/slack-blocks/buttons');
-
+const jwt = require('jsonwebtoken');
 const {sendShiftData, getUserStatus, generateSpreadsheet} = require('../utils/sendShiftData');
 const {
   generateShiftBlocks,
@@ -13,8 +11,9 @@ const {
 } = require('../utils/slack-blocks/shiftBlocks');
 const {format} = require('date-fns/format');
 const userInSelectedChannel = require('../utils/getCorrectChannelId');
-const {extractDataFromBlocks} = require('../utils/extractDataFromBlocks');
-const {generateSpreadsheetActions} = require('../utils/slack-blocks/generateShiftButtons');
+
+const {checkAuthorization, sendStatusUpdate} = require('../utils/axios');
+
 // Create Slack slackApp instance
 const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -22,19 +21,28 @@ const slackApp = new App({
 });
 
 const client = new WebClient(process.env.SLACK_BOT_TOKEN);
-async function sendConfirmationMessage(blocks, subgroupId, userId, userSlackId, text, adminId) {
+async function sendConfirmationMessage(
+  blocks,
+  subgroupId,
+  userId,
+  userSlackId,
+  text,
+  adminId,
+  status
+) {
   try {
     const messageBlocks = [
       ...JSON.parse(blocks),
       {
         type: 'actions',
+        block_id: 'actionsData',
         elements: [
           generateButton(
-            `confirm_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
+            `confirm_${userId}_${subgroupId}_${userSlackId}_${adminId}_${status}`,
             'confirm_action'
           ),
           generateButton(
-            `cancel_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
+            `cancel_${userId}_${subgroupId}_${userSlackId}_${adminId}_${status}`,
             'cancel_action',
             'danger',
             'Відміняю'
@@ -102,7 +110,7 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
   await ack();
   const stateValues = body.state.values;
   console.log(stateValues, 'state values');
-  const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
+  const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   const updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
 
   updatedBlocks.push({
@@ -119,6 +127,16 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
       text: body.message.text,
       blocks: updatedBlocks
     });
+    const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {
+      expiresIn: '1h'
+    });
+    await sendStatusUpdate(token, {
+      subgroupId,
+      userSlackId,
+      userId,
+      adminId,
+      status: isMic ? 'mic_approved' : 'approved'
+    });
     sendMessage('slack_queue_confirmation', 'subgroup_confirmed', {
       subgroupId,
       userSlackId,
@@ -134,7 +152,7 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
 slackApp.action('cancel_action', async ({body, action, ack, client}) => {
   await ack();
 
-  const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
+  const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   const updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks.push(
     {
@@ -154,13 +172,13 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
       type: 'actions',
       elements: [
         generateButton(
-          `submitReason_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
+          `submitReason_${userId}_${subgroupId}_${userSlackId}_${adminId}_${isMic}`,
           'submit_reason',
           'danger',
           'Зберегти'
         ),
         generateButton(
-          `backToConfirm_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
+          `backToConfirm_${userId}_${subgroupId}_${userSlackId}_${adminId}_${isMic}`,
           'back_to_confirm',
           'primary',
           'Назад'
@@ -178,15 +196,18 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
 slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
   await ack();
 
-  const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
+  const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
   updatedBlocks.push({
     type: 'actions',
     elements: [
-      generateButton(`confirm_${userId}_${subgroupId}_${userSlackId}_${adminId}`, 'confirm_action'),
       generateButton(
-        `cancel_${userId}_${subgroupId}_${userSlackId}_${adminId}`,
+        `confirm_${userId}_${subgroupId}_${userSlackId}_${adminId}_${isMic}`,
+        'confirm_action'
+      ),
+      generateButton(
+        `cancel_${userId}_${subgroupId}_${userSlackId}_${adminId}_${isMic}`,
         'cancel_action',
         'danger',
         'Відміняю'
@@ -203,7 +224,7 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
 
-  const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
+  const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
@@ -221,12 +242,15 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       text: `Користувач <@${userSlackId}> відмінив за причиною: "${reason}". Підгрупа: ${subgroupId}`,
       blocks: updatedBlocks
     });
-    sendMessage('slack_queue_confirmation', 'subgroup_declined', {
+    const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {
+      expiresIn: '1h'
+    });
+    await sendStatusUpdate(token, {
       subgroupId,
-      userId,
       userSlackId,
+      userId,
       adminId,
-      reason
+      status: isMic ? 'mic_rejected' : 'rejected'
     });
   } else {
     await client.chat.postEphemeral({
@@ -236,17 +260,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
     });
   }
 });
-async function checkAuthorization(slackId) {
-  try {
-    const result = await axios.get(
-      `https://dolphin-app-b3fkw.ondigitalocean.app/api/auth/slack?slackId=${slackId}`
-    );
-    return result.data;
-  } catch (error) {
-    console.error(`Ошибка при проверке авторизации: ${error.message}`);
-    return {isSync: false, user: []};
-  }
-}
+
 slackApp.command('/sync_booking', async ({command, ack, respond}) => {
   await ack();
 
