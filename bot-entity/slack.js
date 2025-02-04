@@ -100,7 +100,9 @@ async function sendGroupMessage(channelId, text = '', blocks = undefined) {
 
 slackApp.action('confirm_action', async ({body, action, ack, client}) => {
   await ack();
-
+  const stateValues = body.state.values;
+  console.log(stateValues, 'state values');
+  return;
   const [actionType, userId, subgroupId, userSlackId, adminId] = action.value.split('_');
   const updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
 
