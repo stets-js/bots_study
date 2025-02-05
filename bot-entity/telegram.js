@@ -25,7 +25,7 @@ bot.onText(/\/sync/, async msg => {
 const sendTelegramNotification = async (chatId, message, reply_markup = {}) => {
   try {
     console.log(reply_markup, 'marikup');
-    await bot.sendMessage(chatId, message, reply_markup);
+    await bot.sendMessage(chatId, message, reply_markup || {parse_mode: 'MarkdownV2'});
     console.log(`Message sent to chat ${chatId}`);
   } catch (error) {
     console.error('Error sending Telegram message:', error);
