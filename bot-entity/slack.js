@@ -240,7 +240,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
 
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
-  if (selectedOption && selectedOption?.text?.text > 0) {
+  if (selectedOption && selectedOption.value) {
     updatedBlocks.push({
       type: 'section',
       text: {
@@ -263,7 +263,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       userId,
       adminId,
       status: isMic ? 'mic_rejected' : 'rejected',
-      cancelReasonId: selectedOption?.value
+      cancelReasonId: +selectedOption?.value
     });
   } else {
     await client.chat.postEphemeral({
