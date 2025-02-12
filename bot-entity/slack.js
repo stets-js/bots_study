@@ -157,17 +157,19 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
   const updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks.push(
     {
-      type: 'input',
+      type: 'section',
       block_id: 'cancel_reason_block',
-      element: {
-        type: 'plain_text_input',
-        action_id: 'cancel_reason_input',
-        multiline: true
+      text: {
+        type: 'mrkdwn',
+        text: 'Оберіть причину скасування:'
       },
-      label: {
-        type: 'plain_text',
-        text: 'Причина'
-      }
+      accessory: generateSelector({
+        name: 'Оберіть причину',
+        action_id: 'cancel_reason_select',
+        block_id: 'cancel_reason_block',
+        options: options.map(el => ({text: el.text, value: el.id})),
+        placeholder: 'Виберіть причину...'
+      })
     },
     {
       type: 'actions',
@@ -224,9 +226,11 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
 });
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
-
+  deepLog(reasonValue);
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
-  const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
+  const reasonValue = body.actions[0].selected_option.value;
+
+  // const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
   if (reason && reason.length > 0) {
@@ -251,7 +255,8 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       userSlackId,
       userId,
       adminId,
-      status: isMic ? 'mic_rejected' : 'rejected'
+      status: isMic ? 'mic_rejected' : 'rejected',
+      cancelReasonId: reasonValue
     });
   } else {
     await client.chat.postEphemeral({
@@ -766,8 +771,9 @@ slackApp.action('cancel_reason_select', async ({body, ack, respond}) => {
   deepLog(body.actions);
   const selectedReason = body.actions[0].selected_option.value;
 
-  await respond(`Ви вибрали: *${selectedReason}*`);
+  // await respond(`Ви вибрали: *${selectedReason}*`);
 });
+
 function deepLog(obj, indent = 0) {
   const spacing = ' '.repeat(indent * 2);
 
