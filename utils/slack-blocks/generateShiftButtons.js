@@ -11,7 +11,7 @@ function generateSelector({name, action_id, block_id, options, placeholder, sele
     },
     options: options.map(option => {
       const text = typeof option === typeof '' ? option : option.text;
-      const value = typeof option === typeof '' ? option : option.value;
+      const value = typeof option === typeof '' ? option : `${option.value}`;
 
       return {
         text: {
