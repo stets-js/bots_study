@@ -238,8 +238,11 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   deepLog(selectedOption);
 
-  let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
-  updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
+  let updatedBlocks = body.message.blocks.filter(
+    block => block?.block_id !== 'cancel_reason_block'
+  );
+  updatedBlocks = updatedBlocks.filter(block => block.type !== 'actions');
+
   if (selectedOption && selectedOption.value) {
     updatedBlocks.push({
       type: 'section',
