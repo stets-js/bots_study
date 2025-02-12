@@ -204,7 +204,7 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   deepLog(body.message.blocks);
   let updatedBlocks = body.message.blocks.filter(
-    block => block?.block_id !== 'cancel_reason_block' || block?.id !== 'cancel_reason_block'
+    block => block?.block_id !== 'cancel_reason_block'
   );
   updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
 
