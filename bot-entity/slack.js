@@ -228,9 +228,10 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
 });
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
-  deepLog(reasonValue);
-  const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
+  deepLog(body);
   const reasonValue = body.actions[0].selected_option.value;
+  const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
+  deepLog(reasonValue);
 
   // const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
