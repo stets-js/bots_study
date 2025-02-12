@@ -157,38 +157,40 @@ slackApp.action('cancel_action', async ({body, action, ack, client}) => {
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   const updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
 
-  updatedBlocks.push({
-    type: 'actions',
-    elements: [
-      {
-        type: 'section',
-        block_id: 'cancel_reason_block',
-        text: {
-          type: 'mrkdwn',
-          text: 'Оберіть причину скасування:'
-        },
-        accessory: generateSelector({
-          name: 'Оберіть причину',
-          action_id: 'cancel_reason_select',
-          block_id: 'cancel_reason_block',
-          options: options.map(el => ({text: el.text, value: el.id})),
-          placeholder: 'Виберіть причину...'
-        })
+  updatedBlocks.push(
+    {
+      type: 'section',
+      block_id: 'cancel_reason_block',
+      text: {
+        type: 'mrkdwn',
+        text: 'Оберіть причину скасування:'
       },
-      generateButton(
-        `submitReason_${userId}_${subgroupId}_${userSlackId}_${adminId}_${isMic}`,
-        'submit_reason',
-        'danger',
-        'Зберегти'
-      ),
-      generateButton(
-        `backToConfirm_${userId}_${subgroupId}_${userSlackId}_${adminId}_${isMic}`,
-        'back_to_confirm',
-        'primary',
-        'Назад'
-      )
-    ]
-  });
+      accessory: generateSelector({
+        name: 'Оберіть причину',
+        action_id: 'cancel_reason_select',
+        block_id: 'cancel_reason_block',
+        options: options.map(el => ({text: el.text, value: el.id})),
+        placeholder: 'Виберіть причину...'
+      })
+    },
+    {
+      type: 'actions',
+      elements: [
+        generateButton(
+          `submitReason_${userId}_${subgroupId}_${userSlackId}_${adminId}_${isMic}`,
+          'submit_reason',
+          'danger',
+          'Зберегти'
+        ),
+        generateButton(
+          `backToConfirm_${userId}_${subgroupId}_${userSlackId}_${adminId}_${isMic}`,
+          'back_to_confirm',
+          'primary',
+          'Назад'
+        )
+      ]
+    }
+  );
   await client.chat.update({
     channel: body.channel.id,
     ts: body.message.ts,
@@ -200,8 +202,10 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
   await ack();
 
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
-  let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
-  updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
+  let updatedBlocks = body.message.blocks.filter(
+    block => block?.block_id !== 'cancel_reason_block' || block?.id !== 'cancel_reason_block'
+  );
+  // updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
   updatedBlocks.push({
     type: 'actions',
     elements: [
