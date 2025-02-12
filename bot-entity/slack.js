@@ -737,7 +737,7 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
 
 slackApp.command('/select', async ({command, ack, respond}) => {
   await ack(); // Підтвердження команди c
-  const options = await getCancelReason();
+  const {data: options} = await getCancelReason();
   console.log(options);
   await respond({
     text: 'Оберіть причину:',
