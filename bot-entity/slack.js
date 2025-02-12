@@ -233,7 +233,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   deepLog(body);
   const selectedOption = body.state.values.cancel_reason_block.cancel_reason_select.selected_option;
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
-  deepLog(reasonValue);
+  deepLog(selectedOption);
 
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
