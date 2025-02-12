@@ -762,11 +762,34 @@ slackApp.command('/select', async ({command, ack, respond}) => {
 
 slackApp.action('cancel_reason_select', async ({body, ack, respond}) => {
   await ack(); // Підтверджуємо дію
-
-  const selectedReason = body.actions[0].selected_option.text.value;
+  deepLog(body.actions);
+  const selectedReason = body.actions[0].selected_option.value;
 
   await respond(`Ви вибрали: *${selectedReason}*`);
 });
+function deepLog(obj, indent = 0) {
+  const spacing = ' '.repeat(indent * 2);
+
+  if (typeof obj === 'object' && obj !== null) {
+    if (Array.isArray(obj)) {
+      console.log(`${spacing}[`);
+      obj.forEach((item, index) => {
+        process.stdout.write(`${spacing}  [${index}] `);
+        deepLog(item, indent + 1);
+      });
+      console.log(`${spacing}]`);
+    } else {
+      console.log(`${spacing}{`);
+      Object.entries(obj).forEach(([key, value]) => {
+        process.stdout.write(`${spacing}  "${key}": `);
+        deepLog(value, indent + 1);
+      });
+      console.log(`${spacing}}`);
+    }
+  } else {
+    console.log(`${spacing}${JSON.stringify(obj)}`);
+  }
+}
 
 module.exports = {
   slackApp,
