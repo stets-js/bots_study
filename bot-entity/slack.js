@@ -152,9 +152,11 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
 
 slackApp.action('cancel_action', async ({body, action, ack, client}) => {
   await ack();
+  const {data: options} = await getCancelReason();
 
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   const updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
+
   updatedBlocks.push(
     {
       type: 'section',
