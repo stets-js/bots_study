@@ -256,18 +256,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       const token = jwt.sign({isSlack: true, slackId: body.user.id}, process.env.JWT_SECRET, {
         expiresIn: '1h'
       });
-      console.log(token);
-      console.log(
-        {
-          subgroupId,
-          userSlackId,
-          userId,
-          adminId,
-          status: isMic ? 'mic_rejected' : 'rejected',
-          cancelReasonId: +selectedOption?.value
-        },
-        'body'
-      );
+
       await sendStatusUpdate(token, {
         subgroupId,
         userSlackId,
