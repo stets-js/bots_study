@@ -760,7 +760,7 @@ slackApp.command('/select', async ({command, ack, respond}) => {
   });
 });
 
-slackApp.action('select_reason', async ({body, ack, respond}) => {
+slackApp.action('cancel_reason_select', async ({body, ack, respond}) => {
   await ack(); // Підтверджуємо дію
 
   const selectedReason = body.actions[0].selected_option.text.value;
