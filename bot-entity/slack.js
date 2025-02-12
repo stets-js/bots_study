@@ -734,6 +734,63 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
   else return await sendEphemeralResponse(respond, 'Щось пішло не так :(');
 });
 
+slackApp.command('/select', async ({command, ack, respond}) => {
+  await ack(); // Підтвердження команди
+
+  await respond({
+    text: 'Оберіть причину:',
+    blocks: [
+      {
+        type: 'section',
+        block_id: 'reason_selection',
+        text: {
+          type: 'mrkdwn',
+          text: 'Будь ласка, оберіть причину з випадаючого списку:'
+        },
+        accessory: {
+          type: 'static_select',
+          action_id: 'select_reason',
+          placeholder: {
+            type: 'plain_text',
+            text: 'Оберіть варіант...'
+          },
+          options: [
+            {
+              text: {
+                type: 'plain_text',
+                text: 'Причина 1'
+              },
+              value: 'reason_1'
+            },
+            {
+              text: {
+                type: 'plain_text',
+                text: 'Причина 2'
+              },
+              value: 'reason_2'
+            },
+            {
+              text: {
+                type: 'plain_text',
+                text: 'Причина 3'
+              },
+              value: 'reason_3'
+            }
+          ]
+        }
+      }
+    ]
+  });
+});
+
+slackApp.action('select_reason', async ({body, ack, respond}) => {
+  await ack(); // Підтверджуємо дію
+
+  const selectedReason = body.actions[0].selected_option.text.text;
+
+  await respond(`Ви вибрали: *${selectedReason}*`);
+});
+
 module.exports = {
   slackApp,
   sendDirectMessage,
