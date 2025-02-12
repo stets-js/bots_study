@@ -248,7 +248,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `Ви відмінили підгрупу за причиною:\n "${selectedOption?.text}".`
+          text: `Ви відмінили підгрупу за причиною:\n "${selectedOption?.text?.text}".`
         }
       });
 
@@ -268,7 +268,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       await client.chat.update({
         channel: body.channel.id,
         ts: body.message.ts,
-        text: `Користувач <@${userSlackId}> відмінив за причиною: "${selectedOption?.text}". Підгрупа: ${subgroupId}`,
+        text: `Користувач <@${userSlackId}> відмінив за причиною: "${selectedOption?.text?.text}". Підгрупа: ${subgroupId}`,
         blocks: updatedBlocks
       });
     } else {
