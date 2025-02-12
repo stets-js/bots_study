@@ -206,7 +206,7 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
   let updatedBlocks = body.message.blocks.filter(
     block => block?.block_id !== 'cancel_reason_block'
   );
-  updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
+  updatedBlocks = updatedBlocks.filter(block => block.type !== 'actions');
 
   // updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
   updatedBlocks.push({
