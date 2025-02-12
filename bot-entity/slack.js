@@ -128,7 +128,7 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
       text: body.message.text,
       blocks: updatedBlocks
     });
-    const token = jwt.sign({isTelegram: true}, process.env.JWT_SECRET, {
+    const token = jwt.sign({isSlack: true, slackId: body.user.id}, process.env.JWT_SECRET, {
       expiresIn: '1h'
     });
     await sendStatusUpdate(token, {
@@ -258,7 +258,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       //   blocks: updatedBlocks
       // });
       console.log('creating token');
-      const token = jwt.sign({isTelegram: true}, process.env.JWT_SECRET, {
+      const token = jwt.sign({isSlack: true, slackId: body.user.id}, process.env.JWT_SECRET, {
         expiresIn: '1h'
       });
       console.log(token);
