@@ -244,19 +244,14 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
     updatedBlocks = updatedBlocks.filter(block => block.type !== 'actions');
 
     if (selectedOption && selectedOption.value) {
-      // updatedBlocks.push({
-      //   type: 'section',
-      //   text: {
-      //     type: 'mrkdwn',
-      //     text: `Ви відмінили підгрупу за причиною:\n "${selectedOption?.text?.text}".`
-      //   }
-      // });
-      // await client.chat.update({
-      //   channel: body.channel.id,
-      //   ts: body.message.ts,
-      //   text: `Користувач <@${userSlackId}> відмінив за причиною: "${selectedOption?.text?.text}". Підгрупа: ${subgroupId}`,
-      //   blocks: updatedBlocks
-      // });
+      updatedBlocks.push({
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `Ви відмінили підгрупу за причиною:\n "${selectedOption?.text}".`
+        }
+      });
+
       console.log('creating token');
       const token = jwt.sign({isSlack: true, slackId: body.user.id}, process.env.JWT_SECRET, {
         expiresIn: '1h'
@@ -280,6 +275,12 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
         adminId,
         status: isMic ? 'mic_rejected' : 'rejected',
         cancelReasonId: +selectedOption?.value
+      });
+      await client.chat.update({
+        channel: body.channel.id,
+        ts: body.message.ts,
+        text: `Користувач <@${userSlackId}> відмінив за причиною: "${selectedOption?.text}". Підгрупа: ${subgroupId}`,
+        blocks: updatedBlocks
       });
     } else {
       await client.chat.postEphemeral({
