@@ -12,7 +12,7 @@ const {
 const {format} = require('date-fns/format');
 const userInSelectedChannel = require('../utils/getCorrectChannelId');
 
-const {checkAuthorization, sendStatusUpdate} = require('../utils/axios');
+const {checkAuthorization, sendStatusUpdate, getCancelReason} = require('../utils/axios');
 const {generateSelector} = require('../utils/slack-blocks/generateShiftButtons');
 
 // Create Slack slackApp instance
@@ -736,8 +736,9 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
 });
 
 slackApp.command('/select', async ({command, ack, respond}) => {
-  await ack(); // Підтвердження команди
-
+  await ack(); // Підтвердження команди c
+  const options = await getCancelReason();
+  console.log(options);
   await respond({
     text: 'Оберіть причину:',
     blocks: [
@@ -752,7 +753,7 @@ slackApp.command('/select', async ({command, ack, respond}) => {
           name: 'Оберіть причину',
           action_id: 'cancel_reason_select',
           block_id: 'cancel_reason_block',
-          options: ['Технічні проблеми', 'Зміни в розкладі', 'Інші обставини'],
+          options: options.map(el => ({text: el.text, value: el.id})),
           placeholder: 'Виберіть причину...'
         })
       }

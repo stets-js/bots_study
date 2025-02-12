@@ -9,14 +9,19 @@ function generateSelector({name, action_id, block_id, options, placeholder, sele
       text: placeholder,
       emoji: true
     },
-    options: options.map(option => ({
-      text: {
-        type: 'plain_text',
-        text: option,
-        emoji: true
-      },
-      value: option
-    })),
+    options: options.map(option => {
+      const text = typeof option === typeof '' ? option : option.text;
+      const value = typeof option === typeof '' ? option : option.value;
+
+      return {
+        text: {
+          type: 'plain_text',
+          text,
+          emoji: true
+        },
+        value
+      };
+    }),
     ...(selectedValue
       ? {
           initial_option: {

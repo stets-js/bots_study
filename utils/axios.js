@@ -24,4 +24,14 @@ async function checkAuthorization(slackId) {
     return {isSync: false, user: []};
   }
 }
-module.exports = {sendStatusUpdate, checkAuthorization};
+
+async function getCancelReason() {
+  try {
+    const result = await axios.get(`https://dolphin-app-b3fkw.ondigitalocean.app/api/cancelReason`);
+    return result.data;
+  } catch (error) {
+    console.error(`Ошибка при проверке авторизации: ${error.message}`);
+    return {isSync: false, user: []};
+  }
+}
+module.exports = {sendStatusUpdate, checkAuthorization, getCancelReason};
