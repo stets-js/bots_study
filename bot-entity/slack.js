@@ -13,6 +13,7 @@ const {format} = require('date-fns/format');
 const userInSelectedChannel = require('../utils/getCorrectChannelId');
 
 const {checkAuthorization, sendStatusUpdate} = require('../utils/axios');
+const {generateSelector} = require('../utils/slack-blocks/generateShiftButtons');
 
 // Create Slack slackApp instance
 const slackApp = new App({

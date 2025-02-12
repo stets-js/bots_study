@@ -1,28 +1,14 @@
 const {generateButton, generateDatePicker} = require('./buttons');
 const {format} = require('date-fns');
-
 function generateSelector({name, action_id, block_id, options, placeholder, selectedValue = null}) {
-  const body = {
+  return {
     type: 'static_select',
     action_id,
-    block_id,
     placeholder: {
       type: 'plain_text',
-      text: name,
+      text: placeholder,
       emoji: true
-    }
-  };
-  if (selectedValue && selectedValue.length > 0)
-    body.initial_option = {
-      text: {
-        type: 'plain_text',
-        text: selectedValue,
-        emoji: true
-      },
-      value: selectedValue
-    };
-  return {
-    ...body,
+    },
     options: options.map(option => ({
       text: {
         type: 'plain_text',
@@ -30,7 +16,19 @@ function generateSelector({name, action_id, block_id, options, placeholder, sele
         emoji: true
       },
       value: option
-    }))
+    })),
+    ...(selectedValue
+      ? {
+          initial_option: {
+            text: {
+              type: 'plain_text',
+              text: selectedValue,
+              emoji: true
+            },
+            value: selectedValue
+          }
+        }
+      : {})
   };
 }
 
