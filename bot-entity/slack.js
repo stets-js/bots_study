@@ -742,42 +742,18 @@ slackApp.command('/select', async ({command, ack, respond}) => {
     blocks: [
       {
         type: 'section',
-        block_id: 'reason_selection',
+        block_id: 'cancel_reason_block',
         text: {
           type: 'mrkdwn',
-          text: 'Будь ласка, оберіть причину з випадаючого списку:'
+          text: 'Оберіть причину скасування:'
         },
-        accessory: {
-          type: 'static_select',
-          action_id: 'select_reason',
-          placeholder: {
-            type: 'plain_text',
-            text: 'Оберіть варіант...'
-          },
-          options: [
-            {
-              text: {
-                type: 'plain_text',
-                text: 'Причина 1'
-              },
-              value: 'reason_1'
-            },
-            {
-              text: {
-                type: 'plain_text',
-                text: 'Причина 2'
-              },
-              value: 'reason_2'
-            },
-            {
-              text: {
-                type: 'plain_text',
-                text: 'Причина 3'
-              },
-              value: 'reason_3'
-            }
-          ]
-        }
+        accessory: generateSelector({
+          name: 'Оберіть причину',
+          action_id: 'cancel_reason_select',
+          block_id: 'cancel_reason_block',
+          options: ['Технічні проблеми', 'Зміни в розкладі', 'Інші обставини'],
+          placeholder: 'Виберіть причину...'
+        })
       }
     ]
   });
@@ -786,7 +762,7 @@ slackApp.command('/select', async ({command, ack, respond}) => {
 slackApp.action('select_reason', async ({body, ack, respond}) => {
   await ack(); // Підтверджуємо дію
 
-  const selectedReason = body.actions[0].selected_option.text.text;
+  const selectedReason = body.actions[0].selected_option.text.value;
 
   await respond(`Ви вибрали: *${selectedReason}*`);
 });
