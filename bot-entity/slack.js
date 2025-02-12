@@ -233,47 +233,63 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
 });
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
-  deepLog(body);
-  const selectedOption = body.state.values.cancel_reason_block.cancel_reason_select.selected_option;
-  const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
-  deepLog(selectedOption);
+  try {
+    const selectedOption =
+      body.state.values.cancel_reason_block.cancel_reason_select.selected_option;
+    const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
 
-  let updatedBlocks = body.message.blocks.filter(
-    block => block?.block_id !== 'cancel_reason_block'
-  );
-  updatedBlocks = updatedBlocks.filter(block => block.type !== 'actions');
+    let updatedBlocks = body.message.blocks.filter(
+      block => block?.block_id !== 'cancel_reason_block'
+    );
+    updatedBlocks = updatedBlocks.filter(block => block.type !== 'actions');
 
-  if (selectedOption && selectedOption.value) {
-    // updatedBlocks.push({
-    //   type: 'section',
-    //   text: {
-    //     type: 'mrkdwn',
-    //     text: `Ви відмінили підгрупу за причиною:\n "${selectedOption?.text?.text}".`
-    //   }
-    // });
-    // await client.chat.update({
-    //   channel: body.channel.id,
-    //   ts: body.message.ts,
-    //   text: `Користувач <@${userSlackId}> відмінив за причиною: "${selectedOption?.text?.text}". Підгрупа: ${subgroupId}`,
-    //   blocks: updatedBlocks
-    // });
-    const token = jwt.sign({isTelegram: true}, process.env.JWT_SECRET, {
-      expiresIn: '1h'
-    });
-    await sendStatusUpdate(token, {
-      subgroupId,
-      userSlackId,
-      userId,
-      adminId,
-      status: isMic ? 'mic_rejected' : 'rejected',
-      cancelReasonId: +selectedOption?.value
-    });
-  } else {
-    await client.chat.postEphemeral({
-      channel: body.channel.id,
-      user: userSlackId,
-      text: 'Яка причина.'
-    });
+    if (selectedOption && selectedOption.value) {
+      // updatedBlocks.push({
+      //   type: 'section',
+      //   text: {
+      //     type: 'mrkdwn',
+      //     text: `Ви відмінили підгрупу за причиною:\n "${selectedOption?.text?.text}".`
+      //   }
+      // });
+      // await client.chat.update({
+      //   channel: body.channel.id,
+      //   ts: body.message.ts,
+      //   text: `Користувач <@${userSlackId}> відмінив за причиною: "${selectedOption?.text?.text}". Підгрупа: ${subgroupId}`,
+      //   blocks: updatedBlocks
+      // });
+      console.log('creating token');
+      const token = jwt.sign({isTelegram: true}, process.env.JWT_SECRET, {
+        expiresIn: '1h'
+      });
+      console.log(token);
+      console.log(
+        {
+          subgroupId,
+          userSlackId,
+          userId,
+          adminId,
+          status: isMic ? 'mic_rejected' : 'rejected',
+          cancelReasonId: +selectedOption?.value
+        },
+        'body'
+      );
+      await sendStatusUpdate(token, {
+        subgroupId,
+        userSlackId,
+        userId,
+        adminId,
+        status: isMic ? 'mic_rejected' : 'rejected',
+        cancelReasonId: +selectedOption?.value
+      });
+    } else {
+      await client.chat.postEphemeral({
+        channel: body.channel.id,
+        user: userSlackId,
+        text: 'Яка причина.'
+      });
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 
