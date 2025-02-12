@@ -276,7 +276,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       await sendStatusUpdate(token, {
         subgroupId,
         userSlackId,
-        userId,
+        mentorId: userId,
         adminId,
         status: isMic ? 'mic_rejected' : 'rejected',
         cancelReasonId: +selectedOption?.value
