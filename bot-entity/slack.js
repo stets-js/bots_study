@@ -229,26 +229,24 @@ slackApp.action('back_to_confirm', async ({body, action, ack, client}) => {
 slackApp.action('submit_reason', async ({body, action, ack, client}) => {
   await ack();
   deepLog(body);
-  const reasonValue =
-    body.state.values.cancel_reason_block.cancel_reason_select.selected_option.value;
+  const selectedOption = body.state.values.cancel_reason_block.cancel_reason_select.selected_option;
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   deepLog(reasonValue);
 
-  // const reason = body.state.values['cancel_reason_block']['cancel_reason_input'].value;
   let updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
   updatedBlocks = updatedBlocks.filter(block => block.type !== 'input');
-  if (reason && reason.length > 0) {
+  if (selectedOption && selectedOption?.text?.text > 0) {
     updatedBlocks.push({
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `Ви відмінили підгрупу за причиною:\n "${reason}".`
+        text: `Ви відмінили підгрупу за причиною:\n "${selectedOption?.text?.text}".`
       }
     });
     await client.chat.update({
       channel: body.channel.id,
       ts: body.message.ts,
-      text: `Користувач <@${userSlackId}> відмінив за причиною: "${reason}". Підгрупа: ${subgroupId}`,
+      text: `Користувач <@${userSlackId}> відмінив за причиною: "${selectedOption?.text?.text}". Підгрупа: ${subgroupId}`,
       blocks: updatedBlocks
     });
     const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {
@@ -260,7 +258,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
       userId,
       adminId,
       status: isMic ? 'mic_rejected' : 'rejected',
-      cancelReasonId: reasonValue
+      cancelReasonId: selectedOption?.value
     });
   } else {
     await client.chat.postEphemeral({
