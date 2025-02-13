@@ -22,10 +22,19 @@ bot.onText(/\/sync/, async msg => {
   }
 });
 
+const escapeMarkdownV2 = text => {
+  return text.replace(/([_*\[\]()~`>#+-=|{}.!])/g, '\\$1');
+};
+
 const sendTelegramNotification = async (chatId, message, reply_markup = undefined) => {
   try {
-    console.log(reply_markup, 'marikup');
-    await bot.sendMessage(chatId, message, reply_markup || {parse_mode: 'MarkdownV2'});
+    const escapedMessage = escapeMarkdownV2(message);
+
+    await bot.sendMessage(chatId, escapedMessage, {
+      parse_mode: 'MarkdownV2',
+      ...(reply_markup ? {reply_markup} : {})
+    });
+
     console.log(`Message sent to chat ${chatId}`);
   } catch (error) {
     console.error('Error sending Telegram message:', error);
