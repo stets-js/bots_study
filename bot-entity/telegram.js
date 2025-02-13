@@ -63,8 +63,8 @@ bot.on('callback_query', async callbackQuery => {
 
       bot.on('callback_query', async callbackQuery => {
         try {
-          console.log(this.callbackQuery);
           const {reasonId} = JSON.parse(callbackQuery.data);
+          if (!reasonId) return;
 
           const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {
             expiresIn: '1h'
@@ -88,7 +88,7 @@ bot.on('callback_query', async callbackQuery => {
           console.error('Error handling callback query:', error);
         }
       });
-    } else {
+    } else if (status.includes(approved)) {
       const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {expiresIn: '1h'});
 
       const response = await updateStatus(token, {subgroupId, status, mentorId});
@@ -103,6 +103,7 @@ bot.on('callback_query', async callbackQuery => {
       }
 
       await bot.answerCallbackQuery(callbackQuery.id);
+    } else {
     }
   } catch (error) {
     await bot.deleteMessage(chatId, messageId);
