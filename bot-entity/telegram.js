@@ -2,7 +2,7 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 const bot = require('../utils/telegramBot');
-const {updateStatus} = require('../utils/axios');
+const {updateStatus, getCancelReason} = require('../utils/axios');
 
 bot.onText(/\/sync/, async msg => {
   const chatId = msg.chat.id;
@@ -40,29 +40,44 @@ bot.on('callback_query', async callbackQuery => {
 
   try {
     if (status.includes('rejected')) {
-      await bot.sendMessage(chatId, 'Будь ласка, введіть причину скасування.');
+      const {data: cancelReasons} = await getCancelReason();
 
-      bot.once('message', async msg => {
-        const cancelReason = msg.text;
-
-        const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {
-          expiresIn: '1h'
-        });
-
-        const response = await updateStatus(token, {
-          subgroupId,
-          status,
-          mentorId,
-          cancelReason
-        });
-
-        if (response) {
-          bot.sendMessage(chatId, `Ви скасували викладання у потоці. Причина: ${cancelReason}`);
-        } else {
-          bot.sendMessage(chatId, 'Сталася помилка при скасуванні викладання.');
+      const buttons = cancelReasons.map(reason => [
+        {
+          text: reason.text,
+          callback_data: JSON.stringify({reasonId: reason.id, reasonText: reason.text})
         }
+      ]);
 
-        await bot.answerCallbackQuery(callbackQuery.id);
+      await bot.sendMessage(chatId, 'Будь ласка, виберіть причину скасування.', {
+        reply_markup: {inline_keyboard: buttons}
+      });
+
+      bot.on('callback_query', async callbackQuery => {
+        try {
+          const {reasonId, reasonText} = JSON.parse(callbackQuery.data);
+
+          const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+          });
+
+          const response = await updateStatus(token, {
+            subgroupId,
+            status,
+            mentorId,
+            cancelReasonId: reasonId
+          });
+
+          if (response) {
+            bot.sendMessage(chatId, `Ви скасували викладання у потоці. Причина: ${reasonText}`);
+          } else {
+            bot.sendMessage(chatId, 'Сталася помилка при скасуванні.');
+          }
+
+          await bot.answerCallbackQuery(callbackQuery.id);
+        } catch (error) {
+          console.error('Error handling callback query:', error);
+        }
       });
     } else {
       const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {expiresIn: '1h'});

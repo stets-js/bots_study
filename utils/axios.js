@@ -19,7 +19,22 @@ async function updateStatus(token, data) {
     throw error;
   }
 }
-
+async function getCancelReason() {
+  const url = `https://dolphin-app-b3fkw.ondigitalocean.app/api/cancelReason`;
+  try {
+    const response = await axios.get(url);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      console.error('Error updating status: Unexpected response status', response.status);
+      throw new Error(`Unexpected response status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Error updating status:', error);
+    throw error;
+  }
+}
 module.exports = {
-  updateStatus
+  updateStatus,
+  getCancelReason
 };
