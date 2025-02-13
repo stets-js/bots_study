@@ -88,7 +88,7 @@ bot.on('callback_query', async callbackQuery => {
           console.error('Error handling callback query:', error);
         }
       });
-    } else if (status.includes(approved)) {
+    } else if (status && status?.includes(approved)) {
       const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {expiresIn: '1h'});
 
       const response = await updateStatus(token, {subgroupId, status, mentorId});
