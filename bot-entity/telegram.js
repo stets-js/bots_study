@@ -76,12 +76,14 @@ bot.on('callback_query', async callbackQuery => {
             mentorId,
             cancelReasonId: reasonId
           });
-
           if (response) {
-            bot.sendMessage(chatId, `Ви скасували викладання у потоці`);
-          } else {
-            bot.sendMessage(chatId, 'Сталася помилка при скасуванні.');
+            await bot.deleteMessage(chatId, messageId);
           }
+          // if (response) {
+          //   bot.sendMessage(chatId, `Ви скасували викладання у потоці`);
+          // } else {
+          //   bot.sendMessage(chatId, 'Сталася помилка при скасуванні.');
+          // }
 
           await bot.answerCallbackQuery(callbackQuery.id);
         } catch (error) {
@@ -92,15 +94,18 @@ bot.on('callback_query', async callbackQuery => {
       const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {expiresIn: '1h'});
 
       const response = await updateStatus(token, {subgroupId, status, mentorId});
-      console.log(response);
       if (response) {
-        bot.sendMessage(
-          chatId,
-          status.includes('approved')
-            ? 'Ви підтвердили викладання у потоці'
-            : 'Ви відмовились від викладання у потоці'
-        );
+        await bot.deleteMessage(chatId, messageId);
       }
+      console.log(response);
+      // if (response) {
+      //   bot.sendMessage(
+      //     chatId,
+      //     status.includes('approved')
+      //       ? 'Ви підтвердили викладання у потоці'
+      //       : 'Ви відмовились від викладання у потоці'
+      //   );
+      // }
 
       await bot.answerCallbackQuery(callbackQuery.id);
     } else {
