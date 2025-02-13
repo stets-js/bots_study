@@ -28,12 +28,11 @@ const escapeMarkdownV2 = text => {
 
 const sendTelegramNotification = async (chatId, message, reply_markup = undefined) => {
   try {
-    const escapedMessage = escapeMarkdownV2(message);
+    console.log(reply_markup, 'markup');
 
-    await bot.sendMessage(chatId, escapedMessage, {
-      parse_mode: 'MarkdownV2',
-      ...(reply_markup ? {reply_markup} : {})
-    });
+    const escapedMessage = escapeMarkdownV2(message); // Экранируем MarkdownV2 символы
+    const parseMode = reply_markup ? reply_markup : {parse_mode: 'MarkdownV2'};
+    await bot.sendMessage(chatId, escapedMessage, parseMode);
 
     console.log(`Message sent to chat ${chatId}`);
   } catch (error) {
