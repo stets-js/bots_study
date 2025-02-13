@@ -30,7 +30,7 @@ const sendTelegramNotification = async (chatId, message, reply_markup = undefine
   try {
     console.log(reply_markup, 'markup');
 
-    const escapedMessage = escapeMarkdownV2(message); // Экранируем MarkdownV2 символы
+    const escapedMessage = reply_markup ? message : escapeMarkdownV2(message);
     const parseMode = reply_markup ? reply_markup : {parse_mode: 'MarkdownV2'};
     await bot.sendMessage(chatId, escapedMessage, parseMode);
 
