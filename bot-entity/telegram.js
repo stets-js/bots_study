@@ -41,7 +41,7 @@ bot.on('callback_query', async callbackQuery => {
   try {
     if (status.includes('rejected')) {
       const {data: cancelReasons} = await getCancelReason();
-
+      console.log(cancelReasons);
       const buttons = cancelReasons.map(reason => [
         {
           text: reason.text,

@@ -23,6 +23,7 @@ async function getCancelReason() {
   const url = `https://dolphin-app-b3fkw.ondigitalocean.app/api/cancelReason`;
   try {
     const response = await axios.get(url);
+    console.log(response);
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
