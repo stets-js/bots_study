@@ -45,7 +45,7 @@ bot.on('callback_query', async callbackQuery => {
       const buttons = cancelReasons.map(reason => [
         {
           text: reason.text,
-          callback_data: JSON.stringify({reasonId: reason.id, reasonText: reason.text})
+          callback_data: JSON.stringify({reasonId: reason.id})
         }
       ]);
 
@@ -55,7 +55,8 @@ bot.on('callback_query', async callbackQuery => {
 
       bot.on('callback_query', async callbackQuery => {
         try {
-          const {reasonId, reasonText} = JSON.parse(callbackQuery.data);
+          console.log(this.callbackQuery);
+          const {reasonId} = JSON.parse(callbackQuery.data);
 
           const token = jwt.sign({isTelegram: true, chatId}, process.env.JWT_SECRET, {
             expiresIn: '1h'
@@ -69,7 +70,7 @@ bot.on('callback_query', async callbackQuery => {
           });
 
           if (response) {
-            bot.sendMessage(chatId, `Ви скасували викладання у потоці. Причина: ${reasonText}`);
+            bot.sendMessage(chatId, `Ви скасували викладання у потоці`);
           } else {
             bot.sendMessage(chatId, 'Сталася помилка при скасуванні.');
           }
