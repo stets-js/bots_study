@@ -114,20 +114,7 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
   const [actionType, userId, subgroupId, userSlackId, adminId, isMic] = action.value.split('_');
   const updatedBlocks = body.message.blocks.filter(block => block.type !== 'actions');
 
-  updatedBlocks.push({
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: '*Підтверджено* ✅'
-    }
-  });
   try {
-    await client.chat.update({
-      channel: body.channel.id,
-      ts: body.message.ts,
-      text: body.message.text,
-      blocks: updatedBlocks
-    });
     const token = jwt.sign({isSlack: true, slackId: body.user.id}, process.env.JWT_SECRET, {
       expiresIn: '1h'
     });
@@ -139,6 +126,19 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
       status: isMic ? 'mic_approved' : 'approved'
     });
 
+    updatedBlocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '*Підтверджено* ✅'
+      }
+    });
+    await client.chat.update({
+      channel: body.channel.id,
+      ts: body.message.ts,
+      text: body.message.text,
+      blocks: updatedBlocks
+    });
     console.log(`Subgroup ${subgroupId} confirmed by user ${userId}.`);
   } catch (error) {
     console.error(`Error updating confirmation message: ${error.message}`);
