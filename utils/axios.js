@@ -5,7 +5,9 @@ axios.defaults.baseURL = 'https://dolphin-app-b3fkw.ondigitalocean.app/api';
 
 const sendStatusUpdate = async (token, data) => {
   console.log(data, 'data!!');
-  const url = `https://dolphin-app-b3fkw.ondigitalocean.app/api/subgroups/${data.subgroupId}/status?action=${data.status}&mentorId=${data.mentorId}`;
+  const url = `https://dolphin-app-b3fkw.ondigitalocean.app/api/subgroups/${
+    data.subgroupId
+  }/status?action=${data.status}&mentorId=${data?.mentorId || data.userId}`;
 
   return axios.post(url, data, {
     headers: {

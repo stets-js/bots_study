@@ -122,6 +122,7 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
       subgroupId,
       userSlackId,
       userId,
+      mentorId: userId,
       adminId,
       status: isMic ? 'mic_approved' : 'approved'
     });
@@ -257,6 +258,7 @@ slackApp.action('submit_reason', async ({body, action, ack, client}) => {
         subgroupId,
         userSlackId,
         mentorId: userId,
+        userId,
         adminId,
         status: isMic ? 'mic_rejected' : 'rejected',
         cancelReasonId: +selectedOption?.value
