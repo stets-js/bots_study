@@ -138,12 +138,7 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
       adminId,
       status: isMic ? 'mic_approved' : 'approved'
     });
-    sendMessage('slack_queue_confirmation', 'subgroup_confirmed', {
-      subgroupId,
-      userSlackId,
-      userId,
-      adminId
-    });
+
     console.log(`Subgroup ${subgroupId} confirmed by user ${userId}.`);
   } catch (error) {
     console.error(`Error updating confirmation message: ${error.message}`);
