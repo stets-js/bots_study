@@ -141,6 +141,7 @@ slackApp.action('confirm_action', async ({body, action, ack, client}) => {
     });
     console.log(`Subgroup ${subgroupId} confirmed by user ${userId}.`);
   } catch (error) {
+    console.log(error);
     console.error(`Error updating confirmation message: ${error.message}`);
   }
 });
