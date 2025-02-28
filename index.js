@@ -1,52 +1,65 @@
 require('dotenv').config();
-// require('./utils/morning');
-
 const amqp = require('amqplib');
 const express = require('express');
-
 const sendTelegramNotification = require('./bot-entity/telegram');
 const {sendEmail} = require('./bot-entity/gmail');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-const processTelegramMessage = async body => {
-  const {chatId, text, markUp} = body.body;
+// Gmail Rate Limits
+const MAX_EMAILS_PER_MINUTE = 50; // Adjust based on Gmail's limits
+const EMAIL_DELAY = 60000 / MAX_EMAILS_PER_MINUTE; // Time in ms between email sends
 
-  if (chatId && text && text.length > 0) await sendTelegramNotification(chatId, text, markUp);
-};
-
-const processEmailMessage = async body => {
+const processEmailMessage = async (body, channel, msg) => {
   const {email, subject, message, html, sender} = body.body;
-  if (email && email.length > 3 && email.includes('@') && message)
-    await sendEmail({
-      sender: sender,
-      email: email,
-      subject: subject,
-      message: message,
-      html: html
-    });
+
+  if (email && email.includes('@') && message) {
+    try {
+      console.log(`Sending email to: ${email}`);
+      await sendEmail({sender, email, subject, message, html});
+
+      // Wait before processing the next email (rate-limiting)
+      setTimeout(() => {
+        channel.ack(msg); // Acknowledge message after email is sent
+      }, EMAIL_DELAY);
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      channel.nack(msg, false, true); // Requeue the message on failure
+    }
+  } else {
+    console.log('Invalid email message:', body);
+    channel.ack(msg); // Acknowledge the message to remove it from the queue
+  }
 };
 
 const processQueueMessages = async (channel, queue_name) => {
+  // Limit the number of unacknowledged messages to 1 (ensures sequential processing)
+  channel.prefetch(1);
+
   await channel.consume(queue_name, async msg => {
     try {
       if (msg) {
         const messageContent = JSON.parse(msg.content.toString());
-        console.log('got message');
-        console.log(messageContent);
+        console.log(`Received message from queue: ${queue_name}`);
+
         if (queue_name === 'tg_queue') {
-          await processTelegramMessage(messageContent);
+          await sendTelegramNotification(
+            messageContent.body.chatId,
+            messageContent.body.text,
+            messageContent.body.markUp
+          );
+          channel.ack(msg);
         } else if (queue_name === 'email_queue') {
-          await processEmailMessage(messageContent);
+          await processEmailMessage(messageContent, channel, msg);
         } else {
           console.log('Unknown queue:', queue_name);
+          channel.ack(msg);
         }
-
-        channel.ack(msg);
       }
     } catch (error) {
       console.error('Error processing RabbitMQ message:', error);
+      channel.nack(msg, false, true); // Requeue the message on failure
     }
   });
 };
@@ -55,8 +68,8 @@ const startQueue = async queue_name => {
   try {
     const connection = await amqp.connect(process.env.RABBITMQ_URL);
     const channel = await connection.createChannel();
-
     await channel.assertQueue(queue_name, {durable: true});
+
     console.log(`Waiting for messages in queue: ${queue_name}`);
     processQueueMessages(channel, queue_name);
   } catch (error) {
@@ -64,6 +77,7 @@ const startQueue = async queue_name => {
   }
 };
 
+// Start listening to queues
 startQueue('email_queue');
 startQueue('tg_queue');
 
