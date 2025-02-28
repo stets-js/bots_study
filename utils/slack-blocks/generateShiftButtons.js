@@ -1,3 +1,4 @@
+const deepLogger = require('../deepLog');
 const {generateButton, generateDatePicker} = require('./buttons');
 const {format} = require('date-fns');
 function generateSelector({name, action_id, block_id, options, placeholder, selectedValue = null}) {
@@ -49,14 +50,15 @@ function generateShiftButtons(
   if (selectedShiftType) additionalData += `@${selectedShiftType}`;
   if (shiftNumber) additionalData += `@${shiftNumber}`;
   if (!isShiftActive) {
-    buttons.push(
-      generateSelector({
-        name: 'shift_type',
-        action_id: 'shift_type_selector',
-        options: ['om', 'kwiz', 'sup'],
-        selectedValue: selectedShiftType
-      })
-    );
+    const selector = generateSelector({
+      name: 'shift_type',
+      placeholder: 'оберіть зміну',
+      action_id: 'shift_type_selector',
+      options: ['om', 'kwiz', 'sup'],
+      selectedValue: selectedShiftType
+    });
+    deepLogger('shift selector', selector);
+    buttons.push(selector);
 
     buttons.push(
       generateButton('start_shift', `start_shift${additionalData}`, 'primary', 'Почати зміну')
@@ -86,6 +88,7 @@ function generateShiftButtons(
       generateButton('refresh_shift', `refresh_shift${additionalData}`, 'primary', 'Оновити час🔄')
     );
   console.log(buttons);
+  deepLogger('buttons', buttons);
   return buttons;
 }
 async function updateShiftMessage(client, body, statusText, buttons) {
