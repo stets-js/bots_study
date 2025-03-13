@@ -2,7 +2,9 @@ const {checkAuthorization} = require('../utils/axios');
 const {slackApp} = require('./slack');
 slackApp.event('app_home_opened', async ({event, client}) => {
   console.log('trying to do');
-  const {user, isSync} = await checkAuthorization(event.user);
+  const data = await checkAuthorization(event.user);
+  console.log(data);
+  const {user, isSync} = data;
   try {
     await client.views.publish({
       user_id: event.user,
