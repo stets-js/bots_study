@@ -1,6 +1,8 @@
+const {checkAuthorization} = require('../utils/axios');
 const {slackApp} = require('./slack');
 slackApp.event('app_home_opened', async ({event, client}) => {
   console.log('trying to do');
+  const {user, isSync} = await checkAuthorization(event.user);
   try {
     await client.views.publish({
       user_id: event.user,
@@ -91,19 +93,27 @@ slackApp.event('app_home_opened', async ({event, client}) => {
               }
             ]
           },
-          {
-            type: 'actions',
-            elements: [
-              {
-                type: 'button',
+          isSync
+            ? {
+                type: 'section',
                 text: {
-                  type: 'plain_text',
-                  text: '🔗 Синхронізуватися'
-                },
-                action_id: 'sync_account'
+                  type: 'mrkdwn',
+                  text: `✅ *Ваш акаунт вже синхронізований з користувачем ${user.name} (${user.email})!*`
+                }
               }
-            ]
-          }
+            : {
+                type: 'actions',
+                elements: [
+                  {
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: '🔗 Синхронізуватися'
+                    },
+                    action_id: 'sync_account'
+                  }
+                ]
+              }
         ]
       }
     });
