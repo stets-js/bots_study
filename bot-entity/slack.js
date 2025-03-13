@@ -680,24 +680,34 @@ slackApp.action(/refresh_shift/, async ({action, body, ack, client, respond}) =>
   }
 });
 slackApp.command('/shift-stats', async ({command, ack, respond, client}) => {
-  const allowedUsers = ['U05AACXUW9X', 'U059NEZSZQF', 'U07DTKVFV2N', 'U058MSTENLX', 'U05AT31TMUL'];
+  try {
+    const allowedUsers = [
+      'U05AACXUW9X',
+      'U059NEZSZQF',
+      'U07DTKVFV2N',
+      'U058MSTENLX',
+      'U05AT31TMUL'
+    ];
 
-  await ack();
+    await ack();
 
-  const userId = command.user_id;
-  let isAllowed = allowedUsers.includes(userId);
+    const userId = command.user_id;
+    let isAllowed = allowedUsers.includes(userId);
 
-  if (!isAllowed) {
-    return await sendEphemeralResponse(respond, 'Вибачте, у вас немає доступу до цієї команди.');
+    if (!isAllowed) {
+      return await sendEphemeralResponse(respond, 'Вибачте, у вас немає доступу до цієї команди.');
+    }
+
+    const blocks = await generateShiftStatsController({});
+
+    await respond({
+      text: 'Управління зміною',
+      blocks,
+      response_type: 'ephemeral'
+    });
+  } catch (error) {
+    console.warn(error);
   }
-
-  const blocks = await generateShiftStatsController({});
-
-  await respond({
-    text: 'Управління зміною',
-    blocks,
-    response_type: 'ephemeral'
-  });
 });
 
 slackApp.action('spreadsheet_type_selector', async ({action, ack, body, respond}) => {
