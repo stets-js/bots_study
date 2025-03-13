@@ -812,6 +812,42 @@ function deepLog(obj, indent = 0) {
   }
 }
 
+slackApp.event('app_home_opened', async ({event, client}) => {
+  console.log('trying to do');
+  try {
+    await client.views.publish({
+      user_id: event.user,
+      view: {
+        type: 'home',
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: '👋 Привіт, радий бачити тебе. Для синхронізації використай кнопку нижче. Синхронізований аккаунт дозволяє отримувати повідомлення про призначення потоків, оцінку ВКЯ та інші'
+            }
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: '🔗 Синхронізуватися'
+                },
+                action_id: 'sync_account'
+              }
+            ]
+          }
+        ]
+      }
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки App Home:', error);
+  }
+});
+
 module.exports = {
   slackApp,
   sendDirectMessage,
