@@ -134,7 +134,7 @@ function generateSpreadsheetActions(selectedShiftType, start, end) {
   if (selectedShiftType) value.selectedShiftType = selectedShiftType;
   if (start) value.start = start;
   if (end) value.end = end;
-
+  console.log(startOfTheMonth, endOfTheMonth, value);
   buttons.push(
     generateDatePicker({
       action_id: 'start_date',
