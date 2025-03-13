@@ -130,7 +130,11 @@ slackApp.action('sync_account', async ({body, ack, client}) => {
           block_id: 'email_block',
           element: {
             type: 'plain_text_input',
-            action_id: 'email_input'
+            action_id: 'email_input',
+            placeholder: {
+              type: 'plain_text',
+              text: 'Пошта від букінга'
+            }
           },
           label: {
             type: 'plain_text',
@@ -142,7 +146,11 @@ slackApp.action('sync_account', async ({body, ack, client}) => {
           block_id: 'password_block',
           element: {
             type: 'plain_text_input',
-            action_id: 'password_input'
+            action_id: 'password_input',
+            placeholder: {
+              type: 'plain_text',
+              text: 'Пароль від букінга'
+            }
           },
           label: {
             type: 'plain_text',
@@ -182,7 +190,7 @@ slackApp.view('login_submit', async ({view, ack, body, client}) => {
     );
 
     const result = await response.json();
-
+    console.log(result);
     if (result.success) {
       await client.chat.postMessage({
         channel: slackUserId,
