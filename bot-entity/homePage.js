@@ -35,7 +35,7 @@ slackApp.event('app_home_opened', async ({event, client}) => {
   }
 });
 
-app.action('sync_account', async ({body, ack, client}) => {
+slackApp.action('sync_account', async ({body, ack, client}) => {
   await ack();
 
   // Відкриваємо модальне вікно з полями для логіну
@@ -87,7 +87,7 @@ app.action('sync_account', async ({body, ack, client}) => {
   });
 });
 
-app.view('login_submit', async ({view, ack, body, client}) => {
+slackApp.view('login_submit', async ({view, ack, body, client}) => {
   await ack();
 
   const email = view.state.values.email_block.email_input.value;

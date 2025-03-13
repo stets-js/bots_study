@@ -93,6 +93,7 @@ start();
 if (queue_name === 'slack_queue') {
   (async () => {
     await slackApp.start(port);
+    require('./bot-entity/homePage');
     console.log(`⚡️ Slack Bolt app is running on port ${port}`);
   })();
 } else {
