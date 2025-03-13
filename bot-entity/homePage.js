@@ -1,9 +1,120 @@
 const {slackApp} = require('./slack');
+slackApp.event('app_home_opened', async ({event, client}) => {
+  console.log('trying to do');
+  try {
+    await client.views.publish({
+      user_id: event.user,
+      view: {
+        type: 'home',
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: '👋 Привіт, радий бачити тебе!',
+              emoji: true
+            }
+          },
+          {
+            type: 'divider'
+          },
+          {
+            type: 'rich_text',
+            elements: [
+              {
+                type: 'rich_text_section',
+                elements: [
+                  {
+                    type: 'text',
+                    text: 'Синхронізація з Teacher Booking надає можливість отримувати в приватні повідомлення'
+                  },
+                  {
+                    type: 'text',
+                    text: ' актуальну інформацію',
+                    style: {
+                      bold: true
+                    }
+                  },
+                  {
+                    type: 'text',
+                    text: ':\n'
+                  }
+                ]
+              },
+              {
+                type: 'rich_text_list',
+                style: 'bullet',
+                indent: 0,
+                border: 0,
+                elements: [
+                  {
+                    type: 'rich_text_section',
+                    elements: [
+                      {
+                        type: 'text',
+                        text: 'Звіти від Відділу Контроля Якості'
+                      }
+                    ]
+                  },
+                  {
+                    type: 'rich_text_section',
+                    elements: [
+                      {
+                        type: 'text',
+                        text: 'Інтерактивні запити на проведення потоків з можливістю '
+                      },
+                      {
+                        type: 'text',
+                        text: 'погодження',
+                        style: {
+                          bold: true
+                        }
+                      },
+                      {
+                        type: 'text',
+                        text: ' або '
+                      },
+                      {
+                        type: 'text',
+                        text: 'відміни',
+                        style: {
+                          bold: true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                type: 'rich_text_section',
+                elements: []
+              }
+            ]
+          },
+          {
+            type: 'actions',
+            elements: [
+              {
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: '🔗 Синхронізуватися'
+                },
+                action_id: 'sync_account'
+              }
+            ]
+          }
+        ]
+      }
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки App Home:', error);
+  }
+});
 
 slackApp.action('sync_account', async ({body, ack, client}) => {
   await ack();
 
-  // Відкриваємо модальне вікно з полями для логіну
   await client.views.open({
     trigger_id: body.trigger_id,
     view: {
@@ -31,8 +142,7 @@ slackApp.action('sync_account', async ({body, ack, client}) => {
           block_id: 'password_block',
           element: {
             type: 'plain_text_input',
-            action_id: 'password_input',
-            type: 'password'
+            action_id: 'password_input'
           },
           label: {
             type: 'plain_text',
