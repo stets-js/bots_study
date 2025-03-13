@@ -4,7 +4,7 @@ slackApp.event('app_home_opened', async ({event, client}) => {
   console.log('trying to do');
   const data = await checkAuthorization(event.user);
   console.log(data);
-  const {users, isSync} = data;
+  const {user: users, isSync} = data;
   const [user] = users;
   try {
     await client.views.publish({
