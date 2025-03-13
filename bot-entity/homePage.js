@@ -1,14 +1,13 @@
 const {checkAuthorization} = require('../utils/axios');
 const {slackApp} = require('./slack');
-slackApp.event('app_home_opened', async ({event, client}) => {
-  console.log('trying to do');
-  const data = await checkAuthorization(event.user);
+const publishHomeTab = async (userId, client) => {
+  const data = await checkAuthorization(userId);
   console.log(data);
   const {user: users, isSync} = data;
   const [user] = users;
   try {
     await client.views.publish({
-      user_id: event.user,
+      user_id: userId,
       view: {
         type: 'home',
         blocks: [
@@ -123,6 +122,10 @@ slackApp.event('app_home_opened', async ({event, client}) => {
   } catch (error) {
     console.error('Ошибка загрузки App Home:', error);
   }
+};
+slackApp.event('app_home_opened', async ({event, client}) => {
+  console.log('trying to do');
+  await publishHomeTab(event.user, client);
 });
 
 slackApp.action('sync_account', async ({body, ack, client}) => {
@@ -203,12 +206,13 @@ slackApp.view('login_submit', async ({view, ack, body, client}) => {
     );
 
     const result = await response.json();
-    console.log(result);
-    if (result.success) {
+    console.log(result, 'result!');
+    if (result) {
       await client.chat.postMessage({
         channel: slackUserId,
         text: '✅ Ваш акаунт успішно синхронізовано з Teacher Booking!'
       });
+      await publishHomeTab(body.user.id, client);
     } else {
       await client.chat.postMessage({
         channel: slackUserId,
