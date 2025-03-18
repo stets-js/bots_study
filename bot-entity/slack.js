@@ -682,11 +682,11 @@ slackApp.action(/refresh_shift/, async ({action, body, ack, client, respond}) =>
 slackApp.command('/shift-stats', async ({command, ack, respond, client}) => {
   try {
     const allowedUsers = [
+      'U05AT31TMUL',
       'U05AACXUW9X',
       'U059NEZSZQF',
       'U07DTKVFV2N',
-      'U058MSTENLX',
-      'U05AT31TMUL'
+      'U058MSTENLX'
     ];
 
     await ack();
@@ -738,7 +738,7 @@ slackApp.action('generate_spreadsheet', async ({action, ack, body, client, respo
       ? 'C07UADS7U3G'
       : selectedShiftType === 'om'
       ? 'C07U2G5J7PH'
-      : selectedShiftType === 'sup'
+      : selectedShiftType === 'tech'
       ? 'C083PKS3L0M'
       : '';
   const channel = await client.conversations.members({channel: channelId});

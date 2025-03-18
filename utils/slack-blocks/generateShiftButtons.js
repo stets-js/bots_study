@@ -120,7 +120,7 @@ function generateSpreadsheetActions(selectedShiftType, start, end) {
       placeholder: 'Оберіть тип зміни',
       name: 'shift_type',
       action_id: 'spreadsheet_type_selector',
-      options: ['om', 'kwiz'],
+      options: ['om', 'kwiz', 'tech'],
       selectedValue: selectedShiftType
     })
   );
