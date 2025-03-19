@@ -5,7 +5,7 @@ const userInSelectedChannel = async (shiftType = '', userId, client) => {
       ? 'C07UADS7U3G'
       : shiftType === 'om'
       ? 'C07U2G5J7PH'
-      : shiftType === 'sup'
+      : shiftType === 'tech'
       ? 'C083PKS3L0M'
       : '';
   const channel = await client.conversations.members({channel: channelId});

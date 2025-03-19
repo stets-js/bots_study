@@ -54,7 +54,7 @@ function generateShiftButtons(
       name: 'shift_type',
       placeholder: 'оберіть зміну',
       action_id: 'shift_type_selector',
-      options: ['om', 'kwiz', 'sup'],
+      options: ['om', 'kwiz', 'tech'],
       selectedValue: selectedShiftType
     });
     deepLogger('shift selector', selector);
@@ -69,7 +69,7 @@ function generateShiftButtons(
         generateButton('end_break', `end_break${additionalData}`, 'primary', 'Завершити перерву')
       );
     } else {
-      if (selectedShiftType !== 'sup')
+      if (selectedShiftType !== 'tech')
         buttons.push(
           generateButton(
             'start_break',
