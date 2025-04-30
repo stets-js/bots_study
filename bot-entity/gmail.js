@@ -1,24 +1,24 @@
 const nodemailer = require("nodemailer");
 
-// const transporter = nodemailer.createTransport({
-//   host: process.env.EMAIL_HOST, //mail.smtp2go.com
-//   port: 2525,
-//   secure: false,
-//   auth: {
-//     user: process.env.EMAIL_USERNAME,
-//     pass: process.env.EMAIL_PASSWORD,
-//   },
-// });
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  service: process.env.EMAIL_SERVICE,
-  port: 587,
-
+  host: process.env.EMAIL_HOST, //mail.smtp2go.com
+  port: 2525,
+  secure: false,
   auth: {
     user: process.env.EMAIL_USERNAME,
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+// const transporter = nodemailer.createTransport({
+//   host: process.env.EMAIL_HOST,
+//   service: process.env.EMAIL_SERVICE,
+//   port: 587,
+
+//   auth: {
+//     user: process.env.EMAIL_USERNAME,
+//     pass: process.env.EMAIL_PASSWORD,
+//   },
+// });
 const sendEmail = async (options) => {
   if (!options.email) {
     console.error("No email provided");
@@ -26,8 +26,9 @@ const sendEmail = async (options) => {
   }
 
   const mailOptions = {
+    from: '"Goiteens Bot" <booking-service@goiteens.ua>',
     // from: '"Goiteens Bot" <d.stetsenko@goiteens.ua>',
-    from: options.sender,
+    // from: options.sender,
     to: options.email,
     subject: options.subject,
     text: options.message,
