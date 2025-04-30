@@ -8,7 +8,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Gmail Rate Limits
-const MAX_EMAILS_PER_MINUTE = 50; // Adjust based on Gmail's limits
+const MAX_EMAILS_PER_MINUTE = 19; // Adjust based on Gmail's limits
 const EMAIL_DELAY = 60000 / MAX_EMAILS_PER_MINUTE; // Time in ms between email sends
 
 const processEmailMessage = async (body, channel, msg) => {
