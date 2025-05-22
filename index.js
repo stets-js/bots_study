@@ -4,7 +4,6 @@ const axios = require("axios");
 const amqp = require("amqplib");
 const express = require("express");
 const { createEventAdapter } = require("@slack/events-api");
-const { sendMessage } = require("./utils/sendMessage");
 
 const {
   sendDirectMessage,
@@ -95,8 +94,26 @@ const checkServers = async () => {
   return;
 };
 
+const sendToQueue = async (queue, message) => {
+  let connection, channel;
+  try {
+    connection = await amqp.connect(process.env.RABBITMQ_URL);
+    channel = await connection.createChannel();
+    await channel.assertQueue(queue, { durable: true });
+    channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
+      persistent: true,
+    });
+    console.log(`Message sent to queue ${queue}`);
+  } catch (error) {
+    console.error("Error sending message to queue:", error);
+  } finally {
+    if (channel) await channel.close();
+    if (connection) await connection.close();
+  }
+};
+
 // --- Нова cron-задача ---
-cron.schedule("25 9 * * *", async () => {
+cron.schedule("05 10 * * *", async () => {
   try {
     console.log("⏰ Щоденна задача: нагадування про закінчення підгруп");
 
@@ -129,18 +146,21 @@ cron.schedule("25 9 * * *", async () => {
             continue;
           }
 
-          const body = {
-            userName: `${mentor.firstName} ${mentor.lastName}`,
-            userId: mentor.slackId,
-            text: `Привіт, ${
-              mentor.firstName
-            }! Нагадуємо, що підгрупа "${courseName}" завершується скоро (${new Date(
-              subgroup.endDate
-            ).toLocaleDateString()}). Перевір чи все до цього готово! Якщо з'являться питання - пиши в бот!`,
-            blocks: null,
+          const message = {
+            type: "slack_direct",
+            body: {
+              userName: `${mentor.firstName} ${mentor.lastName}`,
+              userId: mentor.slackId,
+              text: `Привіт, ${
+                mentor.firstName
+              }! Нагадуємо, що підгрупа "${courseName}" завершується скоро (${new Date(
+                subgroup.endDate
+              ).toLocaleDateString()}). Перевір чи все до цього готово! Якщо з'являться питання - пиши в бот!`,
+              blocks: null,
+            },
           };
 
-          await sendMessage(queue_name, "slack_direct", body);
+          await sendToQueue(queue_name, message);
           console.log(
             `Відправлено повідомлення для наставника ${mentor.firstName} ${mentor.lastName}`
           );
