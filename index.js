@@ -114,7 +114,7 @@ const sendToQueue = async (queue, message) => {
 
 console.log("🔁 Ініціалізую CRON...");
 // --- Нова cron-задача ---
-cron.schedule("16 10 * * *", async () => {
+cron.schedule("0 9 * * *", async () => {
   console.log("⏰ CRON запустився");
   try {
     console.log("⏰ Щоденна задача: нагадування про закінчення підгруп");
@@ -162,7 +162,7 @@ cron.schedule("16 10 * * *", async () => {
             },
           };
 
-          await sendToQueue(queue_name, message);
+          await sendToQueue("slack_queue", message);
           console.log(
             `Відправлено повідомлення для наставника ${mentor.firstName} ${mentor.lastName}`
           );
