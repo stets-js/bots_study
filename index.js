@@ -4,6 +4,7 @@ const axios = require("axios");
 const amqp = require("amqplib");
 const express = require("express");
 const { createEventAdapter } = require("@slack/events-api");
+const { sendMessage } = require("./utils/sendMessage");
 
 const {
   sendDirectMessage,
@@ -95,7 +96,7 @@ const checkServers = async () => {
 };
 
 // --- Нова cron-задача ---
-cron.schedule("0 9 * * *", async () => {
+cron.schedule("25 9 * * *", async () => {
   try {
     console.log("⏰ Щоденна задача: нагадування про закінчення підгруп");
 
