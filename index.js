@@ -112,8 +112,10 @@ const sendToQueue = async (queue, message) => {
   }
 };
 
+console.log("🔁 Ініціалізую CRON...");
 // --- Нова cron-задача ---
-cron.schedule("05 10 * * *", async () => {
+cron.schedule("16 10 * * *", async () => {
+  console.log("⏰ CRON запустився");
   try {
     console.log("⏰ Щоденна задача: нагадування про закінчення підгруп");
 
