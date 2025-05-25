@@ -112,13 +112,10 @@ const sendToQueue = async (queue, message) => {
   }
 };
 
-console.log("🔁 Ініціалізую CRON...");
-// --- Нова cron-задача ---
-cron.schedule("0 9 * * *", async () => {
-  console.log("⏰ CRON запустився");
-  try {
-    console.log("⏰ Щоденна задача: нагадування про закінчення підгруп");
+const runDailyReminder = async () => {
+  console.log("⏰ Щоденна задача: нагадування про закінчення підгруп");
 
+  try {
     const response = await axios.get(
       "https://dolphin-app-b3fkw.ondigitalocean.app/api/subgroups/remind_about_ending_subgroup"
     );
@@ -133,20 +130,13 @@ cron.schedule("0 9 * * *", async () => {
         const courseName = subgroup.courseName;
         const mentors = subgroup.mentors;
 
-        if (mentors.length === 0) {
-          console.log(
-            `Підгрупа "${courseName}" не має наставників з slackId, пропускаємо.`
-          );
+        if (!mentors.length) {
+          console.log(`Підгрупа "${courseName}" не має наставників.`);
           continue;
         }
 
         for (const mentor of mentors) {
-          if (!mentor.slackId) {
-            console.log(
-              `Наставник ${mentor.firstName} ${mentor.lastName} не має slackId, пропускаємо.`
-            );
-            continue;
-          }
+          if (!mentor.slackId) continue;
 
           const message = {
             type: "slack_direct",
@@ -157,31 +147,36 @@ cron.schedule("0 9 * * *", async () => {
                 mentor.firstName
               }! Нагадуємо, що підгрупа "${courseName}" завершується скоро (${new Date(
                 subgroup.endDate
-              ).toLocaleDateString()}). Перевір чи все до цього готово! Якщо з'являться питання - пиши в бот!`,
+              ).toLocaleDateString()}). Перевір чи все до цього готово!`,
               blocks: null,
             },
           };
 
           await sendToQueue("slack_queue", message);
           console.log(
-            `Відправлено повідомлення для наставника ${mentor.firstName} ${mentor.lastName}`
+            `✅ Повідомлення надіслано ${mentor.firstName} ${mentor.lastName}`
           );
         }
       }
     } else {
-      console.log("Немає підгруп для нагадування або помилка у відповіді API.");
+      console.log("Немає підгруп для обробки або відповідь порожня.");
     }
   } catch (err) {
-    console.error("❌ Помилка при виконанні щоденної задачі:", err.message);
+    console.error("❌ Помилка в щоденній задачі:", err.message);
   }
-});
-// --- Кінець нової cron-задачі ---
+};
 
 const start = async () => {
   setInterval(async () => {
     await processQueueMessages();
     await checkServers();
   }, 5000);
+
+  await runDailyReminder();
+
+  setInterval(async () => {
+    await runDailyReminder();
+  }, 24 * 60 * 60 * 1000);
 };
 
 start();
