@@ -112,6 +112,54 @@ const sendToQueue = async (queue, message) => {
   }
 };
 
+const teacherBirthdayReminder = async () => {
+  console.log("🎂 Перевіряємо, чи в когось завтра день народження");
+
+  try {
+    const response = await axios.get(
+      "https://erp-back-qwro9.ondigitalocean.app/api/get_users_birthday"
+    );
+
+    if (!Array.isArray(response.data)) {
+      console.log("⚠️ Некоректний формат відповіді: очікувався масив");
+      return;
+    }
+
+    for (const teacher of response.data) {
+      const { first_name, last_name, birthday, team_lead_slack_id } = teacher;
+
+      if (!team_lead_slack_id) {
+        console.log(
+          `⛔️ Пропущено: немає Slack ID тімліда для ${first_name} ${last_name}`
+        );
+        continue;
+      }
+
+      const formattedBirthday = new Date(birthday).toLocaleDateString("uk-UA");
+
+      const message = {
+        type: "slack_direct",
+        body: {
+          userName: "",
+          userId: team_lead_slack_id,
+          text: `👋 Привіт!\nНагадуємо, що в одного з викладачів твоєї команди скоро день народження 🥳\n\n🎉 Ім'я викладача: ${last_name} ${first_name}\n📅 Дата народження: ${formattedBirthday}\n\nМожна підготувати вітання, приємний меседж або маленький сюрприз 🎁\nЯкщо потрібна допомога — дай знати 💛`,
+          blocks: null,
+        },
+      };
+
+      await sendToQueue("slack_queue", message);
+      console.log(
+        `✅ Повідомлення надіслано тімліду (${team_lead_slack_id}) про ${first_name} ${last_name}`
+      );
+    }
+  } catch (error) {
+    console.error(
+      "❌ Помилка під час нагадування про ДН викладачів:",
+      error.message
+    );
+  }
+};
+
 const runDailyReminder = async () => {
   console.log("⏰ Щоденна задача: нагадування про закінчення підгруп");
 
@@ -173,9 +221,11 @@ const start = async () => {
   }, 5000);
 
   await runDailyReminder();
+  await teacherBirthdayReminder();
 
   setInterval(async () => {
     await runDailyReminder();
+    await teacherBirthdayReminder();
   }, 24 * 60 * 60 * 1000);
 };
 
