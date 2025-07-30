@@ -191,11 +191,14 @@ const runDailyReminder = async () => {
             body: {
               userName: `${mentor.firstName} ${mentor.lastName}`,
               userId: mentor.slackId,
-              text: `Привіт, ${
-                mentor.firstName
-              }! Нагадуємо, що підгрупа "${courseName}" завершується скоро (${new Date(
+              // text: `Привіт, ${
+              //   mentor.firstName
+              // }! Нагадуємо, що підгрупа "${courseName}" завершується скоро (${new Date(
+              //   subgroup.endDate
+              // ).toLocaleDateString()}). Перевір чи все до цього готово!`,
+              text: `Привіт! Нагадуємо, що ваша група підходить до завершення — залишилося 30 днів, останнє заняття заплановане на (${new Date(
                 subgroup.endDate
-              ).toLocaleDateString()}). Перевір чи все до цього готово!`,
+              ).toLocaleDateString()}) \n Це гарний момент, щоб: \n — спланувати фінальні уроки та захист проєкту \n — підбити результати і підготувати зворотний зв’язок \n — при потребі — звернутись до ТЛ \n Якщо є питання чи щось не вкладається — напиши, ми поруч ✨`,
               blocks: null,
             },
           };

@@ -1,192 +1,192 @@
-const {checkAuthorization} = require('../utils/axios');
-const {slackApp} = require('./slack');
+const { checkAuthorization } = require("../utils/axios");
+const { slackApp } = require("./slack");
 const publishHomeTab = async (userId, client) => {
   const data = await checkAuthorization(userId);
   console.log(data);
-  const {user: users, isSync} = data;
+  const { user: users, isSync } = data;
   const [user] = users;
   try {
     await client.views.publish({
       user_id: userId,
       view: {
-        type: 'home',
+        type: "home",
         blocks: [
           {
-            type: 'header',
+            type: "header",
             text: {
-              type: 'plain_text',
-              text: '👋 Привіт, радий бачити тебе!',
-              emoji: true
-            }
+              type: "plain_text",
+              text: "👋 Привіт, радий бачити тебе!",
+              emoji: true,
+            },
           },
           {
-            type: 'divider'
+            type: "divider",
           },
           {
-            type: 'rich_text',
+            type: "rich_text",
             elements: [
               {
-                type: 'rich_text_section',
+                type: "rich_text_section",
                 elements: [
                   {
-                    type: 'text',
-                    text: 'Синхронізація з Teacher Booking надає можливість отримувати в приватні повідомлення'
+                    type: "text",
+                    text: "Синхронізація з Teacher Booking надає можливість отримувати в приватні повідомлення",
                   },
                   {
-                    type: 'text',
-                    text: ' актуальну інформацію',
+                    type: "text",
+                    text: " актуальну інформацію",
                     style: {
-                      bold: true
-                    }
+                      bold: true,
+                    },
                   },
                   {
-                    type: 'text',
-                    text: ':\n'
-                  }
-                ]
+                    type: "text",
+                    text: ":\n",
+                  },
+                ],
               },
               {
-                type: 'rich_text_list',
-                style: 'bullet',
+                type: "rich_text_list",
+                style: "bullet",
                 indent: 0,
                 border: 0,
                 elements: [
                   {
-                    type: 'rich_text_section',
+                    type: "rich_text_section",
                     elements: [
                       {
-                        type: 'text',
-                        text: 'Звіти від Відділу Контроля Якості'
-                      }
-                    ]
+                        type: "text",
+                        text: "Звіти від Відділу Контроля Якості",
+                      },
+                    ],
                   },
                   {
-                    type: 'rich_text_section',
+                    type: "rich_text_section",
                     elements: [
                       {
-                        type: 'text',
-                        text: 'Інтерактивні запити на проведення потоків з можливістю '
+                        type: "text",
+                        text: "Інтерактивні запити на проведення потоків з можливістю ",
                       },
                       {
-                        type: 'text',
-                        text: 'погодження',
+                        type: "text",
+                        text: "погодження",
                         style: {
-                          bold: true
-                        }
+                          bold: true,
+                        },
                       },
                       {
-                        type: 'text',
-                        text: ' або '
+                        type: "text",
+                        text: " або ",
                       },
                       {
-                        type: 'text',
-                        text: 'відміни',
+                        type: "text",
+                        text: "відміни",
                         style: {
-                          bold: true
-                        }
-                      }
-                    ]
-                  }
-                ]
+                          bold: true,
+                        },
+                      },
+                    ],
+                  },
+                ],
               },
               {
-                type: 'rich_text_section',
-                elements: []
-              }
-            ]
+                type: "rich_text_section",
+                elements: [],
+              },
+            ],
           },
           isSync
             ? {
-                type: 'section',
+                type: "section",
                 text: {
-                  type: 'mrkdwn',
-                  text: `✅ *Ваш акаунт вже синхронізований з користувачем ${user.name} (${user.email})!*`
-                }
+                  type: "mrkdwn",
+                  text: `✅ *Ваш акаунт вже синхронізований з користувачем ${user.name} (${user.email})!*`,
+                },
               }
             : {
-                type: 'actions',
+                type: "actions",
                 elements: [
                   {
-                    type: 'button',
+                    type: "button",
                     text: {
-                      type: 'plain_text',
-                      text: '🔗 Синхронізуватися'
+                      type: "plain_text",
+                      text: "🔗 Синхронізуватися",
                     },
-                    action_id: 'sync_account'
-                  }
-                ]
-              }
-        ]
-      }
+                    action_id: "sync_account",
+                  },
+                ],
+              },
+        ],
+      },
     });
   } catch (error) {
-    console.error('Ошибка загрузки App Home:', error);
+    console.error("Ошибка загрузки App Home:", error);
   }
 };
-slackApp.event('app_home_opened', async ({event, client}) => {
-  console.log('trying to do');
+slackApp.event("app_home_opened", async ({ event, client }) => {
+  console.log("trying to do");
   await publishHomeTab(event.user, client);
 });
 
-slackApp.action('sync_account', async ({body, ack, client}) => {
+slackApp.action("sync_account", async ({ body, ack, client }) => {
   await ack();
 
   await client.views.open({
     trigger_id: body.trigger_id,
     view: {
-      type: 'modal',
-      callback_id: 'login_submit',
+      type: "modal",
+      callback_id: "login_submit",
       title: {
-        type: 'plain_text',
-        text: 'Синхронізація акаунта'
+        type: "plain_text",
+        text: "Синхронізація акаунта",
       },
       blocks: [
         {
-          type: 'input',
-          block_id: 'email_block',
+          type: "input",
+          block_id: "email_block",
           element: {
-            type: 'plain_text_input',
-            action_id: 'email_input',
+            type: "plain_text_input",
+            action_id: "email_input",
             placeholder: {
-              type: 'plain_text',
-              text: 'Пошта від букінга'
-            }
+              type: "plain_text",
+              text: "Пошта від букінга",
+            },
           },
           label: {
-            type: 'plain_text',
-            text: 'Введіть ваш Email'
-          }
+            type: "plain_text",
+            text: "Введіть ваш Email",
+          },
         },
         {
-          type: 'input',
-          block_id: 'password_block',
+          type: "input",
+          block_id: "password_block",
           element: {
-            type: 'plain_text_input',
-            action_id: 'password_input',
+            type: "plain_text_input",
+            action_id: "password_input",
             placeholder: {
-              type: 'plain_text',
-              text: 'Пароль від букінга'
-            }
+              type: "plain_text",
+              text: "Пароль від букінга",
+            },
           },
           label: {
-            type: 'plain_text',
-            text: 'Введіть пароль'
-          }
-        }
+            type: "plain_text",
+            text: "Введіть пароль",
+          },
+        },
       ],
       submit: {
-        type: 'plain_text',
-        text: 'Синхронізуватися'
+        type: "plain_text",
+        text: "Синхронізуватися",
       },
       close: {
-        type: 'plain_text',
-        text: 'Скасувати'
-      }
-    }
+        type: "plain_text",
+        text: "Скасувати",
+      },
+    },
   });
 });
 
-slackApp.view('login_submit', async ({view, ack, body, client}) => {
+slackApp.view("login_submit", async ({ view, ack, body, client }) => {
   await ack();
 
   const email = view.state.values.email_block.email_input.value;
@@ -197,34 +197,34 @@ slackApp.view('login_submit', async ({view, ack, body, client}) => {
 
   try {
     const response = await fetch(
-      'https://dolphin-app-b3fkw.ondigitalocean.app/api/auth/slackSync',
+      "https://dolphin-app-b3fkw.ondigitalocean.app/api/auth/slackSync",
       {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({email, password, slackUserId})
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, slackUserId }),
       }
     );
 
     const result = await response.json();
-    console.log(result, 'result!');
+    console.log(result, "result!");
     if (result) {
       await client.chat.postMessage({
         channel: slackUserId,
-        text: '✅ Ваш акаунт успішно синхронізовано з Teacher Booking!'
+        text: "✅ Ваш акаунт успішно синхронізовано з Teacher Booking!",
       });
       await publishHomeTab(body.user.id, client);
     } else {
       await client.chat.postMessage({
         channel: slackUserId,
-        text: '❌ Помилка авторизації! Перевірте email і пароль.'
+        text: "❌ Помилка авторизації! Перевірте email і пароль.",
       });
     }
   } catch (error) {
-    console.error('Помилка логіну:', error);
+    console.error("Помилка логіну:", error);
 
     await client.chat.postMessage({
       channel: slackUserId,
-      text: '⚠️ Сталася помилка під час синхронізації. Спробуйте пізніше.'
+      text: "Сталася технічна помилка 😔\n Ми вже над нею працюємо. Якщо щось термінове — напишіть, будь ласка, тімліду.",
     });
   }
 });

@@ -1,34 +1,39 @@
 const generateButton = (
   value,
   action_id,
-  style = 'primary',
-  buttonText = 'Підтверджую',
+  style = "primary",
+  buttonText = "✅ Погоджуюсь",
   additional
 ) => {
   return {
-    type: 'button',
+    type: "button",
     text: {
-      type: 'plain_text',
+      type: "plain_text",
       emoji: true,
-      text: buttonText
+      text: buttonText,
     },
     style,
     value,
     action_id,
-    ...additional
+    ...additional,
   };
 };
-const generateDatePicker = ({action_id, block_id, initial_date, text = 'Select a date'}) => {
+const generateDatePicker = ({
+  action_id,
+  block_id,
+  initial_date,
+  text = "Select a date",
+}) => {
   return {
-    type: 'datepicker',
+    type: "datepicker",
     initial_date,
     block_id,
     placeholder: {
-      type: 'plain_text',
+      type: "plain_text",
       text,
-      emoji: true
+      emoji: true,
     },
-    action_id
+    action_id,
   };
 };
-module.exports = {generateButton, generateDatePicker};
+module.exports = { generateButton, generateDatePicker };
