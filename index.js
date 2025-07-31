@@ -153,6 +153,16 @@ const teacherBirthdayReminder = async () => {
       );
     }
   } catch (error) {
+    if (
+      error.response &&
+      error.response.status === 404 &&
+      error.response.data &&
+      error.response.data.message
+    ) {
+      console.log(`ℹ️ ${error.response.data.message}`);
+      return;
+    }
+
     console.error(
       "❌ Помилка під час нагадування про ДН викладачів:",
       error.message
