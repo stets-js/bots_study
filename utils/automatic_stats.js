@@ -61,10 +61,10 @@ async function exportTechShiftsToGoogleSheet() {
       detailedMembers
     );
 
-    console.log("Google Sheet створено:", response.data);
+    console.log("Google Sheet сформовано !!!");
     return response.data;
   } catch (error) {
-    console.error("Помилка при створенні звіту:", error);
+    console.error("!!! Помилка при створенні звіту:", error);
     throw error;
   }
 }
