@@ -4,7 +4,7 @@ const axios = require("axios");
 const amqp = require("amqplib");
 const express = require("express");
 const { createEventAdapter } = require("@slack/events-api");
-
+const { exportTechShiftsToGoogleSheet } = require("./utils/automatic_stats");
 const {
   sendDirectMessage,
   sendGroupMessage,
@@ -225,10 +225,12 @@ const start = async () => {
 
   await runDailyReminder();
   await teacherBirthdayReminder();
+  await exportTechShiftsToGoogleSheet();
 
   setInterval(async () => {
     await runDailyReminder();
     await teacherBirthdayReminder();
+    await exportTechShiftsToGoogleSheet();
   }, 24 * 60 * 60 * 1000);
 };
 
